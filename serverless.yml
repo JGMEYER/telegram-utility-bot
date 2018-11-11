@@ -8,13 +8,11 @@ provider:
   environment:
     TELEGRAM_TOKEN: ${env:TELEGRAM_TOKEN}
 
-
-
 functions:
   post:
     handler: handler.hello
     events:
       - http:
-          path: my-custom-url
+          path: alert
           method: post
           cors: true

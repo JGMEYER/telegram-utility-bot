@@ -10,20 +10,35 @@ import requests
 TOKEN = os.environ['TELEGRAM_TOKEN']
 BASE_URL = "https://api.telegram.org/bot{}".format(TOKEN)
 
+BOPIZ_TEST_CHAT_ID = -205156447  # ENS Bot Test Group
+BOPIZ_CHAT_ID = -265155578  # Stream Team
+
+ALERT_CHAT_ID = BOPIZ_CHAT_ID
+
+ALERT_GROUP = {
+  'Knallharter',
+  'Zimexerz',
+  'AlexWOT',
+  'TheRam254',
+  'Dragonnuggets',
+}
 
 def hello(event, context):
     try:
-        data = json.loads(event["body"])
-        message = str(data["message"]["text"])
-        chat_id = data["message"]["chat"]["id"]
-        first_name = data["message"]["chat"]["first_name"]
+        event_body = json.loads(event['body'])
 
-        response = "Please /start, {}".format(first_name)
+        response = f"This is the old version -- get new instructions from Knall"
 
-        if "start" in message:
-            response = "Hello {}".format(first_name)
+        alerter = event_body.get('alerter')
+        if alerter:
+            mentions = [f"@{u}" for u in ALERT_GROUP if u != alerter]
+            response = (
+                f":: BOPIZ ALERT ::\n"
+                f"{alerter} Needs your help!\n"
+                f"\n"
+                f"{', '.join(mentions)}")
 
-        data = {"text": response.encode("utf8"), "chat_id": chat_id}
+        data = {"text": response.encode("utf8"), "chat_id": ALERT_CHAT_ID}
         url = BASE_URL + "/sendMessage"
         requests.post(url, data)
 

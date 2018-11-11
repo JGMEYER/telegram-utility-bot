@@ -50,3 +50,17 @@ You should see something like:
   "description": "Webhook was set"
 }
 ```
+
+## Local testing
+
+I *think* you can test something along the lines of:
+
+```
+serverless invoke local --function post
+```
+
+## Better Logging and Maintenance
+
+Give this a shot? Should include local testing, monitoring, and logs.
+
+https://serverless.com/blog/serverless-monitoring-the-good-the-bad-and-the-ugly/
