@@ -29,10 +29,10 @@ POST - https://u3ir5tjcsf.execute-api.us-east-1.amazonaws.com/dev/my-custom-url
 
 ## Connect backend to Telegram Bot
 
-Set `$TELEGRAM_TOKEN` (from @BotFather) and `$TELEGRAM_API_GATEWAY_ENDPOINT` (from last step) in api_keys_DO_NOT_RENAME, then source:
+Set `$TELEGRAM_TOKEN` (from @BotFather) and `$TELEGRAM_API_GATEWAY_ENDPOINT` (from last step) in secrets/api_keys_DO_NOT_RENAME, then source:
 
 ```
-source api_keys_DO_NOT_RENAME
+source secrets/api_keys_DO_NOT_RENAME
 ```
 
 Then run the following to set up the webhook.
