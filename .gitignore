@@ -15,9 +15,15 @@ var/
 *.egg-info/
 .installed.cfg
 *.egg
+__pycache__
 
 # Serverless directories
 .serverless
 
+# Node
+node_modules/
+
 # Project-specific
-api_keys_DO_NOT_RENAME
+vendored/
+secrets/
+package-lock.json
