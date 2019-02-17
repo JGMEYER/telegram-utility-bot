@@ -3,15 +3,20 @@
 Serverless bot based on this guide:
 https://hackernoon.com/serverless-telegram-bot-on-aws-lambda-851204d4236c
 
+## Required env values
+
+```
+AWS_ACCESS_KEY_ID
+AWS_SECRET_ACCESS_KEY
+TELEGRAM_TOKEN
+TELEGRAM_API_GATEWAY_ENDPOINT
+YOUTUBE_API_KEY
+```
+
 ## Setup
 
-This should configure the environment:
-
-```
-./setup.sh
-```
-
-Afterwards, it may display additional steps to run. Execute them, then proceed.
+1. Add (export) all required env values in `secrets/api_keys`. You may need to create this path.
+1. Run `source setup` to setup the environment.
 
 ## Deploy to AWS
 
@@ -29,10 +34,10 @@ POST - https://u3ir5tjcsf.execute-api.us-east-1.amazonaws.com/dev/my-custom-url
 
 ## Connect backend to Telegram Bot
 
-Set `$TELEGRAM_TOKEN` (from @BotFather) and `$TELEGRAM_API_GATEWAY_ENDPOINT` (from last step) in secrets/api_keys_DO_NOT_RENAME, then source:
+Set `$TELEGRAM_TOKEN` (from @BotFather) and `$TELEGRAM_API_GATEWAY_ENDPOINT` (from last step) in secrets/api_keys, then source:
 
 ```
-source secrets/api_keys_DO_NOT_RENAME
+source secrets/api_keys
 ```
 
 Then run the following to set up the webhook.
