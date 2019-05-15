@@ -15,8 +15,8 @@ import requests
 TOKEN = os.environ['TELEGRAM_TOKEN']
 BASE_URL = "https://api.telegram.org/bot{}".format(TOKEN)
 
-BOPIZ_CHAT_ID = -1001163985660  # Stream Team
-ALERT_CHAT_ID = BOPIZ_CHAT_ID
+TELEGRAM_CHAT_ID = -1001163985660  # Stream Team
+ALERT_CHAT_ID = TELEGRAM_CHAT_ID
 ALERT_GROUP = {
   'Knallharter',
   'Zimexerz',
@@ -30,13 +30,12 @@ def handler(event, context):
     Perform appropriate action for each endpoint invocation
     """
     if event['path'] == "/telegram/alert":
-        return send_alert(event, context)
+        return telegram_alert(event, context)
     elif event['path'] == "/telegram/musicConverter":
         return {"statusCode": 400}  # not yet available
     return {"statusCode": 400}
 
-#TODO GENERALIZE CODE DETAILS
-def send_alert(event, context):
+def telegram_alert(event, context):
     try:
         event_body = json.loads(event['body'])
         alerter = event_body['alerter']
@@ -47,7 +46,7 @@ def send_alert(event, context):
     try:
         mentions = [f"@{u}" for u in ALERT_GROUP if u != alerter]
         response = (
-            f":: BOPIZ ALERT ::\n"
+            f":: TEAM ALERT ::\n"
             f"{alerter} Needs your help!\n"
             f"\n"
             f"{', '.join(mentions)}")

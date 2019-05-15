@@ -105,7 +105,7 @@ $ serverless invoke local --function post
 
 ## Test commands
 
-### Bopiz ENS Bot Alert
+### Telegram Bot Alert
 ```
 $ curl --header "Content-Type: application/json" --request POST --data '{"alerter": "Knallharter"}' $TELEGRAM_API_GATEWAY_ROOT/alert
 ```
