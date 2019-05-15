@@ -3,7 +3,6 @@ import logging
 import os
 import sys
 
-
 here = os.path.dirname(os.path.realpath(__file__))
 sys.path.append(os.path.join(here, "./vendored"))
 
@@ -27,26 +26,43 @@ ALERT_GROUP = {
   'Dragonnuggets',
 }
 
+#TODO GENERALIZE CODE DETAILS
+#TODO FIX ENDPOINT NAMES
 def hello(event, context):
+    http_status_code = send_alert(event, context)
+    return {"statusCode": http_status_code}
+
+def send_alert(event, context):
     try:
         event_body = json.loads(event['body'])
+        alerter = event_body['alerter']
+    except Exception as e:
+        logging.error("Processing alert request body", exc_info=True)
+        return 400
 
-        response = f"This is the old version -- get new instructions from Knall"
-
-        alerter = event_body.get('alerter')
-        if alerter:
-            mentions = [f"@{u}" for u in ALERT_GROUP if u != alerter]
-            response = (
-                f":: BOPIZ ALERT ::\n"
-                f"{alerter} Needs your help!\n"
-                f"\n"
-                f"{', '.join(mentions)}")
+    try:
+        mentions = [f"@{u}" for u in ALERT_GROUP if u != alerter]
+        response = (
+            f":: BOPIZ ALERT ::\n"
+            f"{alerter} Needs your help!\n"
+            f"\n"
+            f"{', '.join(mentions)}")
 
         data = {"text": response.encode("utf8"), "chat_id": ALERT_CHAT_ID}
         url = BASE_URL + "/sendMessage"
-        #TODO ADD PROPER ERROR CHECKING FOR MY OWN SANITY!
-        requests.post(url, data=data)
     except Exception as e:
-        logging.error("Error sending bopiz alert", exc_info=True)
+        logging.error("Encoding message", exc_info=True)
+        return 500
 
-    return {"statusCode": 200}
+    try:
+        response = requests.post(url, data=data)
+        response.raise_for_status()
+    except requests.exceptions.HTTPError as e:
+        logging.error(response.content)
+        logging.error("Sending telegram alert", exc_info=True)
+        return 500
+    except requests.exceptions.RequestException as e:
+        logging.error("Sending telegram alert", exc_info=True)
+        return 500
+
+    return 200
