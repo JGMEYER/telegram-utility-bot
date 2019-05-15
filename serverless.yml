@@ -10,9 +10,13 @@ provider:
 
 functions:
   post:
-    handler: handler.hello
+    handler: handler.handler
     events:
       - http:
-          path: alert
+          path: telegram/alert
+          method: post
+          cors: true
+      - http:
+          path: telegram/musicConverter
           method: post
           cors: true

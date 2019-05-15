@@ -15,7 +15,6 @@ import requests
 TOKEN = os.environ['TELEGRAM_TOKEN']
 BASE_URL = "https://api.telegram.org/bot{}".format(TOKEN)
 
-BOPIZ_TEST_CHAT_ID = -205156447  # ENS Bot Test Group
 BOPIZ_CHAT_ID = -1001163985660  # Stream Team
 ALERT_CHAT_ID = BOPIZ_CHAT_ID
 ALERT_GROUP = {
@@ -26,19 +25,24 @@ ALERT_GROUP = {
   'Dragonnuggets',
 }
 
-#TODO GENERALIZE CODE DETAILS
-#TODO FIX ENDPOINT NAMES
-def hello(event, context):
-    http_status_code = send_alert(event, context)
-    return {"statusCode": http_status_code}
+def handler(event, context):
+    """
+    Perform appropriate action for each endpoint invocation
+    """
+    if event['path'] == "/telegram/alert":
+        return send_alert(event, context)
+    elif event['path'] == "/telegram/musicConverter":
+        return {"statusCode": 400}  # not yet available
+    return {"statusCode": 400}
 
+#TODO GENERALIZE CODE DETAILS
 def send_alert(event, context):
     try:
         event_body = json.loads(event['body'])
         alerter = event_body['alerter']
     except Exception as e:
         logging.error("Processing alert request body", exc_info=True)
-        return 400
+        return {"statusCode": 400}
 
     try:
         mentions = [f"@{u}" for u in ALERT_GROUP if u != alerter]
@@ -52,7 +56,7 @@ def send_alert(event, context):
         url = BASE_URL + "/sendMessage"
     except Exception as e:
         logging.error("Encoding message", exc_info=True)
-        return 500
+        return {"statusCode": 500}
 
     try:
         response = requests.post(url, data=data)
@@ -60,9 +64,9 @@ def send_alert(event, context):
     except requests.exceptions.HTTPError as e:
         logging.error(response.content)
         logging.error("Sending telegram alert", exc_info=True)
-        return 500
+        return {"statusCode": 500}
     except requests.exceptions.RequestException as e:
         logging.error("Sending telegram alert", exc_info=True)
-        return 500
+        return {"statusCode": 500}
 
-    return 200
+    return {"statusCode": 200}

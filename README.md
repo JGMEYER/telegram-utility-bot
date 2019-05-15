@@ -8,10 +8,12 @@ https://hackernoon.com/serverless-telegram-bot-on-aws-lambda-851204d4236c
 ```
 AWS_ACCESS_KEY_ID
 AWS_SECRET_ACCESS_KEY
+TELEGRAM_API_GATEWAY_ROOT
 TELEGRAM_TOKEN
-TELEGRAM_API_GATEWAY_ENDPOINT
 YOUTUBE_API_KEY
 ```
+
+Some of these will be set in the instructions below.
 
 ## Setup
 
@@ -29,12 +31,15 @@ Packages all files into .zip archive and uploads to AWS. It will then create an 
 ```
 endpoints:
 
-POST - https://u3ir5tjcsf.execute-api.us-east-1.amazonaws.com/dev/my-custom-url
+POST - https://u3ir5tjcsf.execute-api.us-east-1.amazonaws.com/dev/telegram/endpoint1
+POST - https://u3ir5tjcsf.execute-api.us-east-1.amazonaws.com/dev/telegram/endpoint2
 ```
+
+Use this and update `$TELEGRAM_API_GATEWAY_ROOT` in secrets/api_keys to "<url\>/dev/telegram", e.g. "https://u3ir5tjcsf.execute-api.us-east-1.amazonaws.com/dev/telegram"
 
 ## Connect backend to Telegram Bot
 
-Set `$TELEGRAM_TOKEN` (from @BotFather) and `$TELEGRAM_API_GATEWAY_ENDPOINT` (from last step) in secrets/api_keys, then source:
+Set `$TELEGRAM_TOKEN` (from @BotFather) in secrets/api_keys, then source:
 
 ```
 $ source secrets/api_keys
@@ -43,7 +48,7 @@ $ source secrets/api_keys
 Then run the following to set up the webhook.
 
 ```
-$ curl --request POST --url "https://api.telegram.org/bot$TELEGRAM_TOKEN/setWebhook" --header "content-type: application/json" --data "{\"url\":\"$TELEGRAM_API_GATEWAY_ENDPOINT\"}"
+$ curl --request POST --url "https://api.telegram.org/bot$TELEGRAM_TOKEN/setWebhook" --header "content-type: application/json" --data "{\"url\":\"$TELEGRAM_API_GATEWAY_ROOT\"}"
 ```
 
 You should see something like:
@@ -55,6 +60,40 @@ You should see something like:
   "description": "Webhook was set"
 }
 ```
+
+## Adding a new endpoint
+
+1. Add endpoint to serverless.yml.
+
+  `IMPORTANT! The root of the endpoint is important. For example, telegram endpoints MUST begin with telegram/* to be recognized by the Telegram bot webhook.`
+
+  ```
+  functions:
+    post:
+      handler: handler.handler
+      events:
+      - http:
+          path: telegram/myEndpoint
+          method: post
+          cors: true
+  ```
+1. Create a function in handler.py that will process incoming requests:
+  ```
+  def my_endpoint_logic(event, context):
+      ...
+  ```
+
+  This function must return a dict like `{"statusCode": <http_status_code>}`.
+1. Add a clause in handler() in handler.py to execute your function when the endpoint is invoked.
+  ```
+  elif event['path'] == "/telegram/myEndpoint":
+      return my_endpoint_logic(event, context)
+  ```
+  You can easily mock out an endpoint like while it's being developed with:
+  ```
+  elif event['path'] == "/telegram/myEndpoint":
+      return {"statusCode": 400}  # not yet available
+  ```
 
 ## Local testing
 
@@ -68,7 +107,7 @@ $ serverless invoke local --function post
 
 ### Bopiz ENS Bot Alert
 ```
-$ curl --header "Content-Type: application/json" --request POST --data '{"alerter": "Knallharter"}' https://7jqeooocuk.execute-api.us-east-1.amazonaws.com/dev/alert
+$ curl --header "Content-Type: application/json" --request POST --data '{"alerter": "Knallharter"}' $TELEGRAM_API_GATEWAY_ROOT/alert
 ```
 
 ## Better Logging and Maintenance

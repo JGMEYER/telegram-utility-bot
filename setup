@@ -3,3 +3,4 @@ pip install -r requirements.txt -t vendored
 
 # Configure env
 source secrets/*
+echo "Env variables set"
