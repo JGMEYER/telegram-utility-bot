@@ -23,4 +23,5 @@ def search_youtube(q, max_results):
                                        search_result["id"]["videoId"]))
     return videos
 
-print(search_youtube(q="G.o.a.t polyphia", max_results=5))
+if __name__ == '__main__':
+    print(search_youtube(q="G.o.a.t polyphia", max_results=5))
