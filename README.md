@@ -50,6 +50,10 @@ Some of these will be set in the instructions below.
 1. Add (export) all required env values in `secrets/env`. You may need to create this path.
 1. Run `$ source setup` to setup the environment.
 
+### Spotify
+
+1. Register application, set SPOTIFY_CLIENT_ID and SPOTIFY_CLIENT_SECRET.
+
 ## Deploy to AWS
 
 Dev:
