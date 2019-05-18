@@ -3,14 +3,23 @@ import json
 import logging
 import os
 import requests
-from urllib.parse import urlencode, urljoin
+from urllib.parse import urlencode, urljoin, urlparse
 from http.client import HTTPConnection
 
 BASE_API_URL = "https://api.spotify.com/v1/"
 AUTHORIZE_URL = "https://accounts.spotify.com/api/token"
 
 # enable HTTP debug logging for requests
-HTTPConnection.debuglevel = 1
+# HTTPConnection.debuglevel = 1
+
+def is_spotify_track_url(url):
+    """Return if url matches Spotify track url"""
+    return url.startswith('https://open.spotify.com/track/')
+
+def track_id_from_track_url(url):
+    """Retrieve track id from Spotify track url"""
+    return urlparse(url).path.split('/track/')[1]
+
 
 class SpotifyToken:
     def __init__(self, token_type, access_token):
@@ -67,4 +76,6 @@ def get_track_by_id(token, id):
 
 if __name__ == "__main__":
     token = request_token()
-    print(get_track_by_id(token, "3h3pOvw6hjOvZxRUseB7h9"))
+    track_url = 'https://open.spotify.com/track/3h3pOvw6hjOvZxRUseB7h9?si=Ci-fm4N2TYq7kKlJANDnhA'
+    track_id = track_id_from_track_url(track_url)
+    print(get_track_by_id(token, track_id))
