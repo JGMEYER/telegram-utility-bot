@@ -4,7 +4,7 @@ import httplib2
 from googleapiclient.discovery import build
 
 # Log all request/response headers and bodies
-httplib2.debuglevel = 4
+# httplib2.debuglevel = 4
 
 def search_youtube(q, max_results):
     youtube = build('youtube', 'v3',
