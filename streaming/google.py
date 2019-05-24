@@ -13,18 +13,16 @@ from streaming import StreamingService, StreamingServiceTrack
 class YouTubeTrack(StreamingServiceTrack):
     name = None
     artist = None
+    id = None
 
-    def __init__(self, name, artist, videoId):
+    def __init__(self, name, artist, id):
         self.name = name
         self.artist = artist
-        self.videoId = videoId
-
-    def __str__(self):
-        return f"{self.__class__.__name__}: '{self.name}' - {self.artist} ({self.videoId})"
+        self.id = id
 
     def share_link(self):
         """WARNING: This is not going through an API and is subject to break"""
-        return f"https://www.youtube.com/watch?v={self.videoId}"
+        return f"https://www.youtube.com/watch?v={self.id}"
 
 class YouTube(StreamingService):
     def __init__(self):
@@ -65,18 +63,16 @@ class YouTube(StreamingService):
 class GMusicTrack(StreamingServiceTrack):
     name = None
     artist = None
+    id = None
 
     def __init__(self, name, artist, storeId):
         self.name = name
         self.artist = artist
-        self.storeId = storeId
-
-    def __str__(self):
-        return f"{self.__class__.__name__}: '{self.name}' - {self.artist} ({self.storeId})"
+        self.id = storeId
 
     def share_link(self):
         """WARNING: This is not going through an API and is subject to break"""
-        return f"https://play.google.com/music/m/{self.storeId}"
+        return f"https://play.google.com/music/m/{self.id}"
 
 
 class GMusic(StreamingService):

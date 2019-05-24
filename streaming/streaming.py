@@ -31,7 +31,7 @@ class StreamingService(object, metaclass=ABCMeta):
 
 class StreamingServiceTrack(metaclass=ABCMeta):
     def __str__(self):
-        return f"{self.__class__.__name__}: '{self.name}' - {self.artist}"
+        return f"{self.__class__.__name__}: '{self.name}' - {self.artist} ({self.id})"
 
     @abstractproperty
     def name(self):
@@ -40,6 +40,14 @@ class StreamingServiceTrack(metaclass=ABCMeta):
     @abstractproperty
     def artist(self):
         raise NotImplementedError
+
+    @abstractproperty
+    def id(self):
+        raise NotImplementedError
+
+    @property
+    def searchable_name(self):
+        return f"{self.name} {self.artist}"
 
     @abstractmethod
     def share_link(self):
