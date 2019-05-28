@@ -52,7 +52,30 @@ Some of these will be set in the instructions below.
 
 ### Spotify
 
-1. Register application, set SPOTIFY_CLIENT_ID and SPOTIFY_CLIENT_SECRET.
+1. Register application on Spotify's website.
+1. Set SPOTIFY_CLIENT_ID and SPOTIFY_CLIENT_SECRET.
+
+### Google Music
+
+More instructions at https://unofficial-google-music-api.readthedocs.io
+
+`TODO as of now, it's unclear how I will automate this process on AWS`
+
+1. Run `python`.
+1. Enter the code below and follow the instructions. This will authorize Google Play Music Manager to manage your account.
+  ```
+  from gmusicapi import Mobileclient
+
+  mm = Mobileclient()
+  mm.perform_oauth()
+  ```
+1. All future connections to Musicmanager can then be performed with 'login'.
+  ```
+  from gmusicapi import Mobileclient
+
+  mm = Mobileclient()
+  mm.oauth_login(Mobileclient.FROM_MAC_ADDRESS)
+  ```
 
 ## Deploy to AWS
 
@@ -92,13 +115,11 @@ $ source secrets/*
 ```
 
 Then run the following to set up the webhook.
-
 ```
 $ curl --request POST --url "https://api.telegram.org/bot$TELEGRAM_TOKEN/setWebhook" --header "content-type: application/json" --data "{\"url\":\"$TELEGRAM_API_GATEWAY_ROOT_DEV\"}"
 ```
 
 You should see something like:
-
 ```
 {
   "ok": true,
@@ -128,14 +149,14 @@ You should see something like:
   def my_endpoint_logic(event, context):
       ...
   ```
-
   This function must return a dict like `{"statusCode": <http_status_code>}`.
+
 1. Add a clause in handler() in handler.py to execute your function when the endpoint is invoked.
   ```
   elif event['path'] == "/telegram/myEndpoint":
       return my_endpoint_logic(event, context)
   ```
-  You can easily mock out an endpoint like while it's being developed with:
+  You can easily mock out an endpoint while it's being developed with:
   ```
   elif event['path'] == "/telegram/myEndpoint":
       return {"statusCode": 400}  # not yet available
