@@ -56,6 +56,10 @@ class GMusicTrack():
     def __str__(self):
         return f"'{self.name}' - {self.artist} ({self.storeId})"
 
+    def share_link(self):
+        """WARNING: This is not going through an API and is subject to break"""
+        return f"https://play.google.com/music/m/{self.storeId}"
+
 
 def search_gmusic_tracks(gm, q, max_results=5):
     tracks = []
