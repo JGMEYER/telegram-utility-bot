@@ -18,9 +18,7 @@ TELEGRAM_CHAT_ID = os.environ['TELEGRAM_CHAT_ID']
 TELEGRAM_ALERT_GROUP = json.loads(os.environ['TELEGRAM_ALERT_GROUP'])
 
 def handler(event, context):
-    """
-    Perform appropriate action for each endpoint invocation
-    """
+    """Perform appropriate action for each endpoint invocation"""
     if event['path'] == "/telegram/alert":
         return telegram_alert(event, context)
     elif event['path'] == "/telegram/musicConverter":

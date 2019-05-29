@@ -8,7 +8,7 @@ from gmusicapi import Mobileclient
 # Log all request/response headers and bodies
 # httplib2.debuglevel = 4
 
-class YoutubeContext():
+class YouTubeContext():
     def __init__(self):
         self.client = None
 
@@ -73,7 +73,7 @@ def search_gmusic_tracks(gm, q, max_results=5):
 
 
 if __name__ == "__main__":
-    with YoutubeContext() as yt:
+    with YouTubeContext() as yt:
         import pprint
         pprint.pprint(search_youtube(yt, "G.o.a.t polyphia", max_results=5))
     with GMusicContext() as gm:
