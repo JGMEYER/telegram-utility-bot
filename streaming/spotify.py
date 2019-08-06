@@ -71,10 +71,13 @@ def get_track_by_id(token, id):
         return None
 
     content = json.loads(response.content)
+    import pprint
+    pprint.pprint(content)
     return SpotifyTrack(content['name'], content['artists'][0]['name'])
 
 
 if __name__ == "__main__":
+    """Integration Tests"""
     token = request_token()
     track_url = 'https://open.spotify.com/track/3h3pOvw6hjOvZxRUseB7h9?si=Ci-fm4N2TYq7kKlJANDnhA'
     track_id = track_id_from_track_url(track_url)
