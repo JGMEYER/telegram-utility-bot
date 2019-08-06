@@ -6,7 +6,7 @@ import requests
 from urllib.parse import urlencode, urljoin, urlparse
 from http.client import HTTPConnection
 
-from streaming import StreamingServiceTrack
+from streaming import StreamingService, StreamingServiceTrack
 
 BASE_API_URL = "https://api.spotify.com/v1/"
 AUTHORIZE_URL = "https://accounts.spotify.com/api/token"
@@ -31,6 +31,27 @@ class SpotifyToken:
     def __str__(self):
         return f"{self.token_type} {self.access_token}"
 
+def request_token():
+    """Request Spotify access token"""
+    client_id = os.environ.get("SPOTIFY_CLIENT_ID")
+    client_secret = os.environ.get("SPOTIFY_CLIENT_SECRET")
+
+    client_credentials = f"{client_id}:{client_secret}"
+    encoded_credentials = base64.b64encode(client_credentials.encode())
+
+    headers = {'Authorization': f'Basic {encoded_credentials.decode()}'}
+    data = {'grant_type': 'client_credentials'}
+    try:
+        response = requests.post(AUTHORIZE_URL, headers=headers, data=data)
+        response.raise_for_status()
+    except Exception as e:
+        logging.error("Requesting Spotify token", exc_info=True)
+        return None
+
+    content = json.loads(response.content)
+    return SpotifyToken(content['token_type'], content['access_token'])
+
+
 class SpotifyTrack(StreamingServiceTrack):
     name = None
     artist = None
@@ -46,26 +67,42 @@ class SpotifyTrack(StreamingServiceTrack):
         """WARNING: This is not going through an API and is subject to break"""
         return url if url else f"https://open.spotify.com/track/{self.trackId}"
 
-def request_token():
-    """Request Spotify access token"""
-    client_id = os.environ.get("SPOTIFY_CLIENT_ID")
-    client_secret = os.environ.get("SPOTIFY_CLIENT_SECRET")
+class Spotify(StreamingService):
+    def __enter__(self):
+        self._token = request_token()
+        return self
 
-    client_credentials = f"{client_id}:{client_secret}"
-    encoded_credentials = base64.b64encode(client_credentials.encode())
+    def __exit__(self, *args):
+        pass
 
-    authorize_url = "https://accounts.spotify.com/api/token"
-    headers = {'Authorization': f'Basic {encoded_credentials.decode()}'}
-    data = {'grant_type': 'client_credentials'}
-    try:
-        response = requests.post(authorize_url, headers=headers, data=data)
-        response.raise_for_status()
-    except Exception as e:
-        logging.error("Requesting Spotify token", exc_info=True)
-        return None
+    def search_tracks(self, q, max_results=5):
+        search_url = urljoin(BASE_API_URL, "search")
+        headers = {'Authorization': str(self._token), 'Accept': 'application/json', 'Content-Type': 'application/json'}
+        params = {'q': q, 'type': 'track', 'limit': 1}
+        try:
+            search_response = requests.get(search_url, headers=headers, params=params)
+            search_response.raise_for_status()
+        except Exception as e:
+            logging.error("Searching Spotify track", exc_info=True)
+            return None
+        search_results = json.loads(search_response.content)
 
-    content = json.loads(response.content)
-    return SpotifyToken(content['token_type'], content['access_token'])
+        tracks = []
+        for search_result in search_results['tracks']['items']:
+            track = SpotifyTrack(
+                search_result['name'],
+                search_result['artists'][0]['name'],  # best guess
+                search_result['id'],
+                search_result['external_urls']['spotify'],
+            )
+            tracks.append(track)
+        return tracks
+
+    def supports_url(url):
+        pass
+
+    def get_track_name_from_url(url):
+        pass
 
 def get_track_by_id(token, trackId):
     """GET spotify track by trackId"""
@@ -81,30 +118,13 @@ def get_track_by_id(token, trackId):
     content = json.loads(response.content)
     return SpotifyTrack(content['name'], content['artists'][0]['name'], trackId)
 
-def search_track(token, name):
-    """GET spotify track by track name"""
-    search_url = urljoin(BASE_API_URL, "search")
-    headers = {'Authorization': str(token), 'Accept': 'application/json', 'Content-Type': 'application/json'}
-    params = {'q': name, 'type': 'track', 'limit': 1}
-    try:
-        search_response = requests.get(search_url, headers=headers, params=params)
-        search_response.raise_for_status()
-    except Exception as e:
-        logging.error("Searching Spotify track", exc_info=True)
-        return None
-
-    search_results = json.loads(search_response.content)
-    result = search_results['tracks']['items'][0]
-    track = SpotifyTrack(
-        result['name'],
-        result['artists'][0]['name'],  # best guess
-        result['id'],
-        result['external_urls']['spotify'],
-    )
-    return track
-
 if __name__ == "__main__":
     """Integration Tests"""
+    with Spotify() as spotify:
+        track = spotify.search_one_track("G.o.a.t polyphia")
+        print(track)
+
+    # Reverse lookup not yet bound to Spotify context manager
     token = request_token()
     track_url = 'https://open.spotify.com/track/3h3pOvw6hjOvZxRUseB7h9?si=Ci-fm4N2TYq7kKlJANDnhA'
     print(track_url)
@@ -112,5 +132,3 @@ if __name__ == "__main__":
     print(track_id)
     track = get_track_by_id(token, track_id)
     print(track)
-    found_track = search_track(token, track.searchable_name)
-    print(found_track)
