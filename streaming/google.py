@@ -42,7 +42,18 @@ class YouTube(StreamingService):
         pass
 
     def get_track_from_trackId(self, trackId):
-        pass
+        query_response = self._client.videos().list(
+            id=trackId,
+            part="id,snippet",
+            maxResults=1,
+        ).execute()
+        query_result = query_response['items'][0]
+        track = YouTubeTrack(
+            query_result['snippet']['title'],
+            query_result['snippet']['channelTitle'],  # best guess
+            query_result['id'],
+        )
+        return track
 
     def search_tracks(self, q, max_results=5):
         search_response = self._client.search().list(
@@ -92,7 +103,9 @@ class GMusic(StreamingService):
         self._client.logout()
 
     def get_track_from_trackId(self, trackId):
-        pass
+        query_result = self._client.get_track_info(trackId)
+        track = GMusicTrack(query_result['title'], query_result['artist'], query_result['storeId'])
+        return track
 
     def search_tracks(self, q, max_results=5):
         tracks = []
@@ -123,8 +136,17 @@ if __name__ == "__main__":
     with YouTube() as yt:
         track = yt.search_one_track("G.o.a.t polyphia")
         print(track)
+        trackId = YouTube.get_trackId_from_url(track.share_link())
+        print(trackId)
+        track = yt.get_track_from_trackId(trackId)
+        print(track)
         print(track.share_link())
+    print()
     with GMusic() as gm:
         track = gm.search_one_track("G.o.a.t polyphia")
+        print(track)
+        trackId = GMusic.get_trackId_from_url(track.share_link())
+        print(trackId)
+        track = gm.get_track_from_trackId(trackId)
         print(track)
         print(track.share_link())
