@@ -20,6 +20,10 @@ class YouTubeTrack(StreamingServiceTrack):
         self.artist = artist
         self.id = id
 
+    @property
+    def searchable_name(self):
+        return f"{self.name}"
+
     def share_link(self):
         """WARNING: This is not going through an API and is subject to break"""
         return f"https://www.youtube.com/watch?v={self.id}"

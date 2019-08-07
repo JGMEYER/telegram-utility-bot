@@ -1,7 +1,11 @@
 import json
 import logging
 import os
+import re
 import sys
+from typing import Dict
+
+from streaming import SUPPORTED_STREAMING_SERVICES, get_streaming_service_for_url
 
 here = os.path.dirname(os.path.realpath(__file__))
 sys.path.append(os.path.join(here, "./vendored"))
@@ -59,3 +63,45 @@ def telegram_alert(event, context):
         return {"statusCode": 500}
 
     return {"statusCode": 200}
+
+def urls_in_message(msg):
+    urls = [w for w in msg.split(' ') if re.match('http[s]?://.*', w)]
+    return urls
+
+def handle_streaming_urls(msg):
+    urls = urls_in_message(msg)
+    if not urls:
+        return
+    for url in urls:
+        logging.info("URL detected")
+        logging.info(url)
+        svc = get_streaming_service_for_url(url)
+        if svc:
+            similar_urls = get_similar_urls_for_streaming_url(svc, url)
+        else:
+            logging.info("URL is not for a supported streaming service")
+            return
+    print(similar_urls)
+
+def get_similar_urls_for_streaming_url(url_svc, url):
+    """Returns dict of urls from other streaming services for the same track"""
+    trackId = url_svc.get_trackId_from_url(url)
+    with url_svc() as svc_client:
+        original_track = svc_client.get_track_from_trackId(trackId)
+
+    similar_urls: Dict[str, str] = {}
+    for svc in SUPPORTED_STREAMING_SERVICES:
+        if svc is url_svc:
+            continue
+        with svc() as svc_client:
+            try:
+                track = svc_client.search_one_track(original_track.searchable_name)
+                similar_urls[svc.__name__] = track.share_link() if track else "No result"
+            except:
+                logging.error("Getting track from trackId", exc_info=True)
+    return similar_urls
+
+
+if __name__ == '__main__':
+    handle_streaming_urls('https://www.youtube.com/watch?v=QDYfEBY9NM4')
+    handle_streaming_urls('https://play.google.com/music/m/Tm7gsodpyxntzyowpo7ha2xaxwe?t=The_Fool_On_The_Hill_Remastered_2009_-_The_Beatles')
