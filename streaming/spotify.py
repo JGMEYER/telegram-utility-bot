@@ -57,7 +57,7 @@ class SpotifyTrack(StreamingServiceTrack):
 
     def share_link(self):
         """WARNING: This is not going through an API and is subject to break"""
-        return url if url else f"https://open.spotify.com/track/{self.trackId}"
+        return self.url if self.url else f"https://open.spotify.com/track/{self.trackId}"
 
 class Spotify(StreamingService):
     VALID_TRACK_URL_PATTERNS = [
@@ -123,9 +123,7 @@ if __name__ == "__main__":
     with Spotify() as spotify:
         track = spotify.search_one_track("G.o.a.t polyphia")
         print(track)
-        track_url = "https://open.spotify.com/track/3h3pOvw6hjOvZxRUseB7h9?si=Ci-fm4N2TYq7kKlJANDnhA"
-        print(track_url)
-        trackId = Spotify.get_trackId_from_url(track_url)
+        trackId = Spotify.get_trackId_from_url(track.share_link())
         print(trackId)
         track = spotify.get_track_from_trackId(trackId)
         print(track)
