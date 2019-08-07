@@ -68,6 +68,10 @@ class SpotifyTrack(StreamingServiceTrack):
         return url if url else f"https://open.spotify.com/track/{self.trackId}"
 
 class Spotify(StreamingService):
+    VALID_TRACK_URL_PATTERNS = [
+        "https://open.spotify.com/track/(?P<trackId>\w+)\\??.*",
+    ]
+
     def __enter__(self):
         self._token = request_token()
         return self
@@ -98,9 +102,6 @@ class Spotify(StreamingService):
             tracks.append(track)
         return tracks
 
-    def supports_url(url):
-        pass
-
     def get_track_name_from_url(url):
         pass
 
@@ -119,16 +120,22 @@ def get_track_by_id(token, trackId):
     return SpotifyTrack(content['name'], content['artists'][0]['name'], trackId)
 
 if __name__ == "__main__":
+    """Unit Tests"""
+    assert Spotify.supports_track_url("https://open.spotify.com/track/3h3pOvw6hjOvZxRUseB7h9")
+    assert Spotify.supports_track_url("https://open.spotify.com/track/3h3pOvw6hjOvZxRUseB7h9?si=Ci-fm4N2TYq7kKlJANDnhA")
+    assert not Spotify.supports_track_url("https://open.spotify.com/track/")
+
+    assert Spotify.get_trackId_from_url("https://open.spotify.com/track/3h3pOvw6hjOvZxRUseB7h9?si=Ci-fm4N2TYq7kKlJANDnhA"), "3h3pOvw6hjOvZxRUseB7h9"
+
     """Integration Tests"""
     with Spotify() as spotify:
         track = spotify.search_one_track("G.o.a.t polyphia")
         print(track)
-
     # Reverse lookup not yet bound to Spotify context manager
     token = request_token()
-    track_url = 'https://open.spotify.com/track/3h3pOvw6hjOvZxRUseB7h9?si=Ci-fm4N2TYq7kKlJANDnhA'
+    track_url = "https://open.spotify.com/track/3h3pOvw6hjOvZxRUseB7h9?si=Ci-fm4N2TYq7kKlJANDnhA"
+    track_id = Spotify.get_trackId_from_url(track_url)
     print(track_url)
-    track_id = track_id_from_track_url(track_url)
     print(track_id)
     track = get_track_by_id(token, track_id)
     print(track)

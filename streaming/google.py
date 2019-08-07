@@ -25,6 +25,11 @@ class YouTubeTrack(StreamingServiceTrack):
         return f"https://www.youtube.com/watch?v={self.id}"
 
 class YouTube(StreamingService):
+    VALID_TRACK_URL_PATTERNS = [
+        "https://www.youtube.com/watch\\?v=(?P<trackId>\w+).*",
+        "https://www.youtu.be/(?P<trackId>\w+).*",
+    ]
+
     def __init__(self):
         self._client = None
 
@@ -53,9 +58,6 @@ class YouTube(StreamingService):
                 tracks.append(track)
         return tracks
 
-    def supports_url(url):
-        pass
-
     def get_track_name_from_url(url):
         pass
 
@@ -74,8 +76,11 @@ class GMusicTrack(StreamingServiceTrack):
         """WARNING: This is not going through an API and is subject to break"""
         return f"https://play.google.com/music/m/{self.id}"
 
-
 class GMusic(StreamingService):
+    VALID_TRACK_URL_PATTERNS = [
+        "https://play.google.com/music/m/(?P<trackId>\w+)\\??.*",
+    ]
+
     def __init__(self):
         self._client = Mobileclient()
 
@@ -94,20 +99,32 @@ class GMusic(StreamingService):
             tracks.append(gm_track)
         return tracks
 
-    def supports_url(url):
-        pass
-
     def get_track_name_from_url(url):
         pass
 
 
 if __name__ == "__main__":
+    """Unit Tests"""
+    assert YouTube.supports_track_url("https://www.youtube.com/watch?v=9_gkpYORQLU")
+    assert YouTube.supports_track_url("https://www.youtube.com/watch?v=9_gkpYORQLU?t=4")
+    assert not YouTube.supports_track_url("https://www.youtube.com/")
+    assert YouTube.supports_track_url("https://www.youtu.be/9_gkpYORQLU")
+    assert YouTube.supports_track_url("https://www.youtu.be/9_gkpYORQLU?t=4")
+    assert not YouTube.supports_track_url("https://www.youtu.be/")
+    assert GMusic.supports_track_url("https://play.google.com/music/m/T2y24nzjhuyvlolsptj7zqon5qi")
+    assert GMusic.supports_track_url("https://play.google.com/music/m/T2y24nzjhuyvlolsptj7zqon5qi?t=GOAT_-_Polyphia")
+    assert not GMusic.supports_track_url("https://play.google.com/music/m/")
+
+    assert YouTube.get_trackId_from_url("https://www.youtube.com/watch?v=9_gkpYORQLU?t=4"), "9_gkpYORQLU"
+    assert YouTube.get_trackId_from_url("https://www.youtu.be/9_gkpYORQLU?t=4"), "9_gkpYORQLU"
+    assert GMusic.get_trackId_from_url("https://play.google.com/music/m/T2y24nzjhuyvlolsptj7zqon5qi?t=GOAT_-_Polyphia"), "T2y24nzjhuyvlolsptj7zqon5qi"
+
     """Integration Tests"""
-    with GMusic() as gm:
-        track = gm.search_one_track("G.o.a.t polyphia")
-        print(track)
-        print(track.share_link())
     with YouTube() as yt:
         track = yt.search_one_track("G.o.a.t polyphia")
+        print(track)
+        print(track.share_link())
+    with GMusic() as gm:
+        track = gm.search_one_track("G.o.a.t polyphia")
         print(track)
         print(track.share_link())
