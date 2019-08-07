@@ -35,6 +35,7 @@ class StreamingService(object, metaclass=ABCMeta):
 
     @abstractmethod
     def get_track_from_trackId(self, trackId):
+        """Returns StreamingServiceTrack or None"""
         pass
 
     @abstractmethod

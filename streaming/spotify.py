@@ -72,7 +72,20 @@ class Spotify(StreamingService):
         pass
 
     def get_track_from_trackId(self, trackId):
-        pass
+        track_url = urljoin(BASE_API_URL, f"tracks/{trackId}")
+        headers = {'Authorization': str(self._token)}
+        try:
+            response = requests.get(track_url, headers=headers)
+            response.raise_for_status()
+        except Exception as e:
+            logging.error("Requesting Spotify track from id", exc_info=True)
+            return None
+
+        content = json.loads(response.content)
+        if content:
+            return SpotifyTrack(content['name'], content['artists'][0]['name'], trackId)
+        else:
+            return None
 
     def search_tracks(self, q, max_results=5):
         search_url = urljoin(BASE_API_URL, "search")
@@ -97,20 +110,6 @@ class Spotify(StreamingService):
             tracks.append(track)
         return tracks
 
-def get_track_by_id(token, trackId):
-    """GET spotify track by trackId"""
-    track_url = urljoin(BASE_API_URL, f"tracks/{trackId}")
-    headers = {'Authorization': str(token)}
-    try:
-        response = requests.get(track_url, headers=headers)
-        response.raise_for_status()
-    except Exception as e:
-        logging.error("Requesting Spotify track from id", exc_info=True)
-        return None
-
-    content = json.loads(response.content)
-    return SpotifyTrack(content['name'], content['artists'][0]['name'], trackId)
-
 
 if __name__ == "__main__":
     """Unit Tests"""
@@ -124,11 +123,9 @@ if __name__ == "__main__":
     with Spotify() as spotify:
         track = spotify.search_one_track("G.o.a.t polyphia")
         print(track)
-    # Reverse lookup not yet bound to Spotify context manager
-    token = request_token()
-    track_url = "https://open.spotify.com/track/3h3pOvw6hjOvZxRUseB7h9?si=Ci-fm4N2TYq7kKlJANDnhA"
-    track_id = Spotify.get_trackId_from_url(track_url)
-    print(track_url)
-    print(track_id)
-    track = get_track_by_id(token, track_id)
-    print(track)
+        track_url = "https://open.spotify.com/track/3h3pOvw6hjOvZxRUseB7h9?si=Ci-fm4N2TYq7kKlJANDnhA"
+        print(track_url)
+        trackId = Spotify.get_trackId_from_url(track_url)
+        print(trackId)
+        track = spotify.get_track_from_trackId(trackId)
+        print(track)
