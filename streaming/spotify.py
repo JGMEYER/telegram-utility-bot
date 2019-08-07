@@ -14,14 +14,6 @@ AUTHORIZE_URL = "https://accounts.spotify.com/api/token"
 # enable HTTP debug logging for requests
 # HTTPConnection.debuglevel = 1
 
-def is_spotify_track_url(url):
-    """Return if url matches Spotify track url"""
-    return url.startswith('https://open.spotify.com/track/')
-
-def track_id_from_track_url(url):
-    """Retrieve track id from Spotify track url"""
-    return urlparse(url).path.split('/track/')[1]
-
 
 class SpotifyToken:
     def __init__(self, token_type, access_token):
@@ -79,6 +71,9 @@ class Spotify(StreamingService):
     def __exit__(self, *args):
         pass
 
+    def get_track_from_trackId(self, trackId):
+        pass
+
     def search_tracks(self, q, max_results=5):
         search_url = urljoin(BASE_API_URL, "search")
         headers = {'Authorization': str(self._token), 'Accept': 'application/json', 'Content-Type': 'application/json'}
@@ -102,9 +97,6 @@ class Spotify(StreamingService):
             tracks.append(track)
         return tracks
 
-    def get_track_name_from_url(url):
-        pass
-
 def get_track_by_id(token, trackId):
     """GET spotify track by trackId"""
     track_url = urljoin(BASE_API_URL, f"tracks/{trackId}")
@@ -118,6 +110,7 @@ def get_track_by_id(token, trackId):
 
     content = json.loads(response.content)
     return SpotifyTrack(content['name'], content['artists'][0]['name'], trackId)
+
 
 if __name__ == "__main__":
     """Unit Tests"""

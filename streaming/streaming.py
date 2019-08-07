@@ -34,6 +34,10 @@ class StreamingService(object, metaclass=ABCMeta):
                 return match.group('trackId')
 
     @abstractmethod
+    def get_track_from_trackId(self, trackId):
+        pass
+
+    @abstractmethod
     def search_tracks(self, q, max_results):
         """
         Returns list of StreamingServiceTrack or empty list.
@@ -44,10 +48,6 @@ class StreamingService(object, metaclass=ABCMeta):
     def search_one_track(self, q):
         tracks = self.search_tracks(q, max_results=1)
         return tracks[0] if tracks else None
-
-    @abstractmethod
-    def get_track_name_from_url(self, url):
-        pass
 
 class StreamingServiceTrack(metaclass=ABCMeta):
     def __str__(self):

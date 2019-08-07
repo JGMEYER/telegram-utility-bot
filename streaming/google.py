@@ -41,6 +41,9 @@ class YouTube(StreamingService):
     def __exit__(self, *args):
         pass
 
+    def get_track_from_trackId(self, trackId):
+        pass
+
     def search_tracks(self, q, max_results=5):
         search_response = self._client.search().list(
             q=q,
@@ -57,9 +60,6 @@ class YouTube(StreamingService):
                 )
                 tracks.append(track)
         return tracks
-
-    def get_track_name_from_url(url):
-        pass
 
 
 class GMusicTrack(StreamingServiceTrack):
@@ -91,6 +91,9 @@ class GMusic(StreamingService):
     def __exit__(self, *args):
         self._client.logout()
 
+    def get_track_from_trackId(self, trackId):
+        pass
+
     def search_tracks(self, q, max_results=5):
         tracks = []
         for search_result in self._client.search(q, max_results)['song_hits']:
@@ -98,9 +101,6 @@ class GMusic(StreamingService):
             gm_track = GMusicTrack(track['title'], track['artist'], track['storeId'])
             tracks.append(gm_track)
         return tracks
-
-    def get_track_name_from_url(url):
-        pass
 
 
 if __name__ == "__main__":
