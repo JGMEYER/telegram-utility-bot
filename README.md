@@ -182,6 +182,8 @@ Send requests in a new terminal tab like:
 $ curl --header "Accept: application/json" --header "Content-Type: application/json" --request POST --data '{"alerter": "user"}' localhost:3000/telegram/alert
 ```
 
+Otherwise, I've included unit and integration tests in the `if __name__ == '__main__'` clause of tested classes. This was just a stopgap to hit the ground running.
+
 ## Test commands
 
 ### Telegram Bot Alert
