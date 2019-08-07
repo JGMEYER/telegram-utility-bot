@@ -32,6 +32,7 @@ class YouTube(StreamingService):
     VALID_TRACK_URL_PATTERNS = [
         "https://www.youtube.com/watch\\?v=(?P<trackId>\w+).*",
         "https://www.youtu.be/(?P<trackId>\w+).*",
+        "https://youtu.be/(?P<trackId>\w+).*",
     ]
 
     def __init__(self):

@@ -103,5 +103,5 @@ def get_similar_urls_for_streaming_url(url_svc, url):
 
 
 if __name__ == '__main__':
-    handle_streaming_urls('https://www.youtube.com/watch?v=QDYfEBY9NM4')
-    handle_streaming_urls('https://play.google.com/music/m/Tm7gsodpyxntzyowpo7ha2xaxwe?t=The_Fool_On_The_Hill_Remastered_2009_-_The_Beatles')
+    handle_streaming_urls('https://open.spotify.com/track/6VhFUajcI7aVBDe07R8Her?si=DmArdMdATQ-OVdhiJGKKBw')
+    handle_streaming_urls('https://youtu.be/olgaAUJzAu4')
