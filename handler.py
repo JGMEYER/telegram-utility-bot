@@ -103,5 +103,6 @@ def get_similar_urls_for_streaming_url(url_svc, url):
 
 
 if __name__ == '__main__':
-    handle_streaming_urls('https://open.spotify.com/track/6VhFUajcI7aVBDe07R8Her?si=DmArdMdATQ-OVdhiJGKKBw')
-    handle_streaming_urls('https://youtu.be/olgaAUJzAu4')
+    # Integration Tests
+    handle_streaming_urls('https://open.spotify.com/track/43ddJFnP8m3PzNJXiHuiyJ?si=T3ZApBErTF-M1esGJoRMmw')
+    handle_streaming_urls('https://youtu.be/_kvZpVMY89c')

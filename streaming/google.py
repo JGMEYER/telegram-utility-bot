@@ -1,4 +1,5 @@
 import os
+import re
 from enum import Enum
 
 import httplib2
@@ -22,7 +23,9 @@ class YouTubeTrack(StreamingServiceTrack):
 
     @property
     def searchable_name(self):
-        return f"{self.name}"
+        # Remove mentioning of lyrics from the video title
+        searchable_name = re.sub(r'\s(lyrics|with lyrics)$', '', self.name, flags=re.IGNORECASE)
+        return searchable_name
 
     def share_link(self):
         """WARNING: This is not going through an API and is subject to break"""
