@@ -3,7 +3,7 @@ import logging
 import os
 import re
 import sys
-from typing import Dict
+from typing import Dict, List
 
 from streaming import SUPPORTED_STREAMING_SERVICES, get_streaming_service_for_url
 
@@ -68,41 +68,43 @@ def urls_in_message(msg):
     urls = [w for w in msg.split(' ') if re.match('http[s]?://.*', w)]
     return urls
 
-def handle_streaming_urls(msg):
+def get_similar_tracks_from_msg(msg):
+    """Parses message for urls and returns matches for similar streaming tracks"""
     urls = urls_in_message(msg)
     if not urls:
         return
+    similar_tracks: List[Dict[str, StreamingServiceTrack]] = []
     for url in urls:
         logging.info("URL detected")
         logging.info(url)
         svc = get_streaming_service_for_url(url)
         if svc:
-            similar_urls = get_similar_urls_for_streaming_url(svc, url)
+            trackId = svc.get_trackId_from_url(url)
+            with svc() as svc_client:
+                original_track = svc_client.get_track_from_trackId(trackId)
+            similar_tracks.append(get_similar_tracks_for_original_track(svc, original_track))
         else:
             logging.info("URL is not for a supported streaming service")
-            return
-    print(similar_urls)
+            continue
+    return similar_tracks
 
-def get_similar_urls_for_streaming_url(url_svc, url):
+def get_similar_tracks_for_original_track(track_svc, original_track):
     """Returns dict of urls from other streaming services for the same track"""
-    trackId = url_svc.get_trackId_from_url(url)
-    with url_svc() as svc_client:
-        original_track = svc_client.get_track_from_trackId(trackId)
-
-    similar_urls: Dict[str, str] = {}
+    similar_tracks: Dict[str, StreamingServiceTrack] = {}
     for svc in SUPPORTED_STREAMING_SERVICES:
-        if svc is url_svc:
+        if svc is track_svc:
             continue
         with svc() as svc_client:
             try:
                 track = svc_client.search_one_track(original_track.searchable_name)
-                similar_urls[svc.__name__] = track.share_link() if track else "No result"
+                similar_tracks[svc.__name__] = track
             except:
                 logging.error("Getting track from trackId", exc_info=True)
-    return similar_urls
+    return similar_tracks
 
 
 if __name__ == '__main__':
     # Integration Tests
-    handle_streaming_urls('https://open.spotify.com/track/43ddJFnP8m3PzNJXiHuiyJ?si=T3ZApBErTF-M1esGJoRMmw')
-    handle_streaming_urls('https://youtu.be/_kvZpVMY89c')
+    import pprint
+    pprint.pprint(get_similar_tracks_from_msg('https://open.spotify.com/track/43ddJFnP8m3PzNJXiHuiyJ?si=T3ZApBErTF-M1esGJoRMmw'))
+    pprint.pprint(get_similar_tracks_from_msg('https://youtu.be/_kvZpVMY89c'))
