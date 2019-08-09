@@ -19,3 +19,13 @@ functions:
           path: telegram/musicConverter
           method: post
           cors: true
+
+plugins:
+  # enables local testing
+  - serverless-offline
+
+custom:
+  serverless-offline:
+    stage: local
+    host: localhost
+    port: 3000
