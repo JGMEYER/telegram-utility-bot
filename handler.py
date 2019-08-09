@@ -15,7 +15,7 @@ import requests
 TOKEN = os.environ['TELEGRAM_TOKEN']
 BASE_URL = "https://api.telegram.org/bot{}".format(TOKEN)
 
-TELEGRAM_CHAT_ID = -1001163985660  # Stream Team
+TELEGRAM_CHAT_ID = os.environ['TELEGRAM_CHAT_ID']
 ALERT_CHAT_ID = TELEGRAM_CHAT_ID
 ALERT_GROUP = {
   'Knallharter',
