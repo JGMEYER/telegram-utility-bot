@@ -5,8 +5,7 @@ provider:
   runtime: python3.6
   stage: dev
   region: us-east-1
-  environment:
-    TELEGRAM_TOKEN: ${env:TELEGRAM_TOKEN}
+  environment: ${file(./env.yml):${opt:stage, self:provider.stage}}
 
 functions:
   post:
