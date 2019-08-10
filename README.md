@@ -24,6 +24,10 @@ export TELEGRAM_CHAT_ID_PROD=
 export TELEGRAM_TOKEN_DEV=
 export TELEGRAM_TOKEN_PROD=
 
+# specific to telegram functionality
+# format like JSON e.g. ='["user1", "user2", "user3"]'
+export TELEGRAM_ALERT_GROUP=
+
 # helpers for testing calls locally (optional)
 export TELEGRAM_API_GATEWAY_ROOT_LOCAL=
 export TELEGRAM_API_GATEWAY_ROOT_DEV=

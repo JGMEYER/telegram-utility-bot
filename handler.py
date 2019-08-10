@@ -16,14 +16,7 @@ TOKEN = os.environ['TELEGRAM_TOKEN']
 BASE_URL = "https://api.telegram.org/bot{}".format(TOKEN)
 
 TELEGRAM_CHAT_ID = os.environ['TELEGRAM_CHAT_ID']
-ALERT_CHAT_ID = TELEGRAM_CHAT_ID
-ALERT_GROUP = {
-  'Knallharter',
-  'Zimexerz',
-  'AlexWOT',
-  'TheRam254',
-  'Dragonnuggets',
-}
+TELEGRAM_ALERT_GROUP = json.loads(os.environ['TELEGRAM_ALERT_GROUP'])
 
 def handler(event, context):
     """
@@ -44,14 +37,14 @@ def telegram_alert(event, context):
         return {"statusCode": 400}
 
     try:
-        mentions = [f"@{u}" for u in ALERT_GROUP if u != alerter]
+        mentions = [f"@{u}" for u in TELEGRAM_ALERT_GROUP if u != alerter]
         response = (
             f":: TEAM ALERT ::\n"
             f"{alerter} Needs your help!\n"
             f"\n"
             f"{', '.join(mentions)}")
 
-        data = {"text": response.encode("utf8"), "chat_id": ALERT_CHAT_ID}
+        data = {"text": response.encode("utf8"), "chat_id": TELEGRAM_CHAT_ID}
         url = BASE_URL + "/sendMessage"
     except Exception as e:
         logging.error("Encoding message", exc_info=True)
