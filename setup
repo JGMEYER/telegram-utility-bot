@@ -1,5 +1,6 @@
 # Install python packages
-pip install -r requirements.txt -t vendored --force-reinstall
+pip freeze | xargs pip uninstall -y
+python -m pip install -r requirements.txt --upgrade
 
 # Configure env
 source secrets/*

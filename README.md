@@ -45,8 +45,11 @@ Some of these will be set in the instructions below.
 
 ## Setup
 
-1. Install serverless: `$ npm install serverless`
-1. Install serverless-offline: `$ npm install serverless-offline serverless@latest`
+1. Install serverless dependencies:
+  - `$ npm install serverless`
+  - `$ npm install serverless-offline serverless@latest`
+  - `$ npm install serverless-python-requirements`
+1. Change `custom.pythonRequirements.pythonBin` to the correct path of your python bin if not using pyenv.
 1. Add (export) all required env values in `secrets/env`. You may need to create this path.
 1. Run `$ source setup` to setup the environment.
 

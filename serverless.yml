@@ -23,9 +23,13 @@ functions:
 plugins:
   # enables local testing
   - serverless-offline
+  # packages requirements listed in requirements.txt
+  - serverless-python-requirements
 
 custom:
   serverless-offline:
     stage: local
     host: localhost
     port: 3000
+  pythonRequirements:
+    pythonBin: ${env:HOME}/.pyenv/versions/3.6.0/bin/python

@@ -2,13 +2,13 @@ import os
 import re
 from enum import Enum
 
-import httplib2
 from googleapiclient.discovery import build
 from gmusicapi import Mobileclient
 
 from streaming import StreamingService, StreamingServiceTrack
 
 # Log all request/response headers and bodies
+# import httplib2
 # httplib2.debuglevel = 4
 
 class YouTubeTrack(StreamingServiceTrack):
