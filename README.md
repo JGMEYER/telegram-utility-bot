@@ -1,6 +1,10 @@
 # README
 
-Serverless bot based on this guide:
+```
+NOTE: This project is currently in development and incomplete.
+```
+
+Serverless utility bot for Telegram based on this guide:
 https://hackernoon.com/serverless-telegram-bot-on-aws-lambda-851204d4236c
 
 ## Required env variables
@@ -13,10 +17,6 @@ Example `secrets/env` template:
 # Credentials for serverless-admin account on AWS
 export AWS_ACCESS_KEY_ID=
 export AWS_SECRET_ACCESS_KEY=
-
-# Spotify API
-export SPOTIFY_CLIENT_ID=
-export SPOTIFY_CLIENT_SECRET=
 
 # Telegram API
 export TELEGRAM_CHAT_ID_DEV=
@@ -32,6 +32,10 @@ export TELEGRAM_ALERT_GROUP=
 export TELEGRAM_API_GATEWAY_ROOT_LOCAL=
 export TELEGRAM_API_GATEWAY_ROOT_DEV=
 export TELEGRAM_API_GATEWAY_ROOT_PROD=
+
+# Spotify API
+export SPOTIFY_CLIENT_ID=
+export SPOTIFY_CLIENT_SECRET=
 
 # Google Cloud APIs
 export YOUTUBE_API_KEY=
