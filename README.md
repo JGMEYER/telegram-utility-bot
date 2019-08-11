@@ -1,4 +1,4 @@
-# README
+## About
 
 ```
 NOTE: This project is currently in development and incomplete.
@@ -7,9 +7,17 @@ NOTE: This project is currently in development and incomplete.
 Serverless utility bot for Telegram based on this guide:
 https://hackernoon.com/serverless-telegram-bot-on-aws-lambda-851204d4236c
 
+## Before you start
+
+This project was developed for python 3.6.0. Pyenv, though not required, is recommended for managing python versions.
+
+This project uses pipenv to manage dependencies. The README herein assumes you are running python from within the `pipenv shell`. Make sure you have pipenv installed before modifying this project. For more information on pipenv, check out: https://docs.pipenv.org/en/latest/basics/.
+
 ## Required env variables
 
-See env.yml for the most up-to-date and complete list of required env variables.
+```
+NOTE: See env.yml for the most up-to-date and complete list of required env variables.
+```
 
 Example `secrets/env` template:
 
@@ -45,7 +53,9 @@ Some of these will be set in the instructions below.
 
 ## Setup
 
-1. Install serverless dependencies:
+1. Install pipenv
+  - `$ brew install pipenv`
+1. Install serverless and dependencies:
   - `$ npm install serverless`
   - `$ npm install serverless-offline serverless@latest`
   - `$ npm install serverless-python-requirements`
@@ -94,7 +104,7 @@ $ source setup
 $ sls deploy --s prod
 ```
 
-Packages all files into .zip archive and uploads to AWS. It will then create an AWS API Gateway and return an API endpoint. You will receive something like this:
+Serverless will package all files into .zip archive and uploads to AWS. It will then create an AWS API Gateway and return an API endpoint. You will receive something like this:
 
 ```
 endpoints:
@@ -117,9 +127,9 @@ Set `$TELEGRAM_TOKEN` (from @BotFather) in secrets/env, then source:
 $ source secrets/*
 ```
 
-Then run the following to set up the webhook.
+Then run the following to set up the webhook. Be sure to replace "{stage}".
 ```
-$ curl --request POST --url "https://api.telegram.org/bot$TELEGRAM_TOKEN/setWebhook" --header "content-type: application/json" --data "{\"url\":\"$TELEGRAM_API_GATEWAY_ROOT_DEV\"}"
+$ curl --request POST --url "https://api.telegram.org/bot$TELEGRAM_TOKEN/setWebhook" --header "content-type: application/json" --data "{\"url\":\"$TELEGRAM_API_GATEWAY_ROOT_{stage}\"}"
 ```
 
 You should see something like:
@@ -135,7 +145,7 @@ You should see something like:
 
 1. Add endpoint to serverless.yml.
 
-  `IMPORTANT! The root of the endpoint is important. For example, telegram endpoints MUST begin with telegram/* to be recognized by the Telegram bot webhook.`
+  `IMPORTANT! The root of the endpoint is important. For example, telegram endpoints MUST begin with "telegram/" to be recognized by the Telegram bot webhook.`
 
   ```
   functions:
@@ -185,7 +195,11 @@ Send requests in a new terminal tab like:
 $ curl --header "Accept: application/json" --header "Content-Type: application/json" --request POST --data '{"alerter": "user"}' localhost:3000/telegram/alert
 ```
 
-Otherwise, I've included unit and integration tests in the `if __name__ == '__main__'` clause of tested classes. This was just a stopgap to hit the ground running.
+Otherwise, I've included unit and integration tests in the `if __name__ == '__main__'` clause of tested classes. This was just a stopgap to test the code while iterating quickly. It's as easy as:
+
+```
+$ python {file}.py
+```
 
 ## Test commands
 
