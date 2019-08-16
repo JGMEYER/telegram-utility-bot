@@ -9,9 +9,9 @@ https://hackernoon.com/serverless-telegram-bot-on-aws-lambda-851204d4236c
 
 ## Before you start
 
-This project was developed for python 3.6.0. Pyenv, though not required, is recommended for managing python versions.
+This project was developed on MacOS for python 3.6.0. Pyenv, though not required, is recommended for managing python versions.
 
-This project uses pipenv to manage dependencies. The README herein assumes you are running python from within the `pipenv shell`. Make sure you have pipenv installed before modifying this project. For more information on pipenv, check out: https://docs.pipenv.org/en/latest/basics/.
+This project uses pipenv to manage dependencies. The README herein assumes you are running python from within the `pipenv shell`. _This will probably bite you at some point, so be sure to run commands from the pipenv shell unless already specified directly._ Make sure you have pipenv installed before modifying this project. For more information on pipenv, check out: https://docs.pipenv.org/en/latest/basics/.
 
 ## Required env variables
 
@@ -66,7 +66,7 @@ Some of these will be set in the instructions below.
 ### Spotify
 
 1. Register application on Spotify's website.
-1. Set SPOTIFY_CLIENT_ID and SPOTIFY_CLIENT_SECRET.
+1. Set SPOTIFY_CLIENT_ID and SPOTIFY_CLIENT_SECRET in secrets/env.
 
 ### Google Music
 
@@ -74,7 +74,7 @@ More instructions at https://unofficial-google-music-api.readthedocs.io
 
 `TODO as of now, it's unclear how I will automate this process on AWS`
 
-1. Run `python`.
+1. Run `pipenv run python`.
 1. Enter the code below and follow the instructions. This will authorize Google Play Music Manager to manage your account.
   ```
   from gmusicapi import Mobileclient
@@ -186,7 +186,7 @@ $ npm install serverless-offline serverless@latest
 Run serverless:
 
 ```
-$ sls offline
+$ pipenv run sls offline
 ```
 
 Send requests in a new terminal tab like:
@@ -198,7 +198,7 @@ $ curl --header "Accept: application/json" --header "Content-Type: application/j
 Otherwise, I've included unit and integration tests in the `if __name__ == '__main__'` clause of tested classes. This was just a stopgap to test the code while iterating quickly. It's as easy as:
 
 ```
-$ python {file}.py
+$ pipenv run python {file}.py
 ```
 
 ## Test commands

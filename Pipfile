@@ -7,13 +7,14 @@ verify_ssl = true
 
 [packages]
 requests = "*"
-gmusicapi = "*"
 google-api-python-client = "*"
 google-auth = "*"
 google-auth-oauthlib = "*"
 google-auth-httplib2 = "*"
 rsa = "*"
 urllib3 = "*"
+wheel = "*"
+gmusicapi = "*"
 
 [requires]
 python_version = "3.6"

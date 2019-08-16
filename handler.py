@@ -2,23 +2,26 @@ import json
 import logging
 import os
 import re
-import sys
+import requests
 from typing import Dict, List
 
 from streaming import SUPPORTED_STREAMING_SERVICES, get_streaming_service_for_url
 
-here = os.path.dirname(os.path.realpath(__file__))
-sys.path.append(os.path.join(here, "./vendored"))
-
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)
 
-import requests
+def getenv(env):
+    """HACK use dev for running local unit/integration tests"""
+    try:
+        return os.environ[env]
+    except:
+        logging.warn(f"{env} missing, defaulting to {env}_DEV")
+        return os.environ[env + '_DEV']
 
-TOKEN = os.environ['TELEGRAM_TOKEN']
-BASE_URL = "https://api.telegram.org/bot{}".format(TOKEN)
+TELEGRAM_TOKEN = getenv('TELEGRAM_TOKEN')
+BASE_URL = "https://api.telegram.org/bot{}".format(TELEGRAM_TOKEN)
 
-TELEGRAM_CHAT_ID = os.environ['TELEGRAM_CHAT_ID']
+TELEGRAM_CHAT_ID = getenv('TELEGRAM_CHAT_ID')
 TELEGRAM_ALERT_GROUP = json.loads(os.environ['TELEGRAM_ALERT_GROUP'])
 
 def handler(event, context):
@@ -108,3 +111,4 @@ if __name__ == '__main__':
     import pprint
     pprint.pprint(get_similar_tracks_from_msg('https://open.spotify.com/track/43ddJFnP8m3PzNJXiHuiyJ?si=T3ZApBErTF-M1esGJoRMmw'))
     pprint.pprint(get_similar_tracks_from_msg('https://youtu.be/_kvZpVMY89c'))
+    pprint.pprint('https://open.spotify.com/track/1wnq9TwifJ9ipLUFsm8vKx?si=IUytRONLTYWxJz3g5L9y8g')

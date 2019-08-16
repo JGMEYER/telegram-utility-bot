@@ -3,5 +3,5 @@ pipenv clean
 pipenv install
 
 # Configure env
-source secrets/*
+. secrets/env
 echo "Env variables set"
