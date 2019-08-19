@@ -1,19 +1,37 @@
-## About
+# Telegram-Utility-Bot
 
 ```
 NOTE: This project is currently in development and incomplete.
 ```
 
+```
+NOTE: This project was developed on MacOS for python 3.6.0. As such, the commands provided in this guide are intended for users on a MacOS installation.
+```
+
+## About
+
 Serverless utility bot for Telegram based on this guide:
 https://hackernoon.com/serverless-telegram-bot-on-aws-lambda-851204d4236c
 
-## Before you start
+## Requirements: Before You Start
 
-This project was developed on MacOS for python 3.6.0. Pyenv, though not required, is recommended for managing python versions.
+This project requires prerequisite tools that are easy to setup. Please read the instructions below closely to avoid issues with your build.
 
-This project uses pipenv to manage dependencies. The README herein assumes you are running python from within the `pipenv shell`. _This will probably bite you at some point, so be sure to run commands from the pipenv shell unless already specified directly._ Make sure you have pipenv installed before modifying this project. For more information on pipenv, check out: https://docs.pipenv.org/en/latest/basics/.
+### Docker
 
-## Required env variables
+```
+NOTE: Linux environments should be able to build the project without using Docker.
+```
+
+This project compiles its python dependencies on a Docker instance to ensure that all installed dependencies are compatible with amazonlinux. Make sure you have Docker installed and running when iterating on this project. See https://www.docker.com/ for setup instructions.
+
+### Pipenv
+
+Pipenv, though not strictly required, is recommended for managing python versions. You will need to mess around with serverless.yml and your deployment process to build this project with serverless, otherwise.
+
+The README herein assumes you are running python from within the `pipenv shell`. _This will probably bite you at some point, so be sure to run commands from the pipenv shell unless already specified directly._ Make sure you have pipenv installed before modifying this project. For more information on pipenv, check out: https://docs.pipenv.org/en/latest/basics/.
+
+## Env Variables
 
 ```
 NOTE: See env.yml for the most up-to-date and complete list of required env variables.
@@ -53,22 +71,47 @@ Some of these will be set in the instructions below.
 
 ## Setup
 
+### Environment
+
+1. Setup your AWS account (https://aws.amazon.com/)
+1. Install and run Docker (https://www.docker.com/)
 1. Install pipenv
   - `$ brew install pipenv`
 1. Install serverless and dependencies:
   - `$ npm install serverless`
   - `$ npm install serverless-offline serverless@latest`
   - `$ npm install serverless-python-requirements`
-1. Change `custom.pythonRequirements.pythonBin` to the correct path of your python bin if not using pyenv.
 1. Add (export) all required env values in `secrets/env`. You may need to create this path.
 1. Run `$ source setup` to setup the environment.
 
-### Spotify
+### Telegram setup
+
+Set `$TELEGRAM_TOKEN` (from @BotFather) in secrets/env, then source:
+
+```
+$ source secrets/*
+```
+
+Then run the following to set up the webhook. Be sure to replace "{stage}" (e.g. "DEV", "PROD").
+```
+$ curl --request POST --url "https://api.telegram.org/bot$TELEGRAM_TOKEN/setWebhook" --header "content-type: application/json" --data "{\"url\":\"$TELEGRAM_API_GATEWAY_ROOT_{stage}\"}"
+```
+
+You should see something like:
+```
+{
+  "ok": true,
+  "result": true,
+  "description": "Webhook was set"
+}
+```
+
+### Spotify setup
 
 1. Register application on Spotify's website.
 1. Set SPOTIFY_CLIENT_ID and SPOTIFY_CLIENT_SECRET in secrets/env.
 
-### Google Music
+### Google Music setup
 
 More instructions at https://unofficial-google-music-api.readthedocs.io
 
@@ -119,29 +162,9 @@ Use this and update `$TELEGRAM_API_GATEWAY_ROOT_{stage}` for {stage} in secrets/
 export TELEGRAM_API_GATEWAY_ROOT_DEV="https://u3ir5tjcsf.execute-api.us-east-1.amazonaws.com/dev/telegram"
 ```
 
-## Connect backend to Telegram Bot
+## Adding a New Endpoint
 
-Set `$TELEGRAM_TOKEN` (from @BotFather) in secrets/env, then source:
-
-```
-$ source secrets/*
-```
-
-Then run the following to set up the webhook. Be sure to replace "{stage}".
-```
-$ curl --request POST --url "https://api.telegram.org/bot$TELEGRAM_TOKEN/setWebhook" --header "content-type: application/json" --data "{\"url\":\"$TELEGRAM_API_GATEWAY_ROOT_{stage}\"}"
-```
-
-You should see something like:
-```
-{
-  "ok": true,
-  "result": true,
-  "description": "Webhook was set"
-}
-```
-
-## Adding a new endpoint
+If you want to extend the functionality of the bot with your own requests/commands, it is recommend you move it to a new endpoint.
 
 1. Add endpoint to serverless.yml.
 
@@ -175,7 +198,9 @@ You should see something like:
       return {"statusCode": 400}  # not yet available
   ```
 
-## Local testing
+## Local Testing
+
+### Offline
 
 Install serverless-offline:
 
@@ -195,15 +220,17 @@ Send requests in a new terminal tab like:
 $ curl --header "Accept: application/json" --header "Content-Type: application/json" --request POST --data '{"alerter": "user"}' localhost:3000/telegram/alert
 ```
 
-Otherwise, I've included unit and integration tests in the `if __name__ == '__main__'` clause of tested classes. This was just a stopgap to test the code while iterating quickly. It's as easy as:
+### Unit/integration testing
+
+I've included unit and integration tests in the `if __name__ == '__main__'` clause of tested classes. This was just a stopgap to test the code while iterating quickly. It's as easy as:
 
 ```
 $ pipenv run python {file}.py
 ```
 
-## Test commands
+## Test Commands
 
-### Telegram Bot Alert
+### Telegram bot alert
 ```
 $ curl --header "Content-Type: application/json" --request POST --data '{"alerter": "user"}' $TELEGRAM_API_GATEWAY_ROOT_LOCAL/alert
 ```
