@@ -1,6 +1,7 @@
 # Install python packages
-pip install -r requirements.txt -t vendored
+pipenv clean
+pipenv install
 
 # Configure env
-source secrets/*
+. secrets/env
 echo "Env variables set"
