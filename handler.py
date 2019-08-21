@@ -26,13 +26,20 @@ TELEGRAM_ALERT_GROUP = json.loads(os.environ['TELEGRAM_ALERT_GROUP'])
 
 def handler(event, context):
     """Perform appropriate action for each endpoint invocation"""
-    if event['path'] == "/hello":
-        return {"statusCode": 200, "body": "hello, world!"}
-    elif event['path'] == "/alert":
-        return telegram_alert(event, context)
-    elif event['path'] == "/musicConverter":
-        return telegram_music_convert(event, context)
+    try:
+        if event['path'] == "/hello":
+            return {"statusCode": 200, "body": "hello, world!"}
+        elif event['path'] == "/alert":
+            return telegram_alert(event, context)
+        elif event['path'] == "/musicConverter":
+            return telegram_music_converter(event, context)
+    except Exception:
+        return {"statusCode": 500}
     return {"statusCode": 400}
+
+"""
+Endpoint calls
+"""
 
 def telegram_alert(event, context):
     try:
@@ -42,15 +49,42 @@ def telegram_alert(event, context):
         logging.error("Processing alert request body", exc_info=True)
         return {"statusCode": 400}
 
-    try:
-        mentions = [f"@{u}" for u in TELEGRAM_ALERT_GROUP if u != alerter]
-        response = (
-            f":: TEAM ALERT ::\n"
-            f"{alerter} Needs your help!\n"
-            f"\n"
-            f"{', '.join(mentions)}")
+    mentions = [f"@{u}" for u in TELEGRAM_ALERT_GROUP if u != alerter]
+    response = (
+        f":: TEAM ALERT ::\n"
+        f"{alerter} Needs your help!\n"
+        f"\n"
+        f"{', '.join(mentions)}")
+    return send_message(response, TELEGRAM_CHAT_ID)
 
-        data = {"text": response.encode("utf8"), "chat_id": TELEGRAM_CHAT_ID}
+def telegram_music_converter(event, context):
+    event_body = json.loads(event['body'])
+
+    try:
+        msg = event_body['message']['text']
+    except KeyError:
+        logging.error("Parsing message from Telegram update")
+        return {"statusCode": 400}
+
+    urls = urls_in_message(msg)
+    if not urls:
+        return {"statusCode": 200}
+
+    response = "Mirrors:\n"
+    similar_tracks = get_similar_tracks_from_urls(urls)
+    for idx, track_matches in enumerate(similar_tracks):
+        if idx != 0:
+            response += '\n\n'
+        response += '\n'.join([f"* {svc_name}: {t.share_link()}" for svc_name, t in track_matches.items()])
+    return send_message(response, TELEGRAM_CHAT_ID)
+
+"""
+Helpers
+"""
+
+def send_message(msg, chat_id):
+    try:
+        data = {"text": msg.encode("utf8"), "chat_id": TELEGRAM_CHAT_ID}
         url = BASE_URL + "/sendMessage"
     except Exception as e:
         logging.error("Encoding message", exc_info=True)
@@ -61,26 +95,19 @@ def telegram_alert(event, context):
         response.raise_for_status()
     except requests.exceptions.HTTPError as e:
         logging.error(response.content)
-        logging.error("Sending telegram alert", exc_info=True)
+        logging.error("Sending Telegram message", exc_info=True)
         return {"statusCode": 500}
     except requests.exceptions.RequestException as e:
-        logging.error("Sending telegram alert", exc_info=True)
+        logging.error("Sending Telegram message", exc_info=True)
         return {"statusCode": 500}
 
-    return {"statusCode": 200}
-
-def telegram_music_convert(event, context):
     return {"statusCode": 200}
 
 def urls_in_message(msg):
     urls = [w for w in msg.split(' ') if re.match('http[s]?://.*', w)]
     return urls
 
-def get_similar_tracks_from_msg(msg):
-    """Parses message for urls and returns matches for similar streaming tracks"""
-    urls = urls_in_message(msg)
-    if not urls:
-        return
+def get_similar_tracks_from_urls(urls):
     similar_tracks: List[Dict[str, StreamingServiceTrack]] = []
     for url in urls:
         logging.info("URL detected")
@@ -113,7 +140,32 @@ def get_similar_tracks_for_original_track(track_svc, original_track):
 
 if __name__ == '__main__':
     # Integration Tests
-    import pprint
-    pprint.pprint(get_similar_tracks_from_msg('https://open.spotify.com/track/43ddJFnP8m3PzNJXiHuiyJ?si=T3ZApBErTF-M1esGJoRMmw'))
-    pprint.pprint(get_similar_tracks_from_msg('https://youtu.be/_kvZpVMY89c'))
-    pprint.pprint('https://open.spotify.com/track/1wnq9TwifJ9ipLUFsm8vKx?si=IUytRONLTYWxJz3g5L9y8g')
+    msg = """
+    Hey! Check out these tracks!
+    https://open.spotify.com/track/43ddJFnP8m3PzNJXiHuiyJ?si=T3ZApBErTF-M1esGJoRMmw
+    https://youtu.be/_kvZpVMY89c
+    https://open.spotify.com/track/1wnq9TwifJ9ipLUFsm8vKx?si=IUytRONLTYWxJz3g5L9y8g
+    """
+    event = { "body": json.dumps(
+        {
+            'update_id': 10000,
+            'message': {
+                'date': 1441645532,
+                'chat': {
+                    'last_name': 'Test Lastname',
+                    'id': 1111111,
+                    'first_name': 'Test',
+                    'username': 'Test'
+                },
+                'message_id': 1365,
+                'from': {
+                    'last_name': 'Test Lastname',
+                    'id': 1111111,
+                    'first_name': 'Test',
+                    'username': 'Test'
+                },
+                'text': msg
+            }
+        }
+    )}
+    telegram_music_converter(event, None)
