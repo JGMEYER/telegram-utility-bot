@@ -118,7 +118,7 @@ $ source secrets/*
 
 Then run the following to set up the webhook. Run this for each stage (e.g. "DEV", "PROD").
 ```
-$ curl --request POST --url "https://api.telegram.org/bot$TELEGRAM_TOKEN_{stage}/setWebhook" --header "content-type: application/json" --data "{\"url\":\"$TELEGRAM_API_GATEWAY_ROOT_{stage}\"}"
+$ curl --request POST --url "https://api.telegram.org/bot$TELEGRAM_TOKEN_{stage}/setWebhook" --header "content-type: application/json" --data "{\"url\":\"$TELEGRAM_API_GATEWAY_ROOT_{stage}/musicConverter\"}"
 ```
 
 You should see something like:
@@ -141,25 +141,19 @@ For other assistance, check out the Telegram documentation for everything webhoo
 
 ### Google Music setup
 
-More instructions at https://unofficial-google-music-api.readthedocs.io
-
-`TODO as of now, it's unclear how I will automate this process on AWS`
-
 1. Run `pipenv run python`.
 1. Enter the code below and follow the instructions. This will authorize Google Play Music Manager to manage your account.
   ```
+  import os
   from gmusicapi import Mobileclient
 
   mm = Mobileclient()
-  mm.perform_oauth()
+  mm.perform_oauth(storage_filepath=os.path.join(os.getcwd(), 'secrets/gmusicapi.cred'), open_browser=True)
   ```
-1. All future connections to Musicmanager can then be performed with 'login'.
-  ```
-  from gmusicapi import Mobileclient
 
-  mm = Mobileclient()
-  mm.oauth_login(Mobileclient.FROM_MAC_ADDRESS)
-  ```
+This file will be pushed as part of the zip archive to S3, which will allow AWS to interact with the api.
+
+For more information on the API, check out: https://unofficial-google-music-api.readthedocs.io
 
 ## Deploy to AWS
 
@@ -223,6 +217,12 @@ If you want to extend the functionality of the bot with your own requests/comman
   elif event['path'] == "/myEndpoint":
       return {"statusCode": 400}  # not yet available
   ```
+
+## Tailing Logs
+
+You can tail cloudwatch logs on dev and prod using a variation of the command below:
+
+`$ sls logs -f post -t`
 
 ## Local Testing
 

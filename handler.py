@@ -115,8 +115,11 @@ def get_similar_tracks_from_urls(urls):
         svc = get_streaming_service_for_url(url)
         if svc:
             trackId = svc.get_trackId_from_url(url)
-            with svc() as svc_client:
-                original_track = svc_client.get_track_from_trackId(trackId)
+            try:
+                with svc() as svc_client:
+                    original_track = svc_client.get_track_from_trackId(trackId)
+            except Exception as e:
+                logging.error("Getting track from track id", exc_info=True)
             similar_tracks.append(get_similar_tracks_for_original_track(svc, original_track))
         else:
             logging.info("URL is not for a supported streaming service")
