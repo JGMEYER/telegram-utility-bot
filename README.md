@@ -10,7 +10,7 @@ NOTE: This project was developed on MacOS for python 3.6.0. As such, the command
 
 ## About
 
-Serverless utility bot for Telegram based on this guide:
+Serverless utility bot for Telegram originally based on this guide:
 https://hackernoon.com/serverless-telegram-bot-on-aws-lambda-851204d4236c
 
 ## Requirements: Before You Start
@@ -44,6 +44,10 @@ Example `secrets/env` template:
 export AWS_ACCESS_KEY_ID=
 export AWS_SECRET_ACCESS_KEY=
 
+# Domains
+export BOT_DOMAIN_DEV=
+export BOT_DOMAIN_PROD=
+
 # Telegram API
 export TELEGRAM_CHAT_ID_DEV=
 export TELEGRAM_CHAT_ID_PROD=
@@ -54,10 +58,10 @@ export TELEGRAM_TOKEN_PROD=
 # format like JSON e.g. ='["user1", "user2", "user3"]'
 export TELEGRAM_ALERT_GROUP=
 
-# helpers for testing calls locally (optional)
-export TELEGRAM_API_GATEWAY_ROOT_LOCAL=
-export TELEGRAM_API_GATEWAY_ROOT_DEV=
-export TELEGRAM_API_GATEWAY_ROOT_PROD=
+# helpers for testing calls locally
+export TELEGRAM_API_GATEWAY_ROOT_LOCAL="localhost:3000/telegram"
+export TELEGRAM_API_GATEWAY_ROOT_DEV="https://$BOT_DOMAIN_DEV"
+export TELEGRAM_API_GATEWAY_ROOT_PROD="https://$BOT_DOMAIN_PROD"
 
 # Spotify API
 export SPOTIFY_CLIENT_ID=
@@ -67,34 +71,54 @@ export SPOTIFY_CLIENT_SECRET=
 export YOUTUBE_API_KEY=
 ```
 
-Some of these will be set in the instructions below.
+`env.yml` and `serverless.yml` help serverless resolve which environment variables to use.
 
 ## Setup
 
-### Environment
+```
+NOTE: These setup instructions were written as I was developing the project. As such, some steps may be out of order, incomplete, or missing. Please open an issue on GitHub for clarification questions or open a PR if you have a fix.
+```
 
+Follow the steps below to setup your environment. Check out each tool's corresponding sections for additional instructions
+
+1. Create a new path/file `secrets/env`
 1. Setup your AWS account (https://aws.amazon.com/)
 1. Install and run Docker (https://www.docker.com/)
 1. Install pipenv
   - `$ brew install pipenv`
-1. Install serverless and dependencies:
-  - `$ npm install serverless`
-  - `$ npm install serverless-offline serverless@latest`
-  - `$ npm install serverless-python-requirements`
-1. Add (export) all required env values in `secrets/env`. You may need to create this path.
-1. Run `$ source setup` to setup the environment.
+1. Setup serverless
+1. Run `$ source setup` to setup the environment
+
+### AWS Setup
+
+This tool uses Telegram's webhooks to send push notifications to the bot on channel updates. In order for Telegram to securely communicate channel information to your bot, you'll need to register a domain with appropriate certificates.
+
+Use the following guide to register a domain and set up your certificates: https://serverless.com/blog/serverless-api-gateway-domain/. Register two separate certificates for `prod.{yourdomain}` and `dev.{yourdomain}`.
+
+It will take some time for your certificate to go from "pending" to "issued".
+
+Once you have the domain registered, update all `$BOT_DOMAIN_{stage}` in secrets/env.
+
+### Serverless setup
+
+1. `$ npm install` - install this serverless package and its dependencies
+1. `$ sls create_domain` - create a custom dev domain
+1. `$ sls create_domain --s prod` - create a custom prod domain
+1. Once the domains are reachable in your browser, deploy dev and prod with `$ sls deploy && sls deploy --s prod`
 
 ### Telegram setup
 
-Set `$TELEGRAM_TOKEN` (from @BotFather) in secrets/env, then source:
+Create two bots by DM'ing @BotFather in Telegram: one for DEV, one for PROD. I recommend you create a test group for the DEV bot to avoid annoying your friends. You can configure different `$TELEGRAM_CHAT_ID_{stage}` in secrets/env.
+
+Set the tokens you get from @BotFather to `$TELEGRAM_TOKEN_{stage}` in secrets/env, then source:
 
 ```
 $ source secrets/*
 ```
 
-Then run the following to set up the webhook. Be sure to replace "{stage}" (e.g. "DEV", "PROD").
+Then run the following to set up the webhook. Run this for each stage (e.g. "DEV", "PROD").
 ```
-$ curl --request POST --url "https://api.telegram.org/bot$TELEGRAM_TOKEN/setWebhook" --header "content-type: application/json" --data "{\"url\":\"$TELEGRAM_API_GATEWAY_ROOT_{stage}\"}"
+$ curl --request POST --url "https://api.telegram.org/bot$TELEGRAM_TOKEN_{stage}/setWebhook" --header "content-type: application/json" --data "{\"url\":\"$TELEGRAM_API_GATEWAY_ROOT_{stage}/musicConverter\"}"
 ```
 
 You should see something like:
@@ -106,6 +130,10 @@ You should see something like:
 }
 ```
 
+If you ever want to remove the webhook, e.g. to test getUpdates GET requests on dev, you can send a POST request to `deleteWebhook`. Just remember to reconfigure the webhook once you're done.
+
+For other assistance, check out the Telegram documentation for everything webhook: https://core.telegram.org/bots/webhooks.
+
 ### Spotify setup
 
 1. Register application on Spotify's website.
@@ -113,25 +141,19 @@ You should see something like:
 
 ### Google Music setup
 
-More instructions at https://unofficial-google-music-api.readthedocs.io
-
-`TODO as of now, it's unclear how I will automate this process on AWS`
-
 1. Run `pipenv run python`.
 1. Enter the code below and follow the instructions. This will authorize Google Play Music Manager to manage your account.
   ```
+  import os
   from gmusicapi import Mobileclient
 
   mm = Mobileclient()
-  mm.perform_oauth()
+  mm.perform_oauth(storage_filepath=os.path.join(os.getcwd(), 'secrets/gmusicapi.cred'), open_browser=True)
   ```
-1. All future connections to Musicmanager can then be performed with 'login'.
-  ```
-  from gmusicapi import Mobileclient
 
-  mm = Mobileclient()
-  mm.oauth_login(Mobileclient.FROM_MAC_ADDRESS)
-  ```
+This file will be pushed as part of the zip archive to S3, which will allow AWS to interact with the api.
+
+For more information on the API, check out: https://unofficial-google-music-api.readthedocs.io
 
 ## Deploy to AWS
 
@@ -152,8 +174,8 @@ Serverless will package all files into .zip archive and uploads to AWS. It will 
 ```
 endpoints:
 
-POST - https://u3ir5tjcsf.execute-api.us-east-1.amazonaws.com/dev/telegram/endpoint1
-POST - https://u3ir5tjcsf.execute-api.us-east-1.amazonaws.com/dev/telegram/endpoint2
+POST - https://u3ir5tjcsf.execute-api.us-east-1.amazonaws.com/dev/endpoint1
+POST - https://u3ir5tjcsf.execute-api.us-east-1.amazonaws.com/dev/endpoint2
 ```
 
 Use this and update `$TELEGRAM_API_GATEWAY_ROOT_{stage}` for {stage} in secrets/env to "<url\>/{stage}/telegram", e.g.
@@ -168,15 +190,13 @@ If you want to extend the functionality of the bot with your own requests/comman
 
 1. Add endpoint to serverless.yml.
 
-  `IMPORTANT! The root of the endpoint is important. For example, telegram endpoints MUST begin with "telegram/" to be recognized by the Telegram bot webhook.`
-
   ```
   functions:
     post:
       handler: handler.handler
       events:
       - http:
-          path: telegram/myEndpoint
+          path: myEndpoint
           method: post
           cors: true
   ```
@@ -189,14 +209,20 @@ If you want to extend the functionality of the bot with your own requests/comman
 
 1. Add a clause in handler() in handler.py to execute your function when the endpoint is invoked.
   ```
-  elif event['path'] == "/telegram/myEndpoint":
+  elif event['path'] == "/myEndpoint":
       return my_endpoint_logic(event, context)
   ```
   You can easily mock out an endpoint while it's being developed with:
   ```
-  elif event['path'] == "/telegram/myEndpoint":
+  elif event['path'] == "/myEndpoint":
       return {"statusCode": 400}  # not yet available
   ```
+
+## Tailing Logs
+
+You can tail cloudwatch logs on dev and prod using a variation of the command below:
+
+`$ sls logs -f post -t`
 
 ## Local Testing
 
@@ -217,7 +243,7 @@ $ pipenv run sls offline
 Send requests in a new terminal tab like:
 
 ```
-$ curl --header "Accept: application/json" --header "Content-Type: application/json" --request POST --data '{"alerter": "user"}' localhost:3000/telegram/alert
+$ curl --header "Accept: application/json" --header "Content-Type: application/json" --request POST --data '{"alerter": "user"}' localhost:3000/alert
 ```
 
 ### Unit/integration testing
