@@ -12,15 +12,20 @@ functions:
     handler: handler.handler
     events:
       - http:
-          path: telegram/alert
+          path: hello
+          method: get
+          cors: true
+      - http:
+          path: alert
           method: post
           cors: true
       - http:
-          path: telegram/musicConverter
+          path: musicConverter
           method: post
           cors: true
 
 plugins:
+  - serverless-domain-manager
   - serverless-offline
   - serverless-python-requirements
 
@@ -32,3 +37,10 @@ custom:
   pythonRequirements:
     usePipenv: true
     dockerizePip: non-linux
+  customDomain:
+    domainName: ${file(./env.yml):${opt:stage, self:provider.stage}.BOT_DOMAIN}
+    stage: ${opt:stage, self:provider.stage}
+    basePath: ''
+    createRoute53Record: true
+    endpointType: regional
+    securityPolicy: tls_1_2

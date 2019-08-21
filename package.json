@@ -1,0 +1,28 @@
+{
+  "name": "telegram-utility-bot",
+  "version": "0.0.2",
+  "description": "A general-use telegram utility bot.",
+  "main": "index.js",
+  "dependencies": {
+    "serverless": "^1.49.0",
+    "serverless-offline": "^5.10.1",
+    "serverless-python-requirements": "^5.0.0"
+  },
+  "devDependencies": {
+    "serverless-domain-manager": "^3.3.0"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/JGMEYER/telegram-utility-bot.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/JGMEYER/telegram-utility-bot/issues"
+  },
+  "homepage": "https://github.com/JGMEYER/telegram-utility-bot#readme"
+}

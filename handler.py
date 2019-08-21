@@ -26,10 +26,12 @@ TELEGRAM_ALERT_GROUP = json.loads(os.environ['TELEGRAM_ALERT_GROUP'])
 
 def handler(event, context):
     """Perform appropriate action for each endpoint invocation"""
-    if event['path'] == "/telegram/alert":
+    if event['path'] == "/hello":
+        return {"statusCode": 200, "body": "hello, world!"}
+    elif event['path'] == "/alert":
         return telegram_alert(event, context)
-    elif event['path'] == "/telegram/musicConverter":
-        return {"statusCode": 400}  # not yet available
+    elif event['path'] == "/musicConverter":
+        return telegram_music_convert(event, context)
     return {"statusCode": 400}
 
 def telegram_alert(event, context):
@@ -65,6 +67,9 @@ def telegram_alert(event, context):
         logging.error("Sending telegram alert", exc_info=True)
         return {"statusCode": 500}
 
+    return {"statusCode": 200}
+
+def telegram_music_convert(event, context):
     return {"statusCode": 200}
 
 def urls_in_message(msg):
