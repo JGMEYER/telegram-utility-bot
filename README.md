@@ -186,7 +186,7 @@ export TELEGRAM_API_GATEWAY_ROOT_DEV="https://u3ir5tjcsf.execute-api.us-east-1.a
 
 ## Adding a New Endpoint
 
-If you want to extend the functionality of the bot with your own requests/commands, it is recommend you move it to a new endpoint.
+If you want to extend the functionality of the bot with your own requests/commands, you need to create a new endpoint.
 
 1. Add endpoint to serverless.yml.
 
@@ -217,6 +217,10 @@ If you want to extend the functionality of the bot with your own requests/comman
   elif event['path'] == "/myEndpoint":
       return {"statusCode": 400}  # not yet available
   ```
+
+### Adding new webhookUpdate parser
+
+All webhook updates currently go to the `webhookUpdate/` endpoint. Update `handle_webhook_update()` in handler.py with your new message-parsing logic. Make sure you consider how this will interact with other tools that are looking to parse messages.
 
 ## Tailing Logs
 

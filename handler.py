@@ -30,18 +30,18 @@ def handler(event, context):
         if event['path'] == "/hello":
             return {"statusCode": 200, "body": "hello, world!"}
         elif event['path'] == "/alert":
-            return telegram_alert(event, context)
-        elif event['path'] == "/musicConverter":
-            return telegram_music_converter(event, context)
+            return send_alert(event, context)
+        elif event['path'] == "/webhookUpdate":
+            return handle_webhook_update(event, context)
     except Exception:
         return {"statusCode": 500}
     return {"statusCode": 400}
 
 """
-Endpoint calls
+Endpoint Handlers
 """
 
-def telegram_alert(event, context):
+def send_alert(event, context):
     try:
         event_body = json.loads(event['body'])
         alerter = event_body['alerter']
@@ -57,7 +57,7 @@ def telegram_alert(event, context):
         f"{', '.join(mentions)}")
     return send_message(response, TELEGRAM_CHAT_ID)
 
-def telegram_music_converter(event, context):
+def handle_webhook_update(event, context):
     event_body = json.loads(event['body'])
 
     try:
@@ -67,9 +67,18 @@ def telegram_music_converter(event, context):
         return {"statusCode": 400}
 
     urls = urls_in_text(text)
-    if not urls:
-        return {"statusCode": 200}
+    if urls:
+        response = send_music_mirror_links(urls)
+        if response['statusCode'] != 200:
+            return response
 
+    return {"statusCode": 200}
+
+"""
+Webhook Update Parsers
+"""
+
+def send_music_mirror_links(urls):
     similar_tracks = get_similar_tracks_from_urls(urls)
     if not similar_tracks:
         return {"statusCode": 200}
@@ -174,4 +183,4 @@ if __name__ == '__main__':
             }
         }
     )}
-    telegram_music_converter(event, None)
+    handle_webhook_update(event, None)

@@ -20,7 +20,7 @@ functions:
           method: post
           cors: true
       - http:
-          path: musicConverter
+          path: webhookUpdate
           method: post
           cors: true
 
