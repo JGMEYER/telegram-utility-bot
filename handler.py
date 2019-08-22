@@ -35,7 +35,7 @@ def handler(event, context):
             return handle_webhook_update(event, context)
     except Exception:
         return {"statusCode": 500}
-    return {"statusCode": 400}
+    return {"statusCode": 404}
 
 """
 Endpoint Handlers
