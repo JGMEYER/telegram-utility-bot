@@ -74,16 +74,15 @@ class YouTube(StreamingService):
             part="id,snippet",
             maxResults=1,
         ).execute()
-        query_result = query_response['items'].get(0)
-        if query_result:
-            track = YouTubeTrack(
-                query_result['snippet']['title'],
-                query_result['snippet']['channelTitle'],  # best guess
-                query_result['id'],
-            )
-            return track
-        else:
+        if not query_response['items']:
             return None
+        query_result = query_response['items'][0]
+        track = YouTubeTrack(
+            query_result['snippet']['title'],
+            query_result['snippet']['channelTitle'],  # best guess
+            query_result['id'],
+        )
+        return track
 
     def search_tracks(self, q, max_results=5):
         search_response = self._client.search().list(
