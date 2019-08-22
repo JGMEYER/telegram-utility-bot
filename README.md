@@ -113,7 +113,7 @@ Create two bots by DM'ing @BotFather in Telegram: one for DEV, one for PROD. I r
 Set the tokens you get from @BotFather to `$TELEGRAM_TOKEN_{stage}` in secrets/env, then source:
 
 ```
-$ source secrets/*
+$ source secrets/env
 ```
 
 Then run the following to set up the webhook. Run this for each stage (e.g. "DEV", "PROD").
