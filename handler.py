@@ -61,12 +61,12 @@ def telegram_music_converter(event, context):
     event_body = json.loads(event['body'])
 
     try:
-        msg = event_body['message']['text']
+        text = event_body['message']['text']
     except KeyError:
         logging.error("Parsing message from Telegram update")
         return {"statusCode": 400}
 
-    urls = urls_in_message(msg)
+    urls = urls_in_text(text)
     if not urls:
         return {"statusCode": 200}
 
@@ -85,9 +85,9 @@ def telegram_music_converter(event, context):
 Helpers
 """
 
-def send_message(msg, chat_id):
+def send_message(text, chat_id):
     try:
-        data = {"text": msg.encode("utf8"), "chat_id": chat_id}
+        data = {"text": text.encode("utf8"), "chat_id": chat_id}
         url = BASE_URL + "/sendMessage"
     except Exception as e:
         logging.error("Encoding message", exc_info=True)
@@ -106,8 +106,8 @@ def send_message(msg, chat_id):
 
     return {"statusCode": 200}
 
-def urls_in_message(msg):
-    urls = [w for w in msg.split(' ') if re.match('http[s]?://.*', w)]
+def urls_in_text(text):
+    urls = [w for w in text.split(' ') if re.match('http[s]?://.*', w)]
     return urls
 
 def get_similar_tracks_from_urls(urls):
@@ -146,7 +146,7 @@ def get_similar_tracks_for_original_track(track_svc, original_track):
 
 if __name__ == '__main__':
     # Integration Tests
-    msg = """
+    text = """
     Hey! Check out these tracks!
     https://open.spotify.com/track/43ddJFnP8m3PzNJXiHuiyJ?si=T3ZApBErTF-M1esGJoRMmw
     https://youtu.be/_kvZpVMY89c
@@ -170,7 +170,7 @@ if __name__ == '__main__':
                     'first_name': 'Test',
                     'username': 'Test'
                 },
-                'text': msg
+                'text': text
             }
         }
     )}
