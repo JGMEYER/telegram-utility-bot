@@ -70,8 +70,11 @@ def telegram_music_converter(event, context):
     if not urls:
         return {"statusCode": 200}
 
-    response = "Mirrors:\n"
     similar_tracks = get_similar_tracks_from_urls(urls)
+    if not similar_tracks:
+        return {"statusCode": 200}
+
+    response = "Mirrors:\n"
     for idx, track_matches in enumerate(similar_tracks):
         if idx != 0:
             response += '\n\n'
