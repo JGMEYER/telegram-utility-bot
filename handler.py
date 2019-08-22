@@ -87,7 +87,7 @@ Helpers
 
 def send_message(msg, chat_id):
     try:
-        data = {"text": msg.encode("utf8"), "chat_id": TELEGRAM_CHAT_ID}
+        data = {"text": msg.encode("utf8"), "chat_id": chat_id}
         url = BASE_URL + "/sendMessage"
     except Exception as e:
         logging.error("Encoding message", exc_info=True)
