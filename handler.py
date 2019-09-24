@@ -100,8 +100,7 @@ def send_music_mirror_links(urls):
         logging.info("No mirrors found for url")
         return {"statusCode": 200}
 
-    logging.info(f"similar_tracks: {similar_tracks}") #TODO rm
-
+    logging.info(f"similar_tracks: {similar_tracks}")
     response = "Mirrors:\n"
     for idx, track_matches in enumerate(similar_tracks):
         if idx != 0:
@@ -140,14 +139,14 @@ def urls_in_text(text):
 
 def get_similar_tracks_from_urls(urls):
     similar_tracks: List[Dict[str, StreamingServiceTrack]] = []
-    logging.info(f"urls: {urls}") #TODO rm
+    logging.info(f"urls: {urls}")
     for url in urls:
         logging.info("URL detected")
         logging.info(url)
         svc = get_streaming_service_for_url(url)
         if svc:
             trackId = svc.get_trackId_from_url(url)
-            logging.info(f"url: {url} ; trackId: {trackId}") #TODO rm
+            logging.info(f"url: {url} ; trackId: {trackId}")
             try:
                 with svc() as svc_client:
                     original_track = svc_client.get_track_from_trackId(trackId)
