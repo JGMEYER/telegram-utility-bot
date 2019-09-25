@@ -5,7 +5,8 @@ NOTE: This project is currently in development and incomplete.
 ```
 
 ```
-NOTE: This project was developed on MacOS for python 3.6.0. As such, the commands provided in this guide are intended for users on a MacOS installation.
+NOTE: This project was developed on MacOS for python 3.6.0. As such, the
+commands provided in this guide are intended for users on a MacOS installation.
 ```
 
 ## About
@@ -20,7 +21,8 @@ This project requires prerequisite tools that are easy to setup. Please read the
 ### Docker
 
 ```
-NOTE: Linux environments should be able to build the project without using Docker.
+NOTE: Linux environments should be able to build the project without using
+Docker.
 ```
 
 This project compiles its python dependencies on a Docker instance to ensure that all installed dependencies are compatible with amazonlinux. Make sure you have Docker installed and running when iterating on this project. See https://www.docker.com/ for setup instructions.
@@ -34,7 +36,8 @@ The README herein assumes you are running python from within the `pipenv shell`.
 ## Env Variables
 
 ```
-NOTE: See env.yml for the most up-to-date and complete list of required env variables.
+NOTE: See env.yml for the most up-to-date and complete list of required env
+variables.
 ```
 
 Example `secrets/env` template:
@@ -76,7 +79,8 @@ export YOUTUBE_API_KEY=
 ## Setup
 
 ```
-NOTE: These setup instructions were written as I was developing the project. As such, some steps may be out of order, incomplete, or missing. Please open an issue on GitHub for clarification questions or open a PR if you have a fix.
+NOTE: Some steps may be out of order, incomplete, or missing. Please open an
+issue on GitHub for clarification questions or open a PR if you have a fix.
 ```
 
 Follow the steps below to setup your environment. Check out each tool's corresponding sections for additional instructions
