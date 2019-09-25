@@ -230,7 +230,9 @@ All webhook updates currently go to the `webhookUpdate/` endpoint. Update `handl
 
 You can tail cloudwatch logs on dev and prod using a variation of the command below:
 
-`$ sls logs -f post -t`
+```
+$ sls logs -f post -t
+```
 
 ## Local Testing
 
@@ -272,7 +274,7 @@ $ curl --header "Content-Type: application/json" --request POST --data '{"alerte
 ### Music link
 
 ```
-curl --tlsv1.2 -v -k -H "Content-Type: application/json" -H "Cache-Control: no-cache"  -d '{"update_id":10000, "message":{ "date":99999999999, "chat":{ "last_name":"Test Lastname", "id":1111111, "first_name":"Test", "username":"Test" }, "message_id":1365, "from":{ "last_name":"Test Lastname", "id":1111111, "first_name":"Test", "username":"Test" }, "text":"https://open.spotify.com/track/43ddJFnP8m3PzNJXiHuiyJ?si=T3ZApBErTF-M1esGJoRMmw" } }' $TELEGRAM_API_GATEWAY_ROOT_LOCAL/webhookUpdate
+$ curl --tlsv1.2 -v -k -H "Content-Type: application/json" -H "Cache-Control: no-cache"  -d '{"update_id":10000, "message":{ "date":99999999999, "chat":{ "last_name":"Test Lastname", "id":1111111, "first_name":"Test", "username":"Test" }, "message_id":1365, "from":{ "last_name":"Test Lastname", "id":1111111, "first_name":"Test", "username":"Test" }, "text":"https://open.spotify.com/track/43ddJFnP8m3PzNJXiHuiyJ?si=T3ZApBErTF-M1esGJoRMmw" } }' $TELEGRAM_API_GATEWAY_ROOT_LOCAL/webhookUpdate
 ```
 
 ## Better Logging and Maintenance
