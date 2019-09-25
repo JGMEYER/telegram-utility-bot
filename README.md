@@ -114,6 +114,8 @@ Once you have the domain registered, update all `$BOT_DOMAIN_{stage}` in secrets
 
 Create two bots by DM'ing @BotFather in Telegram: one for DEV, one for PROD. I recommend you create a test group for the DEV bot to avoid annoying your friends. You can configure different `$TELEGRAM_CHAT_ID_{stage}` in secrets/env.
 
+**Important!** Next, turn off privacy mode for these bots to allow them to send message data via the Telegram webhooks.
+
 Set the tokens you get from @BotFather to `$TELEGRAM_TOKEN_{stage}` in secrets/env, then source:
 
 ```
@@ -122,7 +124,7 @@ $ source secrets/env
 
 Then run the following to set up the webhook. Run this for each stage (e.g. "DEV", "PROD").
 ```
-$ curl --request POST --url "https://api.telegram.org/bot$TELEGRAM_TOKEN_{stage}/setWebhook" --header "content-type: application/json" --data "{\"url\":\"$TELEGRAM_API_GATEWAY_ROOT_{stage}/musicConverter\"}"
+$ curl --request POST --url "https://api.telegram.org/bot$TELEGRAM_TOKEN_{stage}/setWebhook" --header "content-type: application/json" --data "{\"url\":\"$TELEGRAM_API_GATEWAY_ROOT_{stage}/webhookUpdate\"}"
 ```
 
 You should see something like:
