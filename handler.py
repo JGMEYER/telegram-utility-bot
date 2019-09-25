@@ -96,17 +96,31 @@ Webhook Update Parsers
 
 def send_music_mirror_links(urls):
     similar_tracks = get_similar_tracks_from_urls(urls)
+    logging.info(f"similar_tracks: {similar_tracks}")
+
     if not similar_tracks:
-        logging.info("No mirrors found for url")
+        logging.info("No mirrors found for urls")
         return {"statusCode": 200}
 
-    logging.info(f"similar_tracks: {similar_tracks}")
-    response = "Mirrors:\n"
-    for idx, track_matches in enumerate(similar_tracks):
-        if idx != 0:
-            response += '\n\n'
-        response += '\n'.join([f"* {svc_name}: {t.share_link()}" for svc_name, t in track_matches.items()])
-    return send_message(response, TELEGRAM_CHAT_ID)
+    track_list_strs = []
+    for url, track_matches in similar_tracks.items():
+        if not track_matches or not any(track_matches.values()):
+            logging.info(f"No mirrors to send for url (url: {url})")
+        else:
+            track_list_strs.append('\n'.join([f"* {svc_name}: {t.share_link()}"
+                for svc_name, t in track_matches.items() if t
+            ]))
+
+    if track_list_strs:
+        response = ""
+        for idx, s in enumerate(track_list_strs):
+            if idx != 0:
+                response += "\n\n"
+            response += "Mirrors:\n" + s
+        return send_message(response, TELEGRAM_CHAT_ID)
+    else:
+        logging.info("No mirrors to send for urls")
+        return {"statusCode": 200}
 
 """
 Helpers
@@ -138,11 +152,10 @@ def urls_in_text(text):
     return urls
 
 def get_similar_tracks_from_urls(urls):
-    similar_tracks: List[Dict[str, StreamingServiceTrack]] = []
+    similar_tracks: Dict[str, Dict[str, StreamingServiceTrack]] = {}  # {url: {svc: track, ..}, ..}
     logging.info(f"urls: {urls}")
     for url in urls:
-        logging.info("URL detected")
-        logging.info(url)
+        logging.info(f"URL detected (url: {url})")
         svc = get_streaming_service_for_url(url)
         if svc:
             trackId = svc.get_trackId_from_url(url)
@@ -152,10 +165,12 @@ def get_similar_tracks_from_urls(urls):
                     original_track = svc_client.get_track_from_trackId(trackId)
             except Exception as e:
                 logging.error("Getting track from track id", exc_info=True)
+                similar_tracks[url] = {}
                 continue
-            similar_tracks.append(get_similar_tracks_for_original_track(svc, original_track))
+            similar_tracks[url] = get_similar_tracks_for_original_track(svc, original_track)
         else:
-            logging.info("URL is not for a supported streaming service")
+            logging.info(f"URL is not for a supported streaming service (url: {url})")
+            similar_tracks[url] = None
             continue
     return similar_tracks
 
@@ -170,7 +185,7 @@ def get_similar_tracks_for_original_track(track_svc, original_track):
                 track = svc_client.search_one_track(original_track.searchable_name)
                 similar_tracks[svc.__name__] = track
             except:
-                logging.error("Getting track from trackId", exc_info=True)
+                logging.error("Searching one track", exc_info=True)
     return similar_tracks
 
 
