@@ -28,6 +28,12 @@ class MemoryCache(Cache):
 
 
 class YouTubeTrack(StreamingServiceTrack):
+    # Regexp to exclude from searchable video names
+    SEARCHABLE_EXCLUDE_EXPRESSIONS = [
+        r'\s(lyrics|with lyrics)$',
+        r'(\[|\()(Official\s)?(Music\s)?(Video|Movie)(\]|\))',
+    ]
+
     name = None
     artist = None
     id = None
@@ -39,8 +45,10 @@ class YouTubeTrack(StreamingServiceTrack):
 
     @property
     def searchable_name(self):
-        # Remove mentioning of lyrics from the video title
-        searchable_name = re.sub(r'\s(lyrics|with lyrics)$', '', self.name, flags=re.IGNORECASE)
+        searchable_name = self.name
+        # Remove terms that could negatively impact our search on other platforms
+        for exp in self.SEARCHABLE_EXCLUDE_EXPRESSIONS:
+            searchable_name = re.sub(exp, '', searchable_name, flags=re.IGNORECASE)
         return searchable_name
 
     def share_link(self):
