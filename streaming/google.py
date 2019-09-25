@@ -48,7 +48,7 @@ class YouTubeTrack(StreamingServiceTrack):
         searchable_name = self.name
         # Remove terms that could negatively impact our search on other platforms
         for exp in self.SEARCHABLE_EXCLUDE_EXPRESSIONS:
-            searchable_name = re.sub(exp, '', searchable_name, flags=re.IGNORECASE)
+            searchable_name = re.sub(exp, "", searchable_name, flags=re.IGNORECASE)
         return searchable_name
 
     def share_link(self):

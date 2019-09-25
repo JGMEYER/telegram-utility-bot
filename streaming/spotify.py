@@ -57,7 +57,7 @@ class SpotifyTrack(StreamingServiceTrack):
 
     def share_link(self):
         """WARNING: This is not going through an API and is subject to break"""
-        return self.url if self.url else f"https://open.spotify.com/track/{self.trackId}"
+        return self.url if self.url else f"https://open.spotify.com/track/{self.id}"
 
 class Spotify(StreamingService):
     VALID_TRACK_URL_PATTERNS = [

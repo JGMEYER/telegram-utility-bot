@@ -68,7 +68,7 @@ class StreamingServiceTrack(metaclass=ABCMeta):
 
     @property
     def searchable_name(self):
-        return f"{self.name} {self.artist}"
+        return f"{self.name} - {self.artist}"
 
     @abstractmethod
     def share_link(self):

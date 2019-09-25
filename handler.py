@@ -95,40 +95,43 @@ Webhook Update Parsers
 """
 
 def send_music_mirror_links(urls):
-    similar_tracks = get_similar_tracks_from_urls(urls)
+    similar_tracks = get_similar_tracks_from_urls(urls, include_original=True)
     logging.info(f"similar_tracks: {similar_tracks}")
 
     if not similar_tracks:
-        logging.info("No mirrors found for urls")
+        logging.info("No mirrors found for tracks")
         return {"statusCode": 200}
 
-    track_list_strs = []
-    for url, track_matches in similar_tracks.items():
-        if not track_matches or not any(track_matches.values()):
-            logging.info(f"No mirrors to send for url (url: {url})")
+    response = ""
+    for track, track_matches in similar_tracks.items():
+        # No matches besides original
+        if len([m for m in track_matches if m is not None]) < 1:
+            logging.info(f"No mirrors to send for track (share_link: {track.share_link()})")
         else:
-            track_list_strs.append('\n'.join([f"* {svc_name}: {t.share_link()}"
-                for svc_name, t in track_matches.items() if t
-            ]))
-
-    if track_list_strs:
-        response = ""
-        for idx, s in enumerate(track_list_strs):
-            if idx != 0:
+            if response:
                 response += "\n\n"
-            response += "Mirrors:\n" + s
-        return send_message(response, TELEGRAM_CHAT_ID)
+            response += f"{track.searchable_name}:\n" + " | ".join([f"[{svc_name}]({t.share_link()})"
+                for svc_name, t in sorted(track_matches.items()) if t
+            ])
+
+    if response:
+        return send_message(response, TELEGRAM_CHAT_ID, disable_link_previews=True)
     else:
-        logging.info("No mirrors to send for urls")
+        logging.info("No mirrors to send for tracks")
         return {"statusCode": 200}
 
 """
 Helpers
 """
 
-def send_message(text, chat_id):
+def send_message(text, chat_id, disable_link_previews=False):
     try:
-        data = {"text": text.encode("utf8"), "chat_id": chat_id}
+        data = {
+            "text": text.encode("utf8"),
+            "chat_id": chat_id,
+            "disable_web_page_preview": disable_link_previews,
+            "parse_mode": "markdown",
+        }
         url = BASE_URL + "/sendMessage"
     except Exception as e:
         logging.error("Encoding message", exc_info=True)
@@ -151,8 +154,9 @@ def urls_in_text(text):
     urls = [w for w in text.split(' ') if re.match('http[s]?://.*', w)]
     return urls
 
-def get_similar_tracks_from_urls(urls):
-    similar_tracks: Dict[str, Dict[str, StreamingServiceTrack]] = {}  # {url: {svc: track, ..}, ..}
+def get_similar_tracks_from_urls(urls, include_original=False):
+    # Format: {original_track: {svc: track, ..}, ..}
+    similar_tracks: Dict[StreamingServiceTrack, Dict[str, StreamingServiceTrack]] = {}
     logging.info(f"urls: {urls}")
     for url in urls:
         logging.info(f"URL detected (url: {url})")
@@ -165,12 +169,13 @@ def get_similar_tracks_from_urls(urls):
                     original_track = svc_client.get_track_from_trackId(trackId)
             except Exception as e:
                 logging.error("Getting track from track id", exc_info=True)
-                similar_tracks[url] = {}
                 continue
-            similar_tracks[url] = get_similar_tracks_for_original_track(svc, original_track)
+            similar_tracks_from_original = get_similar_tracks_for_original_track(svc, original_track)
+            if include_original:
+                similar_tracks_from_original[svc.__name__] = original_track
+            similar_tracks[original_track] = similar_tracks_from_original
         else:
             logging.info(f"URL is not for a supported streaming service (url: {url})")
-            similar_tracks[url] = None
             continue
     return similar_tracks
 
@@ -201,7 +206,7 @@ if __name__ == '__main__':
         {
             'update_id': 10000,
             'message': {
-                'date': 1441645532,
+                'date': 99999999999,
                 'chat': {
                     'last_name': 'Test Lastname',
                     'id': 1111111,
