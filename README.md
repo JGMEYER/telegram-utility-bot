@@ -59,7 +59,7 @@ export TELEGRAM_TOKEN_PROD=
 export TELEGRAM_ALERT_GROUP=
 
 # helpers for testing calls locally
-export TELEGRAM_API_GATEWAY_ROOT_LOCAL="localhost:3000/telegram"
+export TELEGRAM_API_GATEWAY_ROOT_LOCAL="localhost:3000"
 export TELEGRAM_API_GATEWAY_ROOT_DEV="https://$BOT_DOMAIN_DEV"
 export TELEGRAM_API_GATEWAY_ROOT_PROD="https://$BOT_DOMAIN_PROD"
 
@@ -186,7 +186,7 @@ export TELEGRAM_API_GATEWAY_ROOT_DEV="https://u3ir5tjcsf.execute-api.us-east-1.a
 
 ## Adding a New Endpoint
 
-If you want to extend the functionality of the bot with your own requests/commands, it is recommend you move it to a new endpoint.
+If you want to extend the functionality of the bot with your own requests/commands, you need to create a new endpoint.
 
 1. Add endpoint to serverless.yml.
 
@@ -217,6 +217,10 @@ If you want to extend the functionality of the bot with your own requests/comman
   elif event['path'] == "/myEndpoint":
       return {"statusCode": 400}  # not yet available
   ```
+
+### Adding new webhookUpdate parser
+
+All webhook updates currently go to the `webhookUpdate/` endpoint. Update `handle_webhook_update()` in handler.py with your new message-parsing logic. Make sure you consider how this will interact with other tools that are looking to parse messages.
 
 ## Tailing Logs
 
@@ -259,6 +263,12 @@ $ pipenv run python {file}.py
 ### Telegram bot alert
 ```
 $ curl --header "Content-Type: application/json" --request POST --data '{"alerter": "user"}' $TELEGRAM_API_GATEWAY_ROOT_LOCAL/alert
+```
+
+### Music link
+
+```
+curl --tlsv1.2 -v -k -H "Content-Type: application/json" -H "Cache-Control: no-cache"  -d '{"update_id":10000, "message":{ "date":99999999999, "chat":{ "last_name":"Test Lastname", "id":1111111, "first_name":"Test", "username":"Test" }, "message_id":1365, "from":{ "last_name":"Test Lastname", "id":1111111, "first_name":"Test", "username":"Test" }, "text":"https://open.spotify.com/track/43ddJFnP8m3PzNJXiHuiyJ?si=T3ZApBErTF-M1esGJoRMmw" } }' $TELEGRAM_API_GATEWAY_ROOT_LOCAL/webhookUpdate
 ```
 
 ## Better Logging and Maintenance

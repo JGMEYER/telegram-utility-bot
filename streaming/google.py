@@ -28,6 +28,12 @@ class MemoryCache(Cache):
 
 
 class YouTubeTrack(StreamingServiceTrack):
+    # Regexp to exclude from searchable video names
+    SEARCHABLE_EXCLUDE_EXPRESSIONS = [
+        r'\s(lyrics|with lyrics)$',
+        r'(\[|\()(Official\s)?(Music\s)?(Video|Movie)(\]|\))',
+    ]
+
     name = None
     artist = None
     id = None
@@ -39,8 +45,10 @@ class YouTubeTrack(StreamingServiceTrack):
 
     @property
     def searchable_name(self):
-        # Remove mentioning of lyrics from the video title
-        searchable_name = re.sub(r'\s(lyrics|with lyrics)$', '', self.name, flags=re.IGNORECASE)
+        searchable_name = self.name
+        # Remove terms that could negatively impact our search on other platforms
+        for exp in self.SEARCHABLE_EXCLUDE_EXPRESSIONS:
+            searchable_name = re.sub(exp, '', searchable_name, flags=re.IGNORECASE)
         return searchable_name
 
     def share_link(self):
@@ -49,9 +57,8 @@ class YouTubeTrack(StreamingServiceTrack):
 
 class YouTube(StreamingService):
     VALID_TRACK_URL_PATTERNS = [
-        "https://www.youtube.com/watch\\?v=(?P<trackId>\w+).*",
-        "https://www.youtu.be/(?P<trackId>\w+).*",
-        "https://youtu.be/(?P<trackId>\w+).*",
+        'https://www.youtube.com/watch\?v=(?P<trackId>[A-Za-z0-9\\-\\_]+).*',
+        'https://(www.)?youtu.be/(?P<trackId>[A-Za-z0-9\\-\\_]+).*',
     ]
 
     def __init__(self):
@@ -159,6 +166,7 @@ class GMusic(StreamingService):
 
 if __name__ == "__main__":
     """Unit Tests"""
+    assert YouTube.supports_track_url("https://www.youtube.com/watch?v=GWOIDN-akrY")  # supports dashes
     assert YouTube.supports_track_url("https://www.youtube.com/watch?v=9_gkpYORQLU")
     assert YouTube.supports_track_url("https://www.youtube.com/watch?v=9_gkpYORQLU?t=4")
     assert not YouTube.supports_track_url("https://www.youtube.com/")
@@ -169,6 +177,7 @@ if __name__ == "__main__":
     assert GMusic.supports_track_url("https://play.google.com/music/m/T2y24nzjhuyvlolsptj7zqon5qi?t=GOAT_-_Polyphia")
     assert not GMusic.supports_track_url("https://play.google.com/music/m/")
 
+    assert YouTube.get_trackId_from_url("https://www.youtube.com/watch?v=GWOIDN-akrY"), "GWOIDN-akrY"  # supports dashes
     assert YouTube.get_trackId_from_url("https://www.youtube.com/watch?v=9_gkpYORQLU?t=4"), "9_gkpYORQLU"
     assert YouTube.get_trackId_from_url("https://www.youtu.be/9_gkpYORQLU?t=4"), "9_gkpYORQLU"
     assert GMusic.get_trackId_from_url("https://play.google.com/music/m/T2y24nzjhuyvlolsptj7zqon5qi?t=GOAT_-_Polyphia"), "T2y24nzjhuyvlolsptj7zqon5qi"
