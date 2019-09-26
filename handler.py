@@ -67,7 +67,7 @@ def handle_webhook_update(event, context):
         logging.info("Event is not a message (e.g. a message_edit). Ignore")
         return {"statusCode": 200}
     # ignore messages without text
-    if not event_body['message'].get('text'):
+    elif not event_body['message'].get('text'):
         logging.info("Event message contains no text (e.g. a sticker). Ignore")
         return {"statusCode": 200}
 
