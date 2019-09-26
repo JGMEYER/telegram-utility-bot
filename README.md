@@ -88,10 +88,9 @@ Follow the steps below to setup your environment. Check out each tool's correspo
 1. Create a new path/file `secrets/env`
 1. Setup your AWS account (https://aws.amazon.com/)
 1. Install and run Docker (https://www.docker.com/)
-1. Install pipenv
-  - `$ brew install pipenv`
+1. Install pipenv: `$ brew install pipenv`
 1. Setup serverless
-1. Run `$ source setup` to setup the environment
+1. Setup the environment: `$ source setup`
 
 ### AWS Setup
 
@@ -105,6 +104,10 @@ Once you have the domain registered, update all `$BOT_DOMAIN_{stage}` in secrets
 
 ### Serverless setup
 
+```
+NOTE: You can view the domain configurations in serverless.yml:custom:customDomain
+```
+
 1. `$ npm install` - install this serverless package and its dependencies
 1. `$ sls create_domain` - create a custom dev domain
 1. `$ sls create_domain --s prod` - create a custom prod domain
@@ -112,9 +115,9 @@ Once you have the domain registered, update all `$BOT_DOMAIN_{stage}` in secrets
 
 ### Telegram setup
 
-Create two bots by DM'ing @BotFather in Telegram: one for DEV, one for PROD. I recommend you create a test group for the DEV bot to avoid annoying your friends. You can configure different `$TELEGRAM_CHAT_ID_{stage}` in secrets/env.
+Create two bots by messaging @BotFather in Telegram: one for DEV, one for PROD. I recommend you create a test group for the DEV bot to avoid annoying your friends. You can configure different `$TELEGRAM_CHAT_ID_{stage}` in secrets/env.
 
-**Important!** Next, turn off privacy mode for these bots to allow them to send message data via the Telegram webhooks.
+**Important!** Next, turn off privacy mode for these bots via @BotFather to allow them to send message data via the Telegram webhooks.
 
 Set the tokens you get from @BotFather to `$TELEGRAM_TOKEN_{stage}` in secrets/env, then source:
 
