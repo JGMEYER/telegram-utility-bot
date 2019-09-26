@@ -104,8 +104,8 @@ def send_music_mirror_links(urls):
 
     response = ""
     for track, track_matches in similar_tracks.items():
-        # No matches besides original
-        if len([m for m in track_matches if m is not None]) < 1:
+        # Need more than just the original link to display mirrors
+        if len([m for m in track_matches.values() if m is not None]) < 2:
             logging.info(f"No mirrors to send for track (share_link: {track.share_link()})")
         else:
             if response:
@@ -196,12 +196,13 @@ def get_similar_tracks_for_original_track(track_svc, original_track):
 
 if __name__ == '__main__':
     # Integration Tests
-    text = """
-    Hey! Check out these tracks!
-    https://open.spotify.com/track/43ddJFnP8m3PzNJXiHuiyJ?si=T3ZApBErTF-M1esGJoRMmw
-    https://youtu.be/_kvZpVMY89c
-    https://open.spotify.com/track/1wnq9TwifJ9ipLUFsm8vKx?si=IUytRONLTYWxJz3g5L9y8g
-    """
+    text = (
+        "Hey! Check out these tracks! "
+        "https://play.google.com/music/m/Tkqhlm2ssr4y2s76wfcjahkv3b4 "
+        "https://open.spotify.com/track/1wnq9TwifJ9ipLUFsm8vKx?si=IUytRONLTYWxJz3g5L9y8g "
+        "https://youtu.be/_kvZpVMY89c "
+        "https://youtu.be/srre8i83vL8"  # non-music link
+    )
     event = { "body": json.dumps(
         {
             'update_id': 10000,
