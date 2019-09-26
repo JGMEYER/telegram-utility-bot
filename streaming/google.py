@@ -57,8 +57,8 @@ class YouTubeTrack(StreamingServiceTrack):
 
 class YouTube(StreamingService):
     VALID_TRACK_URL_PATTERNS = [
-        'https://www.youtube.com/watch\?v=(?P<trackId>[A-Za-z0-9\\-\\_]+).*',
-        'https://(www.)?youtu.be/(?P<trackId>[A-Za-z0-9\\-\\_]+).*',
+        r'https://www.youtube.com/watch\?v=(?P<trackId>[A-Za-z0-9\-\_]+).*',
+        r'https://(www.)?youtu.be/(?P<trackId>[A-Za-z0-9\-\_]+).*',
     ]
 
     def __init__(self):
@@ -126,7 +126,7 @@ class GMusicTrack(StreamingServiceTrack):
 class GMusic(StreamingService):
     CRED_FILE = "gmusicapi.cred"
     VALID_TRACK_URL_PATTERNS = [
-        "https://play.google.com/music/m/(?P<trackId>\w+)\\??.*",
+        r'https://play.google.com/music/m/(?P<trackId>\w+)\??.*',
     ]
 
     def __init__(self):

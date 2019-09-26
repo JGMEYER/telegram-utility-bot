@@ -61,7 +61,7 @@ class SpotifyTrack(StreamingServiceTrack):
 
 class Spotify(StreamingService):
     VALID_TRACK_URL_PATTERNS = [
-        "https://open.spotify.com/track/(?P<trackId>\w+)\\??.*",
+        r'https://open.spotify.com/track/(?P<trackId>\w+)\??.*',
     ]
 
     def __enter__(self):
