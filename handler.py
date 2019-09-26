@@ -62,10 +62,19 @@ def send_alert(event, context):
 def handle_webhook_update(event, context):
     event_body = json.loads(event['body'])
 
+    # message edits intentionally not supported for now
+    if not event_body.get('message'):
+        logging.info("Event is not a message (e.g. a message_edit). Ignore")
+        return {"statusCode": 200}
+    # ignore messages without text
+    if not event_body['message'].get('text'):
+        logging.info("Event message contains no text (e.g. a sticker). Ignore")
+        return {"statusCode": 200}
+
     try:
         msg_date = event_body['message']['date']
     except KeyError:
-        logging.error("Parsing date from Telegram update")
+        logging.error("Parsing date from Telegram update", exc_info=True)
         return {"statusCode": 400}
 
     # avoid spamming our APIs
@@ -79,7 +88,7 @@ def handle_webhook_update(event, context):
     try:
         text = event_body['message']['text']
     except KeyError:
-        logging.error("Parsing text from Telegram update")
+        logging.error("Parsing text from Telegram update", exc_info=True)
         return {"statusCode": 400}
 
     urls = urls_in_text(text)
