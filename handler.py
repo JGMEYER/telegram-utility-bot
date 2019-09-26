@@ -151,7 +151,7 @@ def send_message(text, chat_id, disable_link_previews=False):
     return {"statusCode": 200}
 
 def urls_in_text(text):
-    urls = [w for w in text.split(' ') if re.match('http[s]?://.*', w)]
+    urls = [w for w in text.split() if re.match('http[s]?://.*', w)]
     return urls
 
 def get_similar_tracks_from_urls(urls, include_original=False):
@@ -197,10 +197,10 @@ def get_similar_tracks_for_original_track(track_svc, original_track):
 if __name__ == '__main__':
     # Integration Tests
     text = (
-        "Hey! Check out these tracks! "
-        "https://play.google.com/music/m/Tkqhlm2ssr4y2s76wfcjahkv3b4 "
-        "https://open.spotify.com/track/1wnq9TwifJ9ipLUFsm8vKx?si=IUytRONLTYWxJz3g5L9y8g "
-        "https://youtu.be/_kvZpVMY89c "
+        "Hey! Check out these tracks!\n"
+        "https://play.google.com/music/m/Tkqhlm2ssr4y2s76wfcjahkv3b4\n"
+        "https://open.spotify.com/track/1wnq9TwifJ9ipLUFsm8vKx?si=IUytRONLTYWxJz3g5L9y8g\n"
+        "https://youtu.be/_kvZpVMY89c\n"
         "https://youtu.be/srre8i83vL8"  # non-music link
     )
     event = { "body": json.dumps(
