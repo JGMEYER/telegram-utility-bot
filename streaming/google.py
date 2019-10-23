@@ -30,7 +30,7 @@ class MemoryCache(Cache):
 class YouTubeTrack(StreamingServiceTrack):
     # Regexp to exclude from searchable video names
     SEARCHABLE_EXCLUDE_EXPRESSIONS = [
-        r'\s(lyrics|with lyrics)$',
+        r'\s\(?(HD\s?)?((with |w\/ )?lyrics)?\)?$',
         r'(\[|\()(Official\s)?(Music\s)?(Video|Movie)(\]|\))',
     ]
 
