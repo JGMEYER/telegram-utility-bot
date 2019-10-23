@@ -1,6 +1,5 @@
 import os
 import re
-from enum import Enum
 from shutil import copyfile
 
 from googleapiclient.discovery import build
@@ -13,9 +12,11 @@ from streaming import StreamingService, StreamingServiceTrack
 # import httplib2
 # httplib2.debuglevel = 4
 
+
 class MemoryCache(Cache):
     """
-    Workaround for "ModuleNotFoundError: No module named 'google.appengine'" when running on AWS.
+    Workaround for "ModuleNotFoundError: No module named 'google.appengine'"
+    when running on AWS.
     https://github.com/googleapis/google-api-python-client/issues/325#issuecomment-274349841
     """
     _CACHE = {}
@@ -46,14 +47,16 @@ class YouTubeTrack(StreamingServiceTrack):
     @property
     def searchable_name(self):
         searchable_name = self.name
-        # Remove terms that could negatively impact our search on other platforms
+        # Remove terms that negatively impact our search on other platforms
         for exp in self.SEARCHABLE_EXCLUDE_EXPRESSIONS:
-            searchable_name = re.sub(exp, "", searchable_name, flags=re.IGNORECASE)
+            searchable_name = re.sub(exp, "", searchable_name,
+                                     flags=re.IGNORECASE)
         return searchable_name
 
     def share_link(self):
         """WARNING: This is not going through an API and is subject to break"""
         return f"https://www.youtube.com/watch?v={self.id}"
+
 
 class YouTube(StreamingService):
     VALID_TRACK_URL_PATTERNS = [
@@ -123,6 +126,7 @@ class GMusicTrack(StreamingServiceTrack):
         """WARNING: This is not going through an API and is subject to break"""
         return f"https://play.google.com/music/m/{self.id}"
 
+
 class GMusic(StreamingService):
     CRED_FILE = "gmusicapi.cred"
     VALID_TRACK_URL_PATTERNS = [
@@ -135,16 +139,19 @@ class GMusic(StreamingService):
     def __enter__(self):
         # AWS
         if os.getenv('LAMBDA_TASK_ROOT'):
-            cred_path = os.path.join(os.environ['LAMBDA_TASK_ROOT'], "secrets", GMusic.CRED_FILE)
+            cred_path = os.path.join(os.environ['LAMBDA_TASK_ROOT'], "secrets",
+                                     GMusic.CRED_FILE)
             # Only /tmp is writable on AWS lambda. gmusicapi needs to write to
             # the cred file to refresh its tokens.
             tmp_path = os.path.join("/tmp", GMusic.CRED_FILE)
             copyfile(cred_path, tmp_path)
-            self._client.oauth_login(Mobileclient.FROM_MAC_ADDRESS, oauth_credentials=tmp_path)
+            self._client.oauth_login(Mobileclient.FROM_MAC_ADDRESS,
+                                     oauth_credentials=tmp_path)
         # Local
         else:
             cred_path = os.path.join(os.getcwd(), "secrets", GMusic.CRED_FILE)
-            self._client.oauth_login(Mobileclient.FROM_MAC_ADDRESS, oauth_credentials=cred_path)
+            self._client.oauth_login(Mobileclient.FROM_MAC_ADDRESS,
+                                     oauth_credentials=cred_path)
         return self
 
     def __exit__(self, *args):
@@ -152,14 +159,16 @@ class GMusic(StreamingService):
 
     def get_track_from_trackId(self, trackId):
         query_result = self._client.get_track_info(trackId)
-        track = GMusicTrack(query_result['title'], query_result['artist'], query_result['storeId'])
+        track = GMusicTrack(query_result['title'], query_result['artist'],
+                            query_result['storeId'])
         return track
 
     def search_tracks(self, q, max_results=5):
         tracks = []
         for search_result in self._client.search(q, max_results)['song_hits']:
             track = search_result['track']
-            gm_track = GMusicTrack(track['title'], track['artist'], track['storeId'])
+            gm_track = GMusicTrack(track['title'], track['artist'],
+                                   track['storeId'])
             tracks.append(gm_track)
         return tracks
 
