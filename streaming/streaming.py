@@ -1,5 +1,7 @@
-from abc import ABCMeta, abstractmethod, abstractproperty
 import re
+from abc import ABCMeta, abstractmethod, abstractproperty
+from difflib import SequenceMatcher
+
 
 class StreamingService(object, metaclass=ABCMeta):
     @abstractproperty
@@ -50,9 +52,11 @@ class StreamingService(object, metaclass=ABCMeta):
         tracks = self.search_tracks(q, max_results=1)
         return tracks[0] if tracks else None
 
+
 class StreamingServiceTrack(metaclass=ABCMeta):
     def __str__(self):
-        return f"{self.__class__.__name__}: '{self.name}' - {self.artist} ({self.id})"
+        return (f"{self.__class__.__name__}: '{self.name}' - {self.artist} "
+                f"({self.id})")
 
     @abstractproperty
     def name(self):
@@ -74,3 +78,8 @@ class StreamingServiceTrack(metaclass=ABCMeta):
     def share_link(self):
         """Returns a sharable link to the track"""
         pass
+
+    def similarity_ratio(self, other_track):
+        """Returns ratio of similarity between track names"""
+        return SequenceMatcher(None, self.searchable_name,
+                               other_track.searchable_name).ratio()

@@ -25,6 +25,9 @@ BASE_URL = "https://api.telegram.org/bot{}".format(TELEGRAM_TOKEN)
 TELEGRAM_CHAT_ID = getenv('TELEGRAM_CHAT_ID')
 TELEGRAM_ALERT_GROUP = json.loads(os.environ['TELEGRAM_ALERT_GROUP'])
 
+# minimum ratio to consider streaming track titles a match
+MINIMUM_ACCEPTED_TRACK_MATCH_RATIO = 0.80  # arbitrary
+
 def handler(event, context):
     """Perform appropriate action for each endpoint invocation"""
     try:
@@ -197,8 +200,17 @@ def get_similar_tracks_for_original_track(track_svc, original_track):
         with svc() as svc_client:
             try:
                 track = svc_client.search_one_track(original_track.searchable_name)
-                similar_tracks[svc.__name__] = track
-            except:
+                similarity_ratio = original_track.similarity_ratio(track)
+
+                if similarity_ratio > MINIMUM_ACCEPTED_TRACK_MATCH_RATIO:
+                    similar_tracks[svc.__name__] = track
+                else:
+                    logging.warning(f"Track \"{track.searchable_name}\" for "
+                                    f"svc {svc.__name__} does not meet "
+                                    f"minimum similarity ratio of "
+                                    f"{MINIMUM_ACCEPTED_TRACK_MATCH_RATIO} "
+                                    f"({similarity_ratio})\"")
+            except Exception:
                 logging.error("Searching one track", exc_info=True)
     return similar_tracks
 
