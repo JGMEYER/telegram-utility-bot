@@ -202,7 +202,7 @@ def get_similar_tracks_for_original_track(track_svc, original_track):
                 track = svc_client.search_one_track(original_track.searchable_name)
                 similarity_ratio = original_track.similarity_ratio(track)
 
-                if similarity_ratio > MINIMUM_ACCEPTED_TRACK_MATCH_RATIO:
+                if similarity_ratio >= MINIMUM_ACCEPTED_TRACK_MATCH_RATIO:
                     similar_tracks[svc.__name__] = track
                 else:
                     logging.warning(f"Track \"{track.searchable_name}\" for "
