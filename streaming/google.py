@@ -1,6 +1,7 @@
 import os
 import re
 from difflib import SequenceMatcher
+from enum import IntEnum
 from shutil import copyfile
 
 from googleapiclient.discovery import build
@@ -89,6 +90,10 @@ class YouTubeTrack(StreamingServiceTrack):
         return ratio
 
 
+class YouTubeVideoCategory(IntEnum):
+    MUSIC = 10  # available in regionCode: US
+
+
 class YouTube(StreamingService):
     VALID_TRACK_URL_PATTERNS = [
         r'https://www.youtube.com/watch\?v=(?P<trackId>[A-Za-z0-9\-\_]+).*',
@@ -113,6 +118,7 @@ class YouTube(StreamingService):
         query_response = self._client.videos().list(
             id=trackId,
             part="id,snippet",
+            type="video",
             maxResults=1,
         ).execute()
         if not query_response['items']:
@@ -125,11 +131,20 @@ class YouTube(StreamingService):
         )
         return track
 
-    def search_tracks(self, q, max_results=5):
+    def search_tracks(self, q, max_results=5, video_category_id=None):
+        print([
+            q,
+            "id,snippet",
+            "video",
+            max_results,
+            video_category_id,
+        ])
         search_response = self._client.search().list(
             q=q,
             part="id,snippet",
+            type="video",
             maxResults=max_results,
+            videoCategoryId=video_category_id,
         ).execute()
         tracks = []
         for search_result in search_response.get("items", []):
