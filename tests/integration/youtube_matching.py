@@ -20,7 +20,7 @@ def test_youtube_matches():
     elsewhere to find matches for these videos on other services.
     """
     with YouTube() as yt:
-        tracks = yt.search_tracks("", max_results=5, video_category_id=
+        tracks = yt.search_tracks("", max_results=20, video_category_id=
                                   YouTubeVideoCategory.MUSIC.value)
 
     track_matches = {}

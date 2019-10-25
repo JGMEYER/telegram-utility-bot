@@ -34,8 +34,10 @@ class MemoryCache(Cache):
 class YouTubeTrack(StreamingServiceTrack):
     # Regexp to exclude from searchable video names
     SEARCHABLE_EXCLUDE_EXPRESSIONS = [
-        r'\s\(?(HD\s?)?((with |w\/ )?lyrics)?\)?$',
-        r'(\[|\()(Official\s)?(Music\s)?(Video|Movie)(\]|\))',
+        r'\s\(?(HD\s?)?((with |w\/ )?lyrics)?\)?$',  # ()'s
+        r'\s\[?(HD\s?)?((with |w\/ )?lyrics)?\]?$',  # []'s
+        r'\((Official\s)?(Music\s|Lyric\s)?(Video|Movie|Audio)\)',  # ()'s
+        r'\[(Official\s)?(Music\s|Lyric\s)?(Video|Movie|Audio)\]',  # []'s
     ]
 
     name = None
@@ -54,7 +56,7 @@ class YouTubeTrack(StreamingServiceTrack):
         for exp in self.SEARCHABLE_EXCLUDE_EXPRESSIONS:
             searchable_name = re.sub(exp, "", searchable_name,
                                      flags=re.IGNORECASE)
-        return searchable_name
+        return searchable_name.strip()
 
     def share_link(self):
         """WARNING: This is not going through an API and is subject to break"""
