@@ -30,13 +30,13 @@ def test_youtube_matches():
         track_matches[track.searchable_name] = similar_tracks
 
     missing_msgs = []
-    for track_name, matches in track_matches.items():
+    for track_src_name, matches in track_matches.items():
         for svc in SUPPORTED_STREAMING_SERVICES:
             if svc is YouTube:
                 continue
             if svc.__name__ not in matches.keys():
-                missing_msgs.append(f"\"{track_name}\" is missing result for "
-                                    f"{svc.__name__}")
+                missing_msgs.append(f"\"{track_src_name}\" is missing result "
+                                    f"for {svc.__name__}")
 
     if missing_msgs:
         print('\n'.join(missing_msgs))

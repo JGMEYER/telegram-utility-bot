@@ -1,3 +1,4 @@
+import html
 import os
 import re
 from difflib import SequenceMatcher
@@ -48,7 +49,7 @@ class YouTubeTrack(StreamingServiceTrack):
 
     @property
     def searchable_name(self):
-        searchable_name = self.name
+        searchable_name = html.unescape(self.name)
         # Remove terms that negatively impact our search on other platforms
         for exp in self.SEARCHABLE_EXCLUDE_EXPRESSIONS:
             searchable_name = re.sub(exp, "", searchable_name,
