@@ -201,26 +201,31 @@ def get_similar_tracks_for_original_track(track_svc, original_track):
             try:
                 track = svc_client.search_one_track(
                             original_track.searchable_name)
-
-                # test the ratio both ways since each StreamingServiceTrack
-                # class can have its own logic for checking similarity
-                sim_ratio_a = original_track.similarity_ratio(track)
-                sim_ratio_b = track.similarity_ratio(original_track)
-                sim_ratio = max(sim_ratio_a, sim_ratio_b)
-                logging.debug(f"Similarity checks: {sim_ratio_a}, "
-                              f"{sim_ratio_b}")
-
-                if sim_ratio >= MINIMUM_ACCEPTED_TRACK_MATCH_RATIO:
-                    similar_tracks[svc.__name__] = track
-                else:
-                    logging.warning(f"Track \"{track.searchable_name}\" for "
-                                    f"svc {svc.__name__} does not meet "
-                                    f"minimum similarity ratio of "
-                                    f"{MINIMUM_ACCEPTED_TRACK_MATCH_RATIO} "
-                                    f"({sim_ratio})\"")
+                if track:
+                    if _tracks_are_similar(original_track, track):
+                        similar_tracks[svc.__name__] = track
+                    else:
+                        logging.warning(
+                            f"Track \"{track.searchable_name}\" for svc "
+                            f"{svc.__name__} does not meet minimum similarity "
+                            f"ratio of {MINIMUM_ACCEPTED_TRACK_MATCH_RATIO}"
+                        )
             except Exception:
                 logging.error("Searching one track", exc_info=True)
     return similar_tracks
+
+def _tracks_are_similar(track_a, track_b):
+    """
+    Returns whether two tracks meet the mimimum similarity ratio.
+
+    We test the ratio both ways since each StreamingServiceTrack class can have
+    its own logic for checking similarity
+    """
+    sim_ratio_ab = track_a.similarity_ratio(track_b)
+    sim_ratio_ba = track_b.similarity_ratio(track_a)
+    sim_ratio = max(sim_ratio_ab, sim_ratio_ba)
+    logging.info(f"Similarity checks: {sim_ratio_ab}, {sim_ratio_ba}")
+    return sim_ratio >= MINIMUM_ACCEPTED_TRACK_MATCH_RATIO
 
 
 if __name__ == '__main__':

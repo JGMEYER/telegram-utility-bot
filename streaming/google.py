@@ -1,6 +1,8 @@
+import html
 import os
 import re
 from difflib import SequenceMatcher
+from enum import IntEnum
 from shutil import copyfile
 
 from googleapiclient.discovery import build
@@ -32,8 +34,10 @@ class MemoryCache(Cache):
 class YouTubeTrack(StreamingServiceTrack):
     # Regexp to exclude from searchable video names
     SEARCHABLE_EXCLUDE_EXPRESSIONS = [
-        r'\s\(?(HD\s?)?((with |w\/ )?lyrics)?\)?$',
-        r'(\[|\()(Official\s)?(Music\s)?(Video|Movie)(\]|\))',
+        r'\s\(?(HD\s?)?((with |w\/ )?lyrics)?\)?$',  # ()'s
+        r'\s\[?(HD\s?)?((with |w\/ )?lyrics)?\]?$',  # []'s
+        r'\((Official\s)?(Music\s|Lyric\s)?(Video|Movie|Audio)\)',  # ()'s
+        r'\[(Official\s)?(Music\s|Lyric\s)?(Video|Movie|Audio)\]',  # []'s
     ]
 
     name = None
@@ -47,12 +51,12 @@ class YouTubeTrack(StreamingServiceTrack):
 
     @property
     def searchable_name(self):
-        searchable_name = self.name
+        searchable_name = html.unescape(self.name)
         # Remove terms that negatively impact our search on other platforms
         for exp in self.SEARCHABLE_EXCLUDE_EXPRESSIONS:
             searchable_name = re.sub(exp, "", searchable_name,
                                      flags=re.IGNORECASE)
-        return searchable_name
+        return searchable_name.strip()
 
     def share_link(self):
         """WARNING: This is not going through an API and is subject to break"""
@@ -89,6 +93,10 @@ class YouTubeTrack(StreamingServiceTrack):
         return ratio
 
 
+class YouTubeVideoCategory(IntEnum):
+    MUSIC = 10  # available in regionCode: US
+
+
 class YouTube(StreamingService):
     VALID_TRACK_URL_PATTERNS = [
         r'https://www.youtube.com/watch\?v=(?P<trackId>[A-Za-z0-9\-\_]+).*',
@@ -113,6 +121,7 @@ class YouTube(StreamingService):
         query_response = self._client.videos().list(
             id=trackId,
             part="id,snippet",
+            type="video",
             maxResults=1,
         ).execute()
         if not query_response['items']:
@@ -125,11 +134,20 @@ class YouTube(StreamingService):
         )
         return track
 
-    def search_tracks(self, q, max_results=5):
+    def search_tracks(self, q, max_results=5, video_category_id=None):
+        print([
+            q,
+            "id,snippet",
+            "video",
+            max_results,
+            video_category_id,
+        ])
         search_response = self._client.search().list(
             q=q,
             part="id,snippet",
+            type="video",
             maxResults=max_results,
+            videoCategoryId=video_category_id,
         ).execute()
         tracks = []
         for search_result in search_response.get("items", []):
