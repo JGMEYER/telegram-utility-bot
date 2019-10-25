@@ -199,17 +199,25 @@ def get_similar_tracks_for_original_track(track_svc, original_track):
             continue
         with svc() as svc_client:
             try:
-                track = svc_client.search_one_track(original_track.searchable_name)
-                similarity_ratio = original_track.similarity_ratio(track)
+                track = svc_client.search_one_track(
+                            original_track.searchable_name)
 
-                if similarity_ratio >= MINIMUM_ACCEPTED_TRACK_MATCH_RATIO:
+                # test the ratio both ways since each StreamingServiceTrack
+                # class can have its own logic for checking similarity
+                sim_ratio_a = original_track.similarity_ratio(track)
+                sim_ratio_b = track.similarity_ratio(original_track)
+                sim_ratio = max(sim_ratio_a, sim_ratio_b)
+                logging.debug(f"Similarity checks: {sim_ratio_a}, "
+                              f"{sim_ratio_b}")
+
+                if sim_ratio >= MINIMUM_ACCEPTED_TRACK_MATCH_RATIO:
                     similar_tracks[svc.__name__] = track
                 else:
                     logging.warning(f"Track \"{track.searchable_name}\" for "
                                     f"svc {svc.__name__} does not meet "
                                     f"minimum similarity ratio of "
                                     f"{MINIMUM_ACCEPTED_TRACK_MATCH_RATIO} "
-                                    f"({similarity_ratio})\"")
+                                    f"({sim_ratio})\"")
             except Exception:
                 logging.error("Searching one track", exc_info=True)
     return similar_tracks
