@@ -2,11 +2,9 @@ import datetime
 import json
 import logging
 import os
-import re
 import requests
-from typing import Dict, List
 
-from streaming import SUPPORTED_STREAMING_SERVICES, get_streaming_service_for_url
+from streaming.match import get_mirror_links_message, urls_in_text
 
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)
@@ -24,9 +22,6 @@ BASE_URL = "https://api.telegram.org/bot{}".format(TELEGRAM_TOKEN)
 
 TELEGRAM_CHAT_ID = getenv('TELEGRAM_CHAT_ID')
 TELEGRAM_ALERT_GROUP = json.loads(os.environ['TELEGRAM_ALERT_GROUP'])
-
-# minimum ratio to consider streaming track titles a match
-MINIMUM_ACCEPTED_TRACK_MATCH_RATIO = 0.80  # arbitrary
 
 def handler(event, context):
     """Perform appropriate action for each endpoint invocation"""
@@ -94,43 +89,17 @@ def handle_webhook_update(event, context):
         logging.error("Parsing text from Telegram update", exc_info=True)
         return {"statusCode": 400}
 
+    # handle music mirror links
     urls = urls_in_text(text)
     if urls:
-        response = send_music_mirror_links(urls)
-        if response['statusCode'] != 200:
-            return response
+        text = get_mirror_links_message(urls)
+        if text:
+            response = send_message(text, TELEGRAM_CHAT_ID,
+                                    disable_link_previews=True)
+            if response['statusCode'] != 200:
+                return response
 
     return {"statusCode": 200}
-
-"""
-Webhook Update Parsers
-"""
-
-def send_music_mirror_links(urls):
-    similar_tracks = get_similar_tracks_from_urls(urls, include_original=True)
-    logging.info(f"similar_tracks: {similar_tracks}")
-
-    if not similar_tracks:
-        logging.info("No mirrors found for tracks")
-        return {"statusCode": 200}
-
-    response = ""
-    for track, track_matches in similar_tracks.items():
-        # Need more than just the original link to display mirrors
-        if len([m for m in track_matches.values() if m is not None]) < 2:
-            logging.info(f"No mirrors to send for track (share_link: {track.share_link()})")
-        else:
-            if response:
-                response += "\n\n"
-            response += f"{track.searchable_name}:\n" + " | ".join([f"[{svc_name}]({t.share_link()})"
-                for svc_name, t in sorted(track_matches.items()) if t
-            ])
-
-    if response:
-        return send_message(response, TELEGRAM_CHAT_ID, disable_link_previews=True)
-    else:
-        logging.info("No mirrors to send for tracks")
-        return {"statusCode": 200}
 
 """
 Helpers
@@ -161,71 +130,6 @@ def send_message(text, chat_id, disable_link_previews=False):
         return {"statusCode": 500}
 
     return {"statusCode": 200}
-
-def urls_in_text(text):
-    urls = [w for w in text.split() if re.match('http[s]?://.*', w)]
-    return urls
-
-def get_similar_tracks_from_urls(urls, include_original=False):
-    # Format: {original_track: {svc: track, ..}, ..}
-    similar_tracks: Dict[StreamingServiceTrack, Dict[str, StreamingServiceTrack]] = {}
-    logging.info(f"urls: {urls}")
-    for url in urls:
-        logging.info(f"URL detected (url: {url})")
-        svc = get_streaming_service_for_url(url)
-        if svc:
-            trackId = svc.get_trackId_from_url(url)
-            logging.info(f"url: {url} ; trackId: {trackId}")
-            try:
-                with svc() as svc_client:
-                    original_track = svc_client.get_track_from_trackId(trackId)
-            except Exception as e:
-                logging.error("Getting track from track id", exc_info=True)
-                continue
-            similar_tracks_from_original = get_similar_tracks_for_original_track(svc, original_track)
-            if include_original:
-                similar_tracks_from_original[svc.__name__] = original_track
-            similar_tracks[original_track] = similar_tracks_from_original
-        else:
-            logging.info(f"URL is not for a supported streaming service (url: {url})")
-            continue
-    return similar_tracks
-
-def get_similar_tracks_for_original_track(track_svc, original_track):
-    """Returns dict of urls from other streaming services for the same track"""
-    similar_tracks: Dict[str, StreamingServiceTrack] = {}
-    for svc in SUPPORTED_STREAMING_SERVICES:
-        if svc is track_svc:
-            continue
-        with svc() as svc_client:
-            try:
-                track = svc_client.search_one_track(
-                            original_track.searchable_name)
-                if track:
-                    if _tracks_are_similar(original_track, track):
-                        similar_tracks[svc.__name__] = track
-                    else:
-                        logging.warning(
-                            f"Track \"{track.searchable_name}\" for svc "
-                            f"{svc.__name__} does not meet minimum similarity "
-                            f"ratio of {MINIMUM_ACCEPTED_TRACK_MATCH_RATIO}"
-                        )
-            except Exception:
-                logging.error("Searching one track", exc_info=True)
-    return similar_tracks
-
-def _tracks_are_similar(track_a, track_b):
-    """
-    Returns whether two tracks meet the mimimum similarity ratio.
-
-    We test the ratio both ways since each StreamingServiceTrack class can have
-    its own logic for checking similarity
-    """
-    sim_ratio_ab = track_a.similarity_ratio(track_b)
-    sim_ratio_ba = track_b.similarity_ratio(track_a)
-    sim_ratio = max(sim_ratio_ab, sim_ratio_ba)
-    logging.info(f"Similarity checks: {sim_ratio_ab}, {sim_ratio_ba}")
-    return sim_ratio >= MINIMUM_ACCEPTED_TRACK_MATCH_RATIO
 
 
 if __name__ == '__main__':
