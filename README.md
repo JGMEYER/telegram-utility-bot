@@ -14,6 +14,19 @@ commands provided in this guide are intended for users on a MacOS installation.
 Serverless utility bot for Telegram originally based on this guide:
 https://hackernoon.com/serverless-telegram-bot-on-aws-lambda-851204d4236c
 
+## Pricing
+
+```
+NOTE: Prices may change based on AWS's pricing model. Values below are estimates.
+```
+
+While the code is free to use, there is a small cost to host the bot on AWS.
+
+* $9/yr Route 53 Registered Domain
+* $0.50/mo Route 53 Hosted Zone
+
+Total: $15/yr
+
 ## Requirements: Before You Start
 
 This project requires prerequisite tools that are easy to setup. Please read the instructions below closely to avoid issues with your build.
