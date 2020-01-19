@@ -9,19 +9,22 @@ from streaming.match import get_mirror_links_message, urls_in_text
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)
 
+
 def getenv(env):
     """HACK use dev for running local unit/integration tests"""
     try:
         return os.environ[env]
-    except:
+    except KeyError:
         logging.warn(f"{env} missing, defaulting to {env}_DEV")
         return os.environ[env + '_DEV']
+
 
 TELEGRAM_TOKEN = getenv('TELEGRAM_TOKEN')
 BASE_URL = "https://api.telegram.org/bot{}".format(TELEGRAM_TOKEN)
 
 TELEGRAM_CHAT_ID = getenv('TELEGRAM_CHAT_ID')
 TELEGRAM_ALERT_GROUP = json.loads(os.environ['TELEGRAM_ALERT_GROUP'])
+
 
 def handler(event, context):
     """Perform appropriate action for each endpoint invocation"""
@@ -32,20 +35,22 @@ def handler(event, context):
             return send_alert(event, context)
         elif event['path'] == "/webhookUpdate":
             return handle_webhook_update(event, context)
-    except Exception as e:
+    except Exception:
         logging.error("Handling request", exc_info=True)
         return {"statusCode": 500}
     return {"statusCode": 404}
+
 
 """
 Endpoint Handlers
 """
 
+
 def send_alert(event, context):
     try:
         event_body = json.loads(event['body'])
         alerter = event_body['alerter']
-    except Exception as e:
+    except Exception:
         logging.error("Processing alert request body", exc_info=True)
         return {"statusCode": 400}
 
@@ -56,6 +61,7 @@ def send_alert(event, context):
         f"\n"
         f"{', '.join(mentions)}")
     return send_message(response, TELEGRAM_CHAT_ID)
+
 
 def handle_webhook_update(event, context):
     event_body = json.loads(event['body'])
@@ -101,9 +107,11 @@ def handle_webhook_update(event, context):
 
     return {"statusCode": 200}
 
+
 """
 Helpers
 """
+
 
 def send_message(text, chat_id, disable_link_previews=False):
     try:
@@ -114,18 +122,18 @@ def send_message(text, chat_id, disable_link_previews=False):
             "parse_mode": "markdown",
         }
         url = BASE_URL + "/sendMessage"
-    except Exception as e:
+    except Exception:
         logging.error("Encoding message", exc_info=True)
         return {"statusCode": 500}
 
     try:
         response = requests.post(url, data=data)
         response.raise_for_status()
-    except requests.exceptions.HTTPError as e:
+    except requests.exceptions.HTTPError:
         logging.error(response.content)
         logging.error("Sending Telegram message", exc_info=True)
         return {"statusCode": 500}
-    except requests.exceptions.RequestException as e:
+    except requests.exceptions.RequestException:
         logging.error("Sending Telegram message", exc_info=True)
         return {"statusCode": 500}
 
@@ -137,11 +145,11 @@ if __name__ == '__main__':
     text = (
         "Hey! Check out these tracks!\n"
         "https://play.google.com/music/m/Tkqhlm2ssr4y2s76wfcjahkv3b4\n"
-        "https://open.spotify.com/track/1wnq9TwifJ9ipLUFsm8vKx?si=IUytRONLTYWxJz3g5L9y8g\n"
+        "https://open.spotify.com/track/1wnq9TwifJ9ipLUFsm8vKx?si=IUytRONLTYWxJz3g5L9y8g\n"  # noqa: E501
         "https://youtu.be/_kvZpVMY89c\n"
         "https://youtu.be/srre8i83vL8"  # non-music link
     )
-    event = { "body": json.dumps(
+    event = {"body": json.dumps(
         {
             'update_id': 10000,
             'message': {

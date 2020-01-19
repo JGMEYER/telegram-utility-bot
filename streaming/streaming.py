@@ -6,11 +6,10 @@ from difflib import SequenceMatcher
 class StreamingService(object, metaclass=ABCMeta):
     @abstractproperty
     def VALID_TRACK_URL_PATTERNS(self):
-        """
-        List of string patterns of supported urls.
-        Url must include matching group for trackId.
+        """List of string patterns of supported urls. Url must include matching
+        group for trackId.
         e.g. "(?P<trackId>\w+)"
-        """
+        """  # noqa: W605
         raise NotImplementedError
 
     @abstractmethod

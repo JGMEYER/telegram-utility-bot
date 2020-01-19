@@ -19,7 +19,7 @@ def urls_in_text(text):
 
 
 def get_mirror_links_message(urls):
-    #TODO docstring
+    """Generate message to display mirror link results"""
     similar_tracks = get_similar_tracks_from_urls(urls, include_original=True)
     logging.info(f"similar_tracks: {similar_tracks}")
 
@@ -34,10 +34,19 @@ def get_mirror_links_message(urls):
             logging.info(f"No mirrors to send for track (share_link: "
                          f"{track.share_link()})")
         else:
+            # Generates message like:
+            #   """
+            #   Song - Artist
+            #   GMusic | Spotify | YouTube
+            #
+            #   Song - Artist
+            #   GMusic | Spotify | YouTube
+            #   """
             if msg:
                 msg += "\n\n"
-            #TODO reformat to be clearer
-            msg += f"{track.searchable_name}:\n" + " | ".join([f"[{svc_name}]({t.share_link()})"
+            msg += f"{track.searchable_name}:\n"
+            msg += " | ".join([
+                f"[{svc_name}]({t.share_link()})"
                 for svc_name, t in sorted(track_matches.items()) if t
             ])
 
@@ -45,7 +54,9 @@ def get_mirror_links_message(urls):
 
 
 def get_similar_tracks_from_urls(urls, include_original=False):
-    #TODO docstring
+    """Attempts to retrieve mirror links to all other streaming services for
+    track provided in URL
+    """
     # Format: {original_track: {svc: track, ..}, ..}
     similar_tracks: Dict[StreamingServiceTrack,
                          Dict[str, StreamingServiceTrack]] = {}
@@ -97,7 +108,7 @@ def get_similar_tracks_for_original_track(track_svc, original_track):
                 similar_tracks[svc.__name__] = track
             else:
                 logging.warning(
-                    f"Track title \"{track.searachable_name}\" for "
+                    f"Track title \"{track.searchable_name}\" for "
                     f"svc {svc.__name__} is not similar enough to "
                     f"\"{original_track.searchable_name}\"."
                 )
@@ -105,8 +116,7 @@ def get_similar_tracks_for_original_track(track_svc, original_track):
 
 
 def tracks_are_similar(track_a, track_b):
-    """
-    Returns whether two tracks meet the mimimum similarity ratio.
+    """Returns whether two tracks meet the mimimum similarity ratio.
 
     We test the ratio both ways since each StreamingServiceTrack class can have
     its own logic for checking similarity

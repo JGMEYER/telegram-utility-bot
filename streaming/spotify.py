@@ -3,15 +3,15 @@ import json
 import logging
 import os
 import requests
-from urllib.parse import urlencode, urljoin, urlparse
-from http.client import HTTPConnection
+from urllib.parse import urljoin
 
 from streaming import StreamingService, StreamingServiceTrack
 
 BASE_API_URL = "https://api.spotify.com/v1/"
 AUTHORIZE_URL = "https://accounts.spotify.com/api/token"
 
-# enable HTTP debug logging for requests
+# # Enable HTTP debug logging for requests
+# from http.client import HTTPConnection
 # HTTPConnection.debuglevel = 1
 
 
@@ -22,6 +22,7 @@ class SpotifyToken:
 
     def __str__(self):
         return f"{self.token_type} {self.access_token}"
+
 
 def request_token():
     """Request Spotify access token"""
@@ -36,7 +37,7 @@ def request_token():
     try:
         response = requests.post(AUTHORIZE_URL, headers=headers, data=data)
         response.raise_for_status()
-    except Exception as e:
+    except Exception:
         logging.error("Requesting Spotify token", exc_info=True)
         return None
 
@@ -57,7 +58,11 @@ class SpotifyTrack(StreamingServiceTrack):
 
     def share_link(self):
         """WARNING: This is not going through an API and is subject to break"""
-        return self.url if self.url else f"https://open.spotify.com/track/{self.id}"
+        return (
+            self.url if self.url
+            else f"https://open.spotify.com/track/{self.id}"
+        )
+
 
 class Spotify(StreamingService):
     VALID_TRACK_URL_PATTERNS = [
@@ -77,24 +82,29 @@ class Spotify(StreamingService):
         try:
             response = requests.get(track_url, headers=headers)
             response.raise_for_status()
-        except Exception as e:
+        except Exception:
             logging.error("Requesting Spotify track from id", exc_info=True)
             return None
 
         content = json.loads(response.content)
         if content:
-            return SpotifyTrack(content['name'], content['artists'][0]['name'], trackId)
+            return SpotifyTrack(content['name'],
+                                content['artists'][0]['name'],
+                                trackId)
         else:
             return None
 
     def search_tracks(self, q, max_results=5):
         search_url = urljoin(BASE_API_URL, "search")
-        headers = {'Authorization': str(self._token), 'Accept': 'application/json', 'Content-Type': 'application/json'}
+        headers = {'Authorization': str(self._token),
+                   'Accept': 'application/json',
+                   'Content-Type': 'application/json'}
         params = {'q': q, 'type': 'track', 'limit': 1}
         try:
-            search_response = requests.get(search_url, headers=headers, params=params)
+            search_response = requests.get(search_url, headers=headers,
+                                           params=params)
             search_response.raise_for_status()
-        except Exception as e:
+        except Exception:
             logging.error("Searching Spotify track", exc_info=True)
             return None
         search_results = json.loads(search_response.content)
@@ -113,11 +123,11 @@ class Spotify(StreamingService):
 
 if __name__ == "__main__":
     """Unit Tests"""
-    assert Spotify.supports_track_url("https://open.spotify.com/track/3h3pOvw6hjOvZxRUseB7h9")
-    assert Spotify.supports_track_url("https://open.spotify.com/track/3h3pOvw6hjOvZxRUseB7h9?si=Ci-fm4N2TYq7kKlJANDnhA")
+    assert Spotify.supports_track_url("https://open.spotify.com/track/3h3pOvw6hjOvZxRUseB7h9")  # noqa: E501
+    assert Spotify.supports_track_url("https://open.spotify.com/track/3h3pOvw6hjOvZxRUseB7h9?si=Ci-fm4N2TYq7kKlJANDnhA")  # noqa: E501
     assert not Spotify.supports_track_url("https://open.spotify.com/track/")
 
-    assert Spotify.get_trackId_from_url("https://open.spotify.com/track/3h3pOvw6hjOvZxRUseB7h9?si=Ci-fm4N2TYq7kKlJANDnhA"), "3h3pOvw6hjOvZxRUseB7h9"
+    assert Spotify.get_trackId_from_url("https://open.spotify.com/track/3h3pOvw6hjOvZxRUseB7h9?si=Ci-fm4N2TYq7kKlJANDnhA"), "3h3pOvw6hjOvZxRUseB7h9"  # noqa: E501
 
     """Integration Tests"""
     with Spotify() as spotify:

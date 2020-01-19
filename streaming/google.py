@@ -17,11 +17,10 @@ from streaming import StreamingService, StreamingServiceTrack
 
 
 class MemoryCache(Cache):
-    """
-    Workaround for "ModuleNotFoundError: No module named 'google.appengine'"
+    """Workaround for "ModuleNotFoundError: No module named 'google.appengine'"
     when running on AWS.
     https://github.com/googleapis/google-api-python-client/issues/325#issuecomment-274349841
-    """
+    """  # noqa: E501
     _CACHE = {}
 
     def get(self, url):
@@ -63,8 +62,7 @@ class YouTubeTrack(StreamingServiceTrack):
         return f"https://www.youtube.com/watch?v={self.id}"
 
     def similarity_ratio(self, other_track):
-        """
-        Overrides StreamingServiceTrack.similarity_ratio()
+        """Overrides StreamingServiceTrack.similarity_ratio()
 
         YouTube titles don't adhere to any convention and may occasionally swap
         the artist and track title. This method tries rearranging the video
@@ -121,7 +119,6 @@ class YouTube(StreamingService):
         query_response = self._client.videos().list(
             id=trackId,
             part="id,snippet",
-            type="video",
             maxResults=1,
         ).execute()
         if not query_response['items']:
@@ -224,21 +221,21 @@ class GMusic(StreamingService):
 
 if __name__ == "__main__":
     """Unit Tests"""
-    assert YouTube.supports_track_url("https://www.youtube.com/watch?v=GWOIDN-akrY")  # supports dashes
-    assert YouTube.supports_track_url("https://www.youtube.com/watch?v=9_gkpYORQLU")
-    assert YouTube.supports_track_url("https://www.youtube.com/watch?v=9_gkpYORQLU?t=4")
+    assert YouTube.supports_track_url("https://www.youtube.com/watch?v=GWOIDN-akrY")  # supports dashes  # noqa: E501
+    assert YouTube.supports_track_url("https://www.youtube.com/watch?v=9_gkpYORQLU")  # noqa: E501
+    assert YouTube.supports_track_url("https://www.youtube.com/watch?v=9_gkpYORQLU?t=4")  # noqa: E501
     assert not YouTube.supports_track_url("https://www.youtube.com/")
     assert YouTube.supports_track_url("https://www.youtu.be/9_gkpYORQLU")
     assert YouTube.supports_track_url("https://www.youtu.be/9_gkpYORQLU?t=4")
     assert not YouTube.supports_track_url("https://www.youtu.be/")
-    assert GMusic.supports_track_url("https://play.google.com/music/m/T2y24nzjhuyvlolsptj7zqon5qi")
-    assert GMusic.supports_track_url("https://play.google.com/music/m/T2y24nzjhuyvlolsptj7zqon5qi?t=GOAT_-_Polyphia")
+    assert GMusic.supports_track_url("https://play.google.com/music/m/T2y24nzjhuyvlolsptj7zqon5qi")  # noqa: E501
+    assert GMusic.supports_track_url("https://play.google.com/music/m/T2y24nzjhuyvlolsptj7zqon5qi?t=GOAT_-_Polyphia")  # noqa: E501
     assert not GMusic.supports_track_url("https://play.google.com/music/m/")
 
-    assert YouTube.get_trackId_from_url("https://www.youtube.com/watch?v=GWOIDN-akrY"), "GWOIDN-akrY"  # supports dashes
-    assert YouTube.get_trackId_from_url("https://www.youtube.com/watch?v=9_gkpYORQLU?t=4"), "9_gkpYORQLU"
-    assert YouTube.get_trackId_from_url("https://www.youtu.be/9_gkpYORQLU?t=4"), "9_gkpYORQLU"
-    assert GMusic.get_trackId_from_url("https://play.google.com/music/m/T2y24nzjhuyvlolsptj7zqon5qi?t=GOAT_-_Polyphia"), "T2y24nzjhuyvlolsptj7zqon5qi"
+    assert YouTube.get_trackId_from_url("https://www.youtube.com/watch?v=GWOIDN-akrY"), "GWOIDN-akrY"  # supports dashes  # noqa: E501
+    assert YouTube.get_trackId_from_url("https://www.youtube.com/watch?v=9_gkpYORQLU?t=4"), "9_gkpYORQLU"  # noqa: E501
+    assert YouTube.get_trackId_from_url("https://www.youtu.be/9_gkpYORQLU?t=4"), "9_gkpYORQLU"  # noqa: E501
+    assert GMusic.get_trackId_from_url("https://play.google.com/music/m/T2y24nzjhuyvlolsptj7zqon5qi?t=GOAT_-_Polyphia"), "T2y24nzjhuyvlolsptj7zqon5qi"  # noqa: E501
 
     """Integration Tests"""
     with YouTube() as yt:
