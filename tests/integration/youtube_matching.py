@@ -5,9 +5,9 @@ import sys
 proj_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "../..")
 sys.path.append(proj_path)
 
-import handler
-from streaming import SUPPORTED_STREAMING_SERVICES
-from streaming.google import YouTube, YouTubeVideoCategory
+import handler  # noqa: E402
+from streaming import SUPPORTED_STREAMING_SERVICES  # noqa: E402
+from streaming.google import YouTube, YouTubeVideoCategory  # noqa: E402
 
 
 def test_youtube_matches():
@@ -20,8 +20,10 @@ def test_youtube_matches():
     elsewhere to find matches for these videos on other services.
     """
     with YouTube() as yt:
-        tracks = yt.search_tracks("", max_results=20, video_category_id=
-                                  YouTubeVideoCategory.MUSIC.value)
+        tracks = yt.search_tracks(
+                         "",
+                         max_results=20,
+                         video_category_id=YouTubeVideoCategory.MUSIC.value)
 
     track_matches = {}
     for track in tracks:
