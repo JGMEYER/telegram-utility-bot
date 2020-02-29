@@ -188,8 +188,11 @@ class GMusic(StreamingService):
         self._client = Mobileclient()
 
     def __enter__(self):
-        # AWS
-        if os.getenv("LAMBDA_TASK_ROOT"):
+        # AWS / Docker
+        if (
+            os.getenv("LAMBDA_TASK_ROOT")
+            and os.environ["SERVERLESS_STAGE"] != "local"
+        ):
             cred_path = os.path.join(
                 os.environ["LAMBDA_TASK_ROOT"], "secrets", GMusic.CRED_FILE
             )
