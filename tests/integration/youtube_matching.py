@@ -1,13 +1,8 @@
-import os
 import sys
 
-# add project modules to path so we can import them
-proj_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "../..")
-sys.path.append(proj_path)
-
-import handler  # noqa: E402
-from streaming import SUPPORTED_STREAMING_SERVICES  # noqa: E402
-from streaming.google import YouTube, YouTubeVideoCategory  # noqa: E402
+import handler
+from streaming import SUPPORTED_STREAMING_SERVICES
+from streaming.google import YouTube, YouTubeVideoCategory
 
 
 def test_youtube_matches():
@@ -21,14 +16,16 @@ def test_youtube_matches():
     """
     with YouTube() as yt:
         tracks = yt.search_tracks(
-                         "",
-                         max_results=20,
-                         video_category_id=YouTubeVideoCategory.MUSIC.value)
+            "",
+            max_results=20,
+            video_category_id=YouTubeVideoCategory.MUSIC.value,
+        )
 
     track_matches = {}
     for track in tracks:
-        similar_tracks = handler.get_similar_tracks_for_original_track(YouTube,
-                                                                       track)
+        similar_tracks = handler.get_similar_tracks_for_original_track(
+            YouTube, track
+        )
         track_matches[track.searchable_name] = similar_tracks
 
     missing_msgs = []
@@ -37,11 +34,13 @@ def test_youtube_matches():
             if svc is YouTube:
                 continue
             if svc.__name__ not in matches.keys():
-                missing_msgs.append(f"\"{track_src_name}\" is missing result "
-                                    f"for {svc.__name__}")
+                missing_msgs.append(
+                    f'"{track_src_name}" is missing result '
+                    f"for {svc.__name__}"
+                )
 
     if missing_msgs:
-        print('\n'.join(missing_msgs))
+        print("\n".join(missing_msgs))
         sys.exit(1)
 
 

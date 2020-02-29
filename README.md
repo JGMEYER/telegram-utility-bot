@@ -83,12 +83,13 @@ issue on GitHub for clarification questions or open a PR if you have a fix.
 
 Follow the steps below to setup your environment. Check out each tool's corresponding sections for additional instructions
 
-1. Create a new path/file `secrets/env`
+1. Create a new path/file "./secrets/env"
 1. Setup your [AWS account](https://aws.amazon.com/)
 1. Install and run [Docker](https://www.docker.com/)
-1. Install pipenv: `$ brew install pipenv`
+1. Install pipenv: `brew install pipenv`
+1. Install pre-commit hooks: `pipenv run pre-commit install`
 1. Setup serverless
-1. Setup the environment: `$ source setup`
+1. Setup the environment: `source setup`
 
 ### AWS Setup
 

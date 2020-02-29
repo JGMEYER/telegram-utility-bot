@@ -32,8 +32,8 @@ def request_token():
     client_credentials = f"{client_id}:{client_secret}"
     encoded_credentials = base64.b64encode(client_credentials.encode())
 
-    headers = {'Authorization': f'Basic {encoded_credentials.decode()}'}
-    data = {'grant_type': 'client_credentials'}
+    headers = {"Authorization": f"Basic {encoded_credentials.decode()}"}
+    data = {"grant_type": "client_credentials"}
     try:
         response = requests.post(AUTHORIZE_URL, headers=headers, data=data)
         response.raise_for_status()
@@ -42,7 +42,7 @@ def request_token():
         return None
 
     content = json.loads(response.content)
-    return SpotifyToken(content['token_type'], content['access_token'])
+    return SpotifyToken(content["token_type"], content["access_token"])
 
 
 class SpotifyTrack(StreamingServiceTrack):
@@ -59,14 +59,15 @@ class SpotifyTrack(StreamingServiceTrack):
     def share_link(self):
         """WARNING: This is not going through an API and is subject to break"""
         return (
-            self.url if self.url
+            self.url
+            if self.url
             else f"https://open.spotify.com/track/{self.id}"
         )
 
 
 class Spotify(StreamingService):
     VALID_TRACK_URL_PATTERNS = [
-        r'https://open.spotify.com/track/(?P<trackId>\w+)\??.*',
+        r"https://open.spotify.com/track/(?P<trackId>\w+)\??.*",
     ]
 
     def __enter__(self):
@@ -78,7 +79,7 @@ class Spotify(StreamingService):
 
     def get_track_from_trackId(self, trackId):
         track_url = urljoin(BASE_API_URL, f"tracks/{trackId}")
-        headers = {'Authorization': str(self._token)}
+        headers = {"Authorization": str(self._token)}
         try:
             response = requests.get(track_url, headers=headers)
             response.raise_for_status()
@@ -88,21 +89,24 @@ class Spotify(StreamingService):
 
         content = json.loads(response.content)
         if content:
-            return SpotifyTrack(content['name'],
-                                content['artists'][0]['name'],
-                                trackId)
+            return SpotifyTrack(
+                content["name"], content["artists"][0]["name"], trackId
+            )
         else:
             return None
 
     def search_tracks(self, q, max_results=5):
         search_url = urljoin(BASE_API_URL, "search")
-        headers = {'Authorization': str(self._token),
-                   'Accept': 'application/json',
-                   'Content-Type': 'application/json'}
-        params = {'q': q, 'type': 'track', 'limit': 1}
+        headers = {
+            "Authorization": str(self._token),
+            "Accept": "application/json",
+            "Content-Type": "application/json",
+        }
+        params = {"q": q, "type": "track", "limit": 1}
         try:
-            search_response = requests.get(search_url, headers=headers,
-                                           params=params)
+            search_response = requests.get(
+                search_url, headers=headers, params=params
+            )
             search_response.raise_for_status()
         except Exception:
             logging.error("Searching Spotify track", exc_info=True)
@@ -110,12 +114,12 @@ class Spotify(StreamingService):
         search_results = json.loads(search_response.content)
 
         tracks = []
-        for search_result in search_results['tracks']['items']:
+        for search_result in search_results["tracks"]["items"]:
             track = SpotifyTrack(
-                search_result['name'],
-                search_result['artists'][0]['name'],  # best guess
-                search_result['id'],
-                search_result['external_urls']['spotify'],
+                search_result["name"],
+                search_result["artists"][0]["name"],  # best guess
+                search_result["id"],
+                search_result["external_urls"]["spotify"],
             )
             tracks.append(track)
         return tracks
@@ -123,11 +127,17 @@ class Spotify(StreamingService):
 
 if __name__ == "__main__":
     """Unit Tests"""
-    assert Spotify.supports_track_url("https://open.spotify.com/track/3h3pOvw6hjOvZxRUseB7h9")  # noqa: E501
-    assert Spotify.supports_track_url("https://open.spotify.com/track/3h3pOvw6hjOvZxRUseB7h9?si=Ci-fm4N2TYq7kKlJANDnhA")  # noqa: E501
+    assert Spotify.supports_track_url(
+        "https://open.spotify.com/track/3h3pOvw6hjOvZxRUseB7h9"
+    )
+    assert Spotify.supports_track_url(
+        "https://open.spotify.com/track/3h3pOvw6hjOvZxRUseB7h9?si=Ci-fm4N2TYq7kKlJANDnhA"  # noqa: E501
+    )
     assert not Spotify.supports_track_url("https://open.spotify.com/track/")
 
-    assert Spotify.get_trackId_from_url("https://open.spotify.com/track/3h3pOvw6hjOvZxRUseB7h9?si=Ci-fm4N2TYq7kKlJANDnhA"), "3h3pOvw6hjOvZxRUseB7h9"  # noqa: E501
+    assert Spotify.get_trackId_from_url(
+        "https://open.spotify.com/track/3h3pOvw6hjOvZxRUseB7h9?si=Ci-fm4N2TYq7kKlJANDnhA"  # noqa: E501
+    ), "3h3pOvw6hjOvZxRUseB7h9"
 
     """Integration Tests"""
     with Spotify() as spotify:

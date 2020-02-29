@@ -32,7 +32,7 @@ class StreamingService(object, metaclass=ABCMeta):
         for pattern in cls.VALID_TRACK_URL_PATTERNS:
             match = re.search(pattern, url)
             if match:
-                return match.group('trackId')
+                return match.group("trackId")
 
     @abstractmethod
     def get_track_from_trackId(self, trackId):
@@ -54,8 +54,10 @@ class StreamingService(object, metaclass=ABCMeta):
 
 class StreamingServiceTrack(metaclass=ABCMeta):
     def __str__(self):
-        return (f"{self.__class__.__name__}: '{self.name}' - {self.artist} "
-                f"({self.id})")
+        return (
+            f"{self.__class__.__name__}: '{self.name}' - {self.artist} "
+            f"({self.id})"
+        )
 
     @abstractproperty
     def name(self):
@@ -80,5 +82,6 @@ class StreamingServiceTrack(metaclass=ABCMeta):
 
     def similarity_ratio(self, other_track):
         """Returns ratio of similarity between track names"""
-        return SequenceMatcher(None, self.searchable_name,
-                               other_track.searchable_name).ratio()
+        return SequenceMatcher(
+            None, self.searchable_name, other_track.searchable_name
+        ).ratio()
