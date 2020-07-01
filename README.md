@@ -274,9 +274,15 @@ Send requests in a new terminal tab like:
 curl --header "Accept: application/json" --header "Content-Type: application/json" --request POST --data '{"alerter": "user"}' localhost:3000/alert
 ```
 
-### Unit/integration testing
+### Unit tests
 
-I've included unit and integration tests in the `if __name__ == '__main__'` clause of tested classes. This was just a stopgap to test the code while iterating quickly. It's as easy as:
+```bash
+pipenv run pytest
+```
+
+### Integration tests
+
+I've included integration tests in the `if __name__ == '__main__'` clause of tested classes. This is just a stopgap to test the code while iterating quickly. It's as easy as:
 
 ```bash
 pipenv run python {file}.py

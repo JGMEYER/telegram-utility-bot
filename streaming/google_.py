@@ -11,6 +11,10 @@ from gmusicapi import Mobileclient
 
 from streaming import StreamingService, StreamingServiceTrack
 
+"""File for Google-owned music clients. Specifically named to avoid conflicts
+with "google" packages.
+"""
+
 # Log all request/response headers and bodies
 # import httplib2
 # httplib2.debuglevel = 4
@@ -235,41 +239,6 @@ class GMusic(StreamingService):
 
 
 if __name__ == "__main__":
-    """Unit Tests"""
-    assert YouTube.supports_track_url(
-        "https://www.youtube.com/watch?v=GWOIDN-akrY"
-    )
-    assert YouTube.supports_track_url(
-        "https://www.youtube.com/watch?v=9_gkpYORQLU"
-    )
-    assert YouTube.supports_track_url(
-        "https://www.youtube.com/watch?v=9_gkpYORQLU?t=4"
-    )
-    assert not YouTube.supports_track_url("https://www.youtube.com/")
-    assert YouTube.supports_track_url("https://www.youtu.be/9_gkpYORQLU")
-    assert YouTube.supports_track_url("https://www.youtu.be/9_gkpYORQLU?t=4")
-    assert not YouTube.supports_track_url("https://www.youtu.be/")
-    assert GMusic.supports_track_url(
-        "https://play.google.com/music/m/T2y24nzjhuyvlolsptj7zqon5qi"
-    )
-    assert GMusic.supports_track_url(
-        "https://play.google.com/music/m/T2y24nzjhuyvlolsptj7zqon5qi?t=GOAT_-_Polyphia"  # noqa: E501
-    )
-    assert not GMusic.supports_track_url("https://play.google.com/music/m/")
-
-    assert YouTube.get_trackId_from_url(
-        "https://www.youtube.com/watch?v=GWOIDN-akrY"
-    ), "GWOIDN-akrY"
-    assert YouTube.get_trackId_from_url(
-        "https://www.youtube.com/watch?v=9_gkpYORQLU?t=4"
-    ), "9_gkpYORQLU"
-    assert YouTube.get_trackId_from_url(
-        "https://www.youtu.be/9_gkpYORQLU?t=4"
-    ), "9_gkpYORQLU"
-    assert GMusic.get_trackId_from_url(
-        "https://play.google.com/music/m/T2y24nzjhuyvlolsptj7zqon5qi?t=GOAT_-_Polyphia"  # noqa: E501
-    ), "T2y24nzjhuyvlolsptj7zqon5qi"
-
     """Integration Tests"""
     with YouTube() as yt:
         track = yt.search_one_track("G.o.a.t polyphia")
