@@ -126,19 +126,6 @@ class Spotify(StreamingService):
 
 
 if __name__ == "__main__":
-    """Unit Tests"""
-    assert Spotify.supports_track_url(
-        "https://open.spotify.com/track/3h3pOvw6hjOvZxRUseB7h9"
-    )
-    assert Spotify.supports_track_url(
-        "https://open.spotify.com/track/3h3pOvw6hjOvZxRUseB7h9?si=Ci-fm4N2TYq7kKlJANDnhA"  # noqa: E501
-    )
-    assert not Spotify.supports_track_url("https://open.spotify.com/track/")
-
-    assert Spotify.get_trackId_from_url(
-        "https://open.spotify.com/track/3h3pOvw6hjOvZxRUseB7h9?si=Ci-fm4N2TYq7kKlJANDnhA"  # noqa: E501
-    ), "3h3pOvw6hjOvZxRUseB7h9"
-
     """Integration Tests"""
     with Spotify() as spotify:
         track = spotify.search_one_track("G.o.a.t polyphia")

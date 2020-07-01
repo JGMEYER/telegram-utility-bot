@@ -1,6 +1,6 @@
 from unittest import TestCase
 
-from ..google_clients import GMusic, YouTube
+from ..google_ import GMusic, YouTube
 
 
 class TestYouTube(TestCase):
