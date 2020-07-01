@@ -19,6 +19,7 @@ wheel = "*"
 gmusicapi = "*"
 pre-commit = "*"
 black = "*"
+ytmusicapi = "*"
 
 [requires]
 python_version = "3.6"
