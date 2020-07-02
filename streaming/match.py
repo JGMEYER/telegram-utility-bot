@@ -4,6 +4,7 @@ from typing import Dict
 
 from streaming import (
     SUPPORTED_STREAMING_SERVICES,
+    StreamingServiceActionNotSupportedError,
     StreamingServiceTrack,
     get_streaming_service_for_url,
 )
@@ -77,6 +78,12 @@ def get_similar_tracks_from_urls(urls, include_original=False):
             try:
                 with svc() as svc_client:
                     original_track = svc_client.get_track_from_trackId(trackId)
+            except StreamingServiceActionNotSupportedError:
+                logging.warning(
+                    "Client does not support get_track_from_trackId",
+                    exc_info=True,
+                )
+                continue
             except Exception:
                 logging.error("Getting track from track id", exc_info=True)
                 continue
