@@ -1,6 +1,4 @@
-import html
 import re
-from difflib import SequenceMatcher
 
 from ytmusicapi import YTMusic as YTMusicClient
 
