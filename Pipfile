@@ -6,6 +6,7 @@ verify_ssl = true
 [dev-packages]
 flake8 = "*"
 black = "==19.10b0"
+pytest = "*"
 
 [packages]
 requests = "*"
@@ -19,6 +20,7 @@ wheel = "*"
 gmusicapi = "*"
 pre-commit = "*"
 black = "*"
+ytmusicapi = "*"
 
 [requires]
 python_version = "3.6"

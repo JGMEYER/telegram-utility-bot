@@ -1,8 +1,8 @@
 # Ideally, this wouldn't be exported with the module
 from .streaming import StreamingService, StreamingServiceTrack  # noqa: F401
 
-from .google import YouTube, YouTubeTrack  # noqa: F401
-from .google import GMusic, GMusicTrack  # noqa: F401
+from .google_ import YouTube, YouTubeTrack  # noqa: F401
+from .google_ import GMusic, GMusicTrack  # noqa: F401
 from .spotify import Spotify, SpotifyTrack  # noqa: F401
 
 SUPPORTED_STREAMING_SERVICES = StreamingService.__subclasses__()
