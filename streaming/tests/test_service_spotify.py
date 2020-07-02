@@ -1,6 +1,6 @@
 from unittest import TestCase
 
-from ..spotify import Spotify
+from ..service_spotify import Spotify
 
 
 class TestSpotify(TestCase):

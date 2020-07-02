@@ -4,6 +4,7 @@ from typing import Dict
 
 from streaming import (
     SUPPORTED_STREAMING_SERVICES,
+    StreamingServiceActionNotSupportedError,
     StreamingServiceTrack,
     get_streaming_service_for_url,
 )
@@ -49,9 +50,8 @@ def get_mirror_links_message(urls):
             msg += f"{track.searchable_name}:\n"
             msg += " | ".join(
                 [
-                    f"[{svc_name}]({t.share_link()})"
+                    f"[{svc_name}]({t.share_link()})" if t else f"{svc_name}"
                     for svc_name, t in sorted(track_matches.items())
-                    if t
                 ]
             )
 
@@ -77,6 +77,12 @@ def get_similar_tracks_from_urls(urls, include_original=False):
             try:
                 with svc() as svc_client:
                     original_track = svc_client.get_track_from_trackId(trackId)
+            except StreamingServiceActionNotSupportedError:
+                logging.warning(
+                    "Client does not support get_track_from_trackId",
+                    exc_info=True,
+                )
+                continue
             except Exception:
                 logging.error("Getting track from track id", exc_info=True)
                 continue
@@ -117,11 +123,15 @@ def get_similar_tracks_for_original_track(track_svc, original_track):
             if tracks_are_similar(original_track, track):
                 similar_tracks[svc.__name__] = track
             else:
+                similar_tracks[svc.__name__] = None
                 logging.warning(
                     f'Track title "{track.searchable_name}" for '
                     f"svc {svc.__name__} is not similar enough to "
                     f'"{original_track.searchable_name}".'
                 )
+        else:
+            similar_tracks[svc.__name__] = None
+
     return similar_tracks
 
 

@@ -3,6 +3,12 @@ from abc import ABCMeta, abstractmethod, abstractproperty
 from difflib import SequenceMatcher
 
 
+class StreamingServiceActionNotSupportedError(Exception):
+    """Error raised when a StreamingService cannot support an action"""
+
+    pass
+
+
 class StreamingService(object, metaclass=ABCMeta):
     @abstractproperty
     def VALID_TRACK_URL_PATTERNS(self):
