@@ -50,9 +50,8 @@ def get_mirror_links_message(urls):
             msg += f"{track.searchable_name}:\n"
             msg += " | ".join(
                 [
-                    f"[{svc_name}]({t.share_link()})"
+                    f"[{svc_name}]({t.share_link()})" if t else f"{svc_name}"
                     for svc_name, t in sorted(track_matches.items())
-                    if t
                 ]
             )
 
@@ -124,11 +123,15 @@ def get_similar_tracks_for_original_track(track_svc, original_track):
             if tracks_are_similar(original_track, track):
                 similar_tracks[svc.__name__] = track
             else:
+                similar_tracks[svc.__name__] = None
                 logging.warning(
                     f'Track title "{track.searchable_name}" for '
                     f"svc {svc.__name__} is not similar enough to "
                     f'"{original_track.searchable_name}".'
                 )
+        else:
+            similar_tracks[svc.__name__] = None
+
     return similar_tracks
 
 
