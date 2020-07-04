@@ -12,8 +12,6 @@ logging.basicConfig(stream=sys.stdout, level=logging.INFO)
 
 
 TELEGRAM_TOKEN = getenv("TELEGRAM_TOKEN")
-TELEGRAM_BASE_URL = f"https://api.telegram.org/bot{TELEGRAM_TOKEN}/"
-
 TELEGRAM_CHAT_ID = getenv("TELEGRAM_CHAT_ID")
 TELEGRAM_ALERT_GROUP = json.loads(os.environ["TELEGRAM_ALERT_GROUP"])
 
@@ -59,7 +57,7 @@ def send_alert(event, context):
         f"\n"
         f"{', '.join(mentions)}"
     )
-    return telegram.send_message(TELEGRAM_BASE_URL, TELEGRAM_CHAT_ID, response)
+    return telegram.send_message(TELEGRAM_TOKEN, TELEGRAM_CHAT_ID, response)
 
 
 def handle_webhook_update(event, context):
@@ -106,7 +104,7 @@ def handle_webhook_update(event, context):
         response_text = get_mirror_links_message(urls)
         if text:
             response = telegram.send_message(
-                TELEGRAM_BASE_URL,
+                TELEGRAM_TOKEN,
                 TELEGRAM_CHAT_ID,
                 response_text,
                 disable_link_previews=True,
