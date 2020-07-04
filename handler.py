@@ -140,39 +140,3 @@ def send_message(text, chat_id, disable_link_previews=False):
         return {"statusCode": 500}
 
     return {"statusCode": 200}
-
-
-if __name__ == "__main__":
-    # Integration Tests
-    text = (
-        "Hey! Check out these tracks!\n"
-        "https://play.google.com/music/m/Tkqhlm2ssr4y2s76wfcjahkv3b4\n"
-        "https://open.spotify.com/track/1wnq9TwifJ9ipLUFsm8vKx?si=IUytRONLTYWxJz3g5L9y8g\n"  # noqa: E501
-        "https://youtu.be/_kvZpVMY89c\n"
-        "https://youtu.be/srre8i83vL8"  # non-music link
-    )
-    event = {
-        "body": json.dumps(
-            {
-                "update_id": 10000,
-                "message": {
-                    "date": 99999999999,
-                    "chat": {
-                        "last_name": "Test Lastname",
-                        "id": 1111111,
-                        "first_name": "Test",
-                        "username": "Test",
-                    },
-                    "message_id": 1365,
-                    "from": {
-                        "last_name": "Test Lastname",
-                        "id": 1111111,
-                        "first_name": "Test",
-                        "username": "Test",
-                    },
-                    "text": text,
-                },
-            }
-        )
-    }
-    handle_webhook_update(event, None)
