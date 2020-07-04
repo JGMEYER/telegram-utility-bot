@@ -289,7 +289,7 @@ pipenv run pytest -m 'not integ'
 ### Integration tests
 
 ```bash
-pipenv run pytest -m 'integ'
+pipenv run pytest -m 'integ' --log-level=WARNING
 ```
 
 ## Test Commands

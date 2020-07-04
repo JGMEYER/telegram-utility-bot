@@ -123,14 +123,3 @@ class Spotify(StreamingService):
             )
             tracks.append(track)
         return tracks
-
-
-if __name__ == "__main__":
-    """Integration Tests"""
-    with Spotify() as spotify:
-        track = spotify.search_one_track("G.o.a.t polyphia")
-        print(track)
-        trackId = Spotify.get_trackId_from_url(track.share_link())
-        print(trackId)
-        track = spotify.get_track_from_trackId(trackId)
-        print(track)

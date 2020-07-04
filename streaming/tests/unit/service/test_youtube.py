@@ -1,6 +1,6 @@
 from unittest import TestCase
 
-from ...service.youtube import YouTube
+from ....service.youtube import YouTube
 
 
 class TestYouTube(TestCase):

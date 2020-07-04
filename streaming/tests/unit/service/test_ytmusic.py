@@ -1,6 +1,6 @@
 from unittest import TestCase
 
-from ...service.ytmusic import YTMusic
+from ....service.ytmusic import YTMusic
 
 
 class TestYTMusic(TestCase):

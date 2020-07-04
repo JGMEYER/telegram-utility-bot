@@ -32,6 +32,9 @@ class MemoryCache(Cache):
 class YouTubeTrack(StreamingServiceTrack):
     """YouTube song track"""
 
+    # Symbols that may lie between an artist and track title
+    SEARCHABLE_NAME_DIVIDERS = {"-", "|"}
+
     # Regexp to exclude from searchable video names
     SEARCHABLE_EXCLUDE_EXPRESSIONS = [
         r"\s\(?(HD\s?)?((with |w\/ )?lyrics)?\)?$",  # ()'s
@@ -75,10 +78,7 @@ class YouTubeTrack(StreamingServiceTrack):
             None, self.searchable_name, other_track.searchable_name
         ).ratio()
 
-        # symbols that may lie between an artist and track title
-        title_dividers = {"-", "|"}
-
-        for div in title_dividers:
+        for div in self.SEARCHABLE_NAME_DIVIDERS:
             splits = [
                 idx
                 for idx, chr in enumerate(self.searchable_name)
@@ -163,15 +163,3 @@ class YouTube(StreamingService):
                 )
                 tracks.append(track)
         return tracks
-
-
-if __name__ == "__main__":
-    """Integration Tests"""
-    with YouTube() as yt:
-        track = yt.search_one_track("G.o.a.t polyphia")
-        print(track)
-        trackId = YouTube.get_trackId_from_url(track.share_link())
-        print(trackId)
-        track = yt.get_track_from_trackId(trackId)
-        print(track)
-        print(track.share_link())
