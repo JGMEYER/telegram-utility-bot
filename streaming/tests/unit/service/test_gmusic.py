@@ -1,6 +1,6 @@
 from unittest import TestCase
 
-from ..service_gmusic import GMusic
+from ....service.gmusic import GMusic
 
 
 class TestGMusic(TestCase):

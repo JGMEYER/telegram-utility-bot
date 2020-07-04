@@ -80,18 +80,3 @@ class YTMusic(StreamingService):
             )
             tracks.append(ytm_track)
         return tracks
-
-
-if __name__ == "__main__":
-    """Integration Tests"""
-    with YTMusic() as ytm:
-        track = ytm.search_one_track("G.o.a.t polyphia")
-        print(track)
-        trackId = YTMusic.get_trackId_from_url(track.share_link())
-        print(trackId)
-        try:
-            track = ytm.get_track_from_trackId(trackId)
-            print(track)
-            print(track.share_link())
-        except StreamingServiceActionNotSupportedError:
-            print("StreamingServiceActionNotSupportedError")

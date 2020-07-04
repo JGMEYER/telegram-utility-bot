@@ -79,15 +79,3 @@ class GMusic(StreamingService):
             )
             tracks.append(gm_track)
         return tracks
-
-
-if __name__ == "__main__":
-    """Integration Tests"""
-    with GMusic() as gm:
-        track = gm.search_one_track("G.o.a.t polyphia")
-        print(track)
-        trackId = GMusic.get_trackId_from_url(track.share_link())
-        print(trackId)
-        track = gm.get_track_from_trackId(trackId)
-        print(track)
-        print(track.share_link())

@@ -89,7 +89,7 @@ Follow the steps below to setup your environment. Check out each tool's correspo
 1. Install pipenv: `brew install pipenv`
 1. Install pre-commit hooks: `pipenv run pre-commit install`
 1. Setup serverless
-1. Setup the environment: `source setup`
+1. Setup the environment: `. setup`
 
 ### AWS Setup
 
@@ -119,7 +119,7 @@ Create two bots by messaging @BotFather in Telegram: one for DEV, one for PROD. 
 Set the tokens you get from @BotFather to `$TELEGRAM_TOKEN_{stage}` in secrets/env, then source:
 
 ```bash
-source secrets/env
+. secrets/env
 ```
 
 Then run the following to set up the webhook. Run this for each stage (e.g. "DEV", "PROD").
@@ -170,14 +170,14 @@ For more information on the API, check out [the docs](https://unofficial-google-
 Dev:
 
 ```bash
-source setup
+. setup
 sls deploy
 ```
 
 Prod:
 
 ```bash
-source setup
+. setup
 sls deploy --s prod
 ```
 
@@ -274,18 +274,24 @@ Send requests in a new terminal tab like:
 curl --header "Accept: application/json" --header "Content-Type: application/json" --request POST --data '{"alerter": "user"}' localhost:3000/alert
 ```
 
+### All tests
+
+```bash
+. setup
+pipenv run pytest
+```
+
 ### Unit tests
 
 ```bash
-pipenv run pytest
+pipenv run pytest -m 'not integ'
 ```
 
 ### Integration tests
 
-I've included integration tests in the `if __name__ == '__main__'` clause of tested classes. This is just a stopgap to test the code while iterating quickly. It's as easy as:
-
 ```bash
-pipenv run python {file}.py
+. setup
+pipenv run pytest -m 'integ' --log-level=WARNING
 ```
 
 ## Test Commands
