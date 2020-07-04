@@ -15,7 +15,7 @@ def getenv(env):
     try:
         return os.environ[env]
     except KeyError:
-        logging.warn(f"{env} missing, defaulting to {env}_DEV")
+        logging.warning(f"{env} missing, defaulting to {env}_DEV")
         return os.environ[env + "_DEV"]
 
 
