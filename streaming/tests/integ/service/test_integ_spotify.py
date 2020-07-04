@@ -8,7 +8,8 @@ class TestIntegSpotify(TestCase):
     """Integration tests for Spotify"""
 
     @pytest.mark.integ
-    def test_spotify_fetch(self):
+    def test_spotify_track_fetch(self):
+        """Test ability to fetch tracks"""
         with Spotify() as spotify:
             track = spotify.search_one_track("G.O.A.T. Polyphia")
             self.assertEqual(track.name.lower(), "g.o.a.t.")

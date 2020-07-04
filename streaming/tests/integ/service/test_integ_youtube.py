@@ -15,7 +15,8 @@ class TestIntegYouTube(TestCase):
             ]
 
     @pytest.mark.integ
-    def test_spotify_fetch(self):
+    def test_youtube_track_fetch(self):
+        """Test ability to fetch tracks"""
         with YouTube() as yt:
             track = yt.search_one_track("G.O.A.T. Polyphia")
             self.assertIn(

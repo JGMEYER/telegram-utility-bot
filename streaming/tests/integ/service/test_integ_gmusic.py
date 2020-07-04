@@ -9,6 +9,7 @@ class TestIntegGMusic(TestCase):
 
     @pytest.mark.integ
     def test_gmusic_fetch(self):
+        """Test ability to fetch tracks"""
         with GMusic() as gm:
             track = gm.search_one_track("G.O.A.T. Polyphia")
             self.assertEqual(track.name.lower(), "g.o.a.t.")

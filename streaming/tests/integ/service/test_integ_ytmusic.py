@@ -10,6 +10,7 @@ class TestIntegYTMusic(TestCase):
 
     @pytest.mark.integ
     def test_ytmusic_fetch(self):
+        """Test ability to fetch tracks"""
         with YTMusic() as ytm:
             track = ytm.search_one_track("G.O.A.T. Polyphia")
             self.assertEqual(track.name.lower(), "g.o.a.t.")
