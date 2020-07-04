@@ -16,7 +16,7 @@ class TestIntegHandler(TestCase):
         Posts message to TELEGRAM_CHAT_ID.
         """
         text = (
-            "Hey! Check out these tracks!\n"
+            "handler.handle_webhook_update() integration test:\n"
             "https://play.google.com/music/m/Tkqhlm2ssr4y2s76wfcjahkv3b4\n"
             "https://open.spotify.com/track/1wnq9TwifJ9ipLUFsm8vKx?si=IUytRONLTYWxJz3g5L9y8g\n"  # noqa: E501
             "https://youtu.be/_kvZpVMY89c\n"
