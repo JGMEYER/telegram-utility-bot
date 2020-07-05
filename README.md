@@ -57,6 +57,10 @@ export TELEGRAM_CHAT_ID_PROD=
 export TELEGRAM_TOKEN_DEV=
 export TELEGRAM_TOKEN_PROD=
 
+# logging (recommend same credentials as DEV chat if no other group setup)
+export TELEGRAM_LOG_CHAT_ID_DEV=
+export TELEGRAM_LOG_TOKEN=
+
 # specific to telegram functionality
 # format like JSON e.g. ='["user1", "user2", "user3"]'
 export TELEGRAM_ALERT_GROUP=

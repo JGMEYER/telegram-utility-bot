@@ -1,15 +1,11 @@
 import logging
-import os
 
 from . import telegram
+from .env import getenv
 
 
 def setup_logger(logger_name):
     log = logging.getLogger(logger_name)
-
-    # TODO this will break in prod / dev
-    TELEGRAM_TOKEN_DEV = os.environ["TELEGRAM_TOKEN_DEV"]
-    TELEGRAM_CHAT_ID_DEV = os.environ["TELEGRAM_CHAT_ID_DEV"]
 
     formatter = logging.Formatter("%(asctime)s : %(message)s")
 
@@ -20,13 +16,12 @@ def setup_logger(logger_name):
     log.addHandler(ch)
 
     # Create Telegram handler
-    th = TelegramLogHandler(TELEGRAM_TOKEN_DEV, TELEGRAM_CHAT_ID_DEV)
+    telegram_log_token = getenv("TELEGRAM_LOG_TOKEN")
+    telegram_log_chat_id = getenv("TELEGRAM_LOG_CHAT_ID")
+    th = TelegramLogHandler(telegram_log_token, telegram_log_chat_id)
     th.setLevel(logging.WARNING)
     th.setFormatter(formatter)
     log.addHandler(th)
-
-    # TODO rm
-    log.info(os.environ.get("TELEGRAM_TOKEN"))
 
 
 class TelegramLogHandler(logging.StreamHandler):

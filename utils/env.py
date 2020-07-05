@@ -1,11 +1,11 @@
 import logging
 import os
 
-from .log import setup_logger
-
 """Helpful functions for managing environment"""
 
-setup_logger(__name__)
+# Do not use general logger!
+#   1. log.py imports env - infinite import loop
+logging.basicConfig(level=logging.INFO)
 log = logging.getLogger(__name__)
 
 
