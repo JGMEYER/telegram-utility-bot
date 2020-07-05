@@ -9,12 +9,21 @@ logging.basicConfig(level=logging.INFO)
 log = logging.getLogger(__name__)
 
 
-def getenv(env):
+def getenv(var):
     """HACK get environment variable, i.e. use dev for running local
     unit/integration tests
     """
+    if var in os.environ:
+        return os.environ[var]
+
+    log.warning(f"{var} missing, defaulting to {var}_DEV")
+
     try:
-        return os.environ[env]
+        return os.environ[f"{var}_DEV"]
     except KeyError:
-        log.warning(f"{env} missing, defaulting to {env}_DEV")
-        return os.environ[env + "_DEV"]
+        log.error(
+            f"Failed to fetch {var}_DEV when defaulting to DEV. Make sure "
+            "this variable is defined and you've refreshed the environment.",
+            exc_info=True,
+        )
+        raise

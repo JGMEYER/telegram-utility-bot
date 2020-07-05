@@ -21,4 +21,3 @@ class TestIntegSpotify(TestCase):
             track = spotify.get_track_from_trackId(trackId)
             self.assertEqual(track.name.lower(), "g.o.a.t.")
             self.assertEqual(track.artist.lower(), "polyphia")
-        self.assertTrue(False)  # TODO RM

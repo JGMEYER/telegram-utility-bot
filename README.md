@@ -281,6 +281,7 @@ curl --header "Accept: application/json" --header "Content-Type: application/jso
 ### Unit tests
 
 ```bash
+. setup
 pipenv run pytest -m 'not integ' -rf
 ```
 
