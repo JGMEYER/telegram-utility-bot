@@ -141,7 +141,6 @@ class YouTube(StreamingService):
         return track
 
     def search_tracks(self, q, max_results=5, video_category_id=None):
-        print([q, "id,snippet", "video", max_results, video_category_id])
         search_response = (
             self._client.search()
             .list(

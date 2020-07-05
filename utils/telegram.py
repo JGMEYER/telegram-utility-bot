@@ -2,11 +2,20 @@ import logging
 import requests
 from urllib.parse import urljoin
 
+# Do not use general logger!
+#   1. log.py imports telegram - infinite import loop
+#   2. log.py logs to telegram - sending telegram message on failed telegram
+#      message can create infinite messaging loop
+logging.basicConfig(level=logging.INFO)
 log = logging.getLogger(__name__)
 
 
+def get_api_url(token):
+    return f"https://api.telegram.org/bot{token}/"
+
+
 def send_message(
-    base_url, chat_id, text, parse_mode="markdown", disable_link_previews=False
+    token, chat_id, text, parse_mode="markdown", disable_link_previews=False
 ):
     """Send message to telegram `chat_id`"""
     try:
@@ -19,6 +28,8 @@ def send_message(
     except Exception:
         log.error("Encoding Telegram message", exc_info=True)
         return {"statusCode": 500, "body": "Failed to encode Telegram message"}
+
+    base_url = get_api_url(token)
 
     try:
         url = urljoin(base_url, "sendMessage")
@@ -43,4 +54,4 @@ def send_message(
             "body": "Failed to send Telegram message - RequestException",
         }
 
-    return {"statusCode": 200}
+    return {"statusCode": 200, "body": "ok"}
