@@ -1,6 +1,6 @@
 from unittest import TestCase
 
-import telegram
+from ...utils import telegram
 
 
 class TestTelegram(TestCase):

@@ -1,12 +1,8 @@
-import logging
-
 import pytest
 from unittest import TestCase
 
-import telegram
-from util import getenv
-
-log = logging.getLogger(__name__)
+from ... import telegram
+from utils.env import getenv
 
 
 class TestIntegTelegram(TestCase):

@@ -1,8 +1,11 @@
 import logging
 import os
 
-"""File of helpful util functions"""
+from .log import setup_logger
 
+"""Helpful functions for managing environment"""
+
+setup_logger(__name__)
 log = logging.getLogger(__name__)
 
 

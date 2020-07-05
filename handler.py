@@ -2,14 +2,14 @@ import datetime
 import json
 import logging
 import os
-import sys
 
-import telegram
 from streaming.match import get_mirror_links_message, urls_in_text
-from util import getenv
+from utils import telegram
+from utils.env import getenv
+from utils.log import setup_logger
 
-logging.basicConfig(stream=sys.stdout, level=logging.INFO)
-
+setup_logger(__name__)
+log = logging.getLogger(__name__)
 
 TELEGRAM_TOKEN = getenv("TELEGRAM_TOKEN")
 TELEGRAM_CHAT_ID = getenv("TELEGRAM_CHAT_ID")
@@ -26,7 +26,7 @@ def handler(event, context):
         elif event["path"] == "/webhookUpdate":
             return handle_webhook_update(event, context)
     except Exception:
-        logging.error("Handling request", exc_info=True)
+        log.error("Handling request", exc_info=True)
         return {
             "statusCode": 500,
             "body": "Failed to handle request, reason unknown",
@@ -44,7 +44,7 @@ def send_alert(event, context):
         event_body = json.loads(event["body"])
         alerter = event_body["alerter"]
     except Exception:
-        logging.error("Processing alert request body", exc_info=True)
+        log.error("Processing alert request body", exc_info=True)
         return {
             "statusCode": 400,
             "body": "Could not process alert from request body",
@@ -65,17 +65,17 @@ def handle_webhook_update(event, context):
 
     # message edits intentionally not supported for now
     if not event_body.get("message"):
-        logging.info("Event is not a message (e.g. a message_edit). Ignore")
+        log.info("Event is not a message (e.g. a message_edit). Ignore")
         return {"statusCode": 200, "body": "ok"}
     # ignore messages without text
     elif not event_body["message"].get("text"):
-        logging.info("Event message contains no text (e.g. a sticker). Ignore")
+        log.info("Event message contains no text (e.g. a sticker). Ignore")
         return {"statusCode": 200, "body": "ok"}
 
     try:
         msg_date = event_body["message"]["date"]
     except KeyError:
-        logging.error("Parsing date from Telegram update", exc_info=True)
+        log.error("Parsing date from Telegram update", exc_info=True)
         return {
             "statusCode": 400,
             "body": "Could not parse date from Telegram update",
@@ -84,15 +84,15 @@ def handle_webhook_update(event, context):
     # avoid spamming our APIs
     timeout = 30  # seconds
     age = datetime.datetime.now().timestamp() - msg_date
-    logging.info(f"Telegram update age: {age}s")
+    log.info(f"Telegram update age: {age}s")
     if age > timeout:
-        logging.info(f"Ignoring old Telegram update")
+        log.info(f"Ignoring old Telegram update")
         return {"statusCode": 200, "body": "ok"}
 
     try:
         text = event_body["message"]["text"]
     except KeyError:
-        logging.error("Parsing text from Telegram update", exc_info=True)
+        log.error("Parsing text from Telegram update", exc_info=True)
         return {
             "statusCode": 400,
             "body": "Could not parse text from Telegram update",

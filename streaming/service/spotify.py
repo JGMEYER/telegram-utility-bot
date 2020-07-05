@@ -6,6 +6,10 @@ import requests
 from urllib.parse import urljoin
 
 from streaming import StreamingService, StreamingServiceTrack
+from utils.log import setup_logger
+
+setup_logger(__name__)
+log = logging.getLogger(__name__)
 
 BASE_API_URL = "https://api.spotify.com/v1/"
 AUTHORIZE_URL = "https://accounts.spotify.com/api/token"
@@ -38,7 +42,7 @@ def request_token():
         response = requests.post(AUTHORIZE_URL, headers=headers, data=data)
         response.raise_for_status()
     except Exception:
-        logging.error("Requesting Spotify token", exc_info=True)
+        log.error("Requesting Spotify token", exc_info=True)
         return None
 
     content = json.loads(response.content)
@@ -84,7 +88,7 @@ class Spotify(StreamingService):
             response = requests.get(track_url, headers=headers)
             response.raise_for_status()
         except Exception:
-            logging.error("Requesting Spotify track from id", exc_info=True)
+            log.error("Requesting Spotify track from id", exc_info=True)
             return None
 
         content = json.loads(response.content)
@@ -109,7 +113,7 @@ class Spotify(StreamingService):
             )
             search_response.raise_for_status()
         except Exception:
-            logging.error("Searching Spotify track", exc_info=True)
+            log.error("Searching Spotify track", exc_info=True)
             return None
         search_results = json.loads(search_response.content)
 
