@@ -15,8 +15,8 @@ class StreamingService(object, metaclass=ABCMeta):
     def VALID_TRACK_URL_PATTERNS(self):
         """List of string patterns of supported urls. Url must include matching
         group for trackId.
-        e.g. "(?P<trackId>\w+)"
-        """  # noqa: W605
+        """
+        # Include trackId match, e.g. "(?P<trackId>\w+)"  # noqa: W605
         raise NotImplementedError
 
     @abstractmethod
