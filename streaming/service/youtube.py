@@ -31,7 +31,7 @@ class YouTubeTrack(StreamingServiceTrack):
     """YouTube song track"""
 
     # Symbols that may lie between an artist and track title
-    SEARCHABLE_NAME_DIVIDERS = {"-", "|"}
+    SEARCHABLE_NAME_DIVIDERS = {"-", "|", "»"}
 
     title = None
     artist = None
