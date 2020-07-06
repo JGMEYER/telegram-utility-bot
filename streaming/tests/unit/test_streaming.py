@@ -25,27 +25,27 @@ class TestStreamingServiceTrack(TestCase):
     def test_cleaned_title(self):
         mock_sst = MockStreamingServiceTrack(None, None, None)
 
-        def _assert_cleaned(title):
+        def _assert_cleaned(title, target="Song"):
             old_title = mock_sst.title
             mock_sst.title = title
-            self.assertEqual(mock_sst.cleaned_title, "Song")
+            self.assertEqual(mock_sst.cleaned_title, target)
             mock_sst.title = old_title
 
-        # r"\s\(?(HD\s?)?((with |w\/ )?lyrics)?\)?$"
+        # r"\s\(?(HD )?((with |w\/ )?lyrics)?\)?$"
 
         _assert_cleaned("Song (HD With Lyrics)")
         _assert_cleaned("Song (HD W/ Lyrics)")
         _assert_cleaned("Song (With Lyrics)")
         _assert_cleaned("Song (W/ Lyrics)")
 
-        # r"\s\[?(HD\s?)?((with |w\/ )?lyrics)?\]?$"
+        # r"\s\[?(HD )?((with |w\/ )?lyrics)?\]?$"
 
         _assert_cleaned("Song [HD With Lyrics]")
         _assert_cleaned("Song [HD W/ Lyrics]")
         _assert_cleaned("Song [With Lyrics]")
         _assert_cleaned("Song [W/ Lyrics]")
 
-        # r"\((Official\s)?(Music\s|Lyric\s)?(Video|Movie|Audio)\)"
+        # r"\((Official )?(Music |Lyric )?(Video|Movie|Audio)\)"
 
         _assert_cleaned("Song (Official Music Video)")
         _assert_cleaned("Song (Official Music Movie)")
@@ -66,7 +66,7 @@ class TestStreamingServiceTrack(TestCase):
         _assert_cleaned("Song (Movie)")
         _assert_cleaned("Song (Audio)")
 
-        # r"\[(Official\s)?(Music\s|Lyric\s)?(Video|Movie|Audio)\]"
+        # r"\[(Official )?(Music |Lyric )?(Video|Movie|Audio)\]"
 
         _assert_cleaned("Song [Official Music Video]")
         _assert_cleaned("Song [Official Music Movie]")
@@ -87,6 +87,63 @@ class TestStreamingServiceTrack(TestCase):
         _assert_cleaned("Song [Movie]")
         _assert_cleaned("Song [Audio]")
 
+        # r"\| (Official )?(Music |Lyric )?(Video|Movie|Audio)"
+
+        _assert_cleaned("Song | Official Music Video")
+        _assert_cleaned("Song | Official Music Movie")
+        _assert_cleaned("Song | Official Music Audio")
+        _assert_cleaned("Song | Official Lyric Video")
+        _assert_cleaned("Song | Official Lyric Movie")
+        _assert_cleaned("Song | Official Lyric Audio")
+        _assert_cleaned("Song | Official Video")
+        _assert_cleaned("Song | Official Movie")
+        _assert_cleaned("Song | Official Audio")
+        _assert_cleaned("Song | Music Video")
+        _assert_cleaned("Song | Music Movie")
+        _assert_cleaned("Song | Music Audio")
+        _assert_cleaned("Song | Lyric Video")
+        _assert_cleaned("Song | Lyric Movie")
+        _assert_cleaned("Song | Lyric Audio")
+        _assert_cleaned("Song | Video")
+        _assert_cleaned("Song | Movie")
+        _assert_cleaned("Song | Audio")
+        _assert_cleaned("Song - Official Music Video")
+        _assert_cleaned("Song - Official Music Movie")
+        _assert_cleaned("Song - Official Music Audio")
+        _assert_cleaned("Song - Official Lyric Video")
+        _assert_cleaned("Song - Official Lyric Movie")
+        _assert_cleaned("Song - Official Lyric Audio")
+        _assert_cleaned("Song - Official Video")
+        _assert_cleaned("Song - Official Movie")
+        _assert_cleaned("Song - Official Audio")
+        _assert_cleaned("Song - Music Video")
+        _assert_cleaned("Song - Music Movie")
+        _assert_cleaned("Song - Music Audio")
+        _assert_cleaned("Song - Lyric Video")
+        _assert_cleaned("Song - Lyric Movie")
+        _assert_cleaned("Song - Lyric Audio")
+        _assert_cleaned("Song - Video")
+        _assert_cleaned("Song - Movie")
+        _assert_cleaned("Song - Audio")
+        _assert_cleaned("Song Official Music Video")
+        _assert_cleaned("Song Official Music Movie")
+        _assert_cleaned("Song Official Music Audio")
+        _assert_cleaned("Song Official Lyric Video")
+        _assert_cleaned("Song Official Lyric Movie")
+        _assert_cleaned("Song Official Lyric Audio")
+        _assert_cleaned("Song Official Video")
+        _assert_cleaned("Song Official Movie")
+        _assert_cleaned("Song Official Audio")
+        _assert_cleaned("Song Music Video")
+        _assert_cleaned("Song Music Movie")
+        _assert_cleaned("Song Music Audio")
+        _assert_cleaned("Song Lyric Video")
+        _assert_cleaned("Song Lyric Movie")
+        _assert_cleaned("Song Lyric Audio")
+        _assert_cleaned("Song Video")
+        _assert_cleaned("Song Movie")
+        _assert_cleaned("Song Audio")
+
         # r"\s\(.*Live( at| on| in)?.*\)"
 
         _assert_cleaned("Song (Live)")
@@ -100,6 +157,17 @@ class TestStreamingServiceTrack(TestCase):
         _assert_cleaned("Song [Live at Bonnaroo]")
         _assert_cleaned("Song [Live on Stage]")
         _assert_cleaned("Song [Recorded Live in San Francisco]")
+
+        # r"\s\| Live( at| on| in)?.*$"
+
+        _assert_cleaned("Song | Live")
+        _assert_cleaned("Song | Live at Bonnaroo")
+        _assert_cleaned("Song | Live on Stage")
+        _assert_cleaned("Song | Live on Stage | 2020")
+        _assert_cleaned(
+            "Song | Recorded Live in San Francisco",
+            "Song | Recorded Live in San Francisco",
+        )  # does not match regex
 
         # r"\s\((Original|Official)( Mix)?\)"
 
@@ -125,14 +193,29 @@ class TestStreamingServiceTrack(TestCase):
         _assert_cleaned("Song [Remaster]")
         _assert_cleaned("Song [Remastered]")
 
-        # r"\s\((Feat\.?|Featuring)\s.*\)"
+        # r"\s\| Remaster(ed)?.*$"
 
+        _assert_cleaned("Song | Remaster")
+        _assert_cleaned("Song | Remastered")
+        _assert_cleaned("Song | Remastered | 2020")
+
+        # r"\s\((Ft\.?|Feat\.?|Featuring)\s.*\)"
+
+        _assert_cleaned("Song (Ft. Calvin & Hobbes)")
         _assert_cleaned("Song (Feat Calvin & Hobbes)")
         _assert_cleaned("Song (Feat. Calvin & Hobbes)")
         _assert_cleaned("Song (Featuring Calvin & Hobbes)")
 
         # r"\s\[(Feat\.?|Featuring)\s.*\]"
 
+        _assert_cleaned("Song [Ft. Calvin & Hobbes]")
         _assert_cleaned("Song [Feat Calvin & Hobbes]")
         _assert_cleaned("Song [Feat. Calvin & Hobbes]")
         _assert_cleaned("Song [Featuring Calvin & Hobbes]")
+
+        # r"\s(Ft\.?|Feat\.?|Featuring)\s.*"
+
+        _assert_cleaned("Song Ft. Calvin & Hobbes")
+        _assert_cleaned("Song Feat Calvin & Hobbes")
+        _assert_cleaned("Song Feat. Calvin & Hobbes")
+        _assert_cleaned("Song Featuring Calvin & Hobbes")
