@@ -26,9 +26,10 @@ class TestStreamingServiceTrack(TestCase):
         mock_sst = MockStreamingServiceTrack(None, None, None)
 
         def _assert_cleaned(title):
+            old_title = mock_sst.title
             mock_sst.title = title
             self.assertEqual(mock_sst.cleaned_title, "Song")
-            mock_sst.title = None
+            mock_sst.title = old_title
 
         # r"\s\(?(HD\s?)?((with |w\/ )?lyrics)?\)?$"
 
