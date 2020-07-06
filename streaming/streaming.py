@@ -95,7 +95,6 @@ class StreamingServiceTrack(metaclass=ABCMeta):
     def id(self):
         raise NotImplementedError
 
-    # TODO lazy load or make more efficient?
     @property
     def cleaned_title(self):
         cleaned_title = html.unescape(self.title)
