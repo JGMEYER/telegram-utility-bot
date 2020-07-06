@@ -64,7 +64,6 @@ class YouTubeTrack(StreamingServiceTrack):
         the artist and track title. This method tries rearranging the video
         title to better check for a match with another track.
         """
-
         ratio = SequenceMatcher(
             None, self.searchable_name, other_track.searchable_name
         ).ratio()
