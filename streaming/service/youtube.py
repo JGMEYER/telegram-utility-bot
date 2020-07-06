@@ -46,8 +46,8 @@ class YouTubeTrack(StreamingServiceTrack):
     def searchable_name(self):
         """Overrides StreamingServiceTrack.searchable_name()
 
-        Because YouTube does not provide artist information, we use the raw
-        title for comparisons.
+        Because YouTube does not provide artist information, we use just the
+        title for comparisons, which includes both title and artist names.
         """
         return self.cleaned_title
 
