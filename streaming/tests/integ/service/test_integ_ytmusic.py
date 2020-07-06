@@ -13,7 +13,7 @@ class TestIntegYTMusic(TestCase):
         """Test ability to fetch tracks"""
         with YTMusic() as ytm:
             track = ytm.search_one_track("G.O.A.T. Polyphia")
-            self.assertEqual(track.name.lower(), "g.o.a.t.")
+            self.assertEqual(track.title.lower(), "g.o.a.t.")
             self.assertEqual(track.artist.lower(), "polyphia")
 
             # trackId may change, not worth testing this

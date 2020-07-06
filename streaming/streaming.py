@@ -1,3 +1,4 @@
+import html
 import re
 from abc import ABCMeta, abstractmethod, abstractproperty
 from difflib import SequenceMatcher
@@ -14,20 +15,23 @@ class StreamingService(object, metaclass=ABCMeta):
     def VALID_TRACK_URL_PATTERNS(self):
         """List of string patterns of supported urls. Url must include matching
         group for trackId.
-        e.g. "(?P<trackId>\w+)"
-        """  # noqa: W605
+        """
+        # Include trackId match, e.g. "(?P<trackId>\w+)"  # noqa: W605
         raise NotImplementedError
 
     @abstractmethod
     def __enter__(self):
+        """Use this to instantiate a client or handle other setup"""
         pass
 
     @abstractmethod
     def __exit__(self, *args):
+        """Use this to close a client or handle other cleanup"""
         pass
 
     @classmethod
     def supports_track_url(cls, url):
+        """Returns whether a url is handled by this service"""
         for pattern in cls.VALID_TRACK_URL_PATTERNS:
             if re.search(pattern, url):
                 return True
@@ -35,6 +39,7 @@ class StreamingService(object, metaclass=ABCMeta):
 
     @classmethod
     def get_trackId_from_url(cls, url):
+        """Retrieves the trackId from a url handled by this service"""
         for pattern in cls.VALID_TRACK_URL_PATTERNS:
             match = re.search(pattern, url)
             if match:
@@ -47,13 +52,13 @@ class StreamingService(object, metaclass=ABCMeta):
 
     @abstractmethod
     def search_tracks(self, q, max_results):
-        """
-        Returns list of StreamingServiceTrack or empty list.
+        """Returns list of StreamingServiceTrack or empty list.
         Child class should define a default for max_results.
         """
         pass
 
     def search_one_track(self, q):
+        """Retrieves a single track from a list of results"""
         tracks = self.search_tracks(q, max_results=1)
         return tracks[0] if tracks else None
 
@@ -65,8 +70,25 @@ class StreamingServiceTrack(metaclass=ABCMeta):
             f"({self.id})"
         )
 
+    # Expressions that impact our ability to effectively match between
+    # different services.
+    TITLE_EXCLUDE_EXPRESSIONS = [
+        r"\s\(?(HD\s?)?((with |w\/ )?lyrics)?\)?$",  # ()'s
+        r"\s\[?(HD\s?)?((with |w\/ )?lyrics)?\]?$",  # []'s
+        r"\((Official\s)?(Music\s|Lyric\s)?(Video|Movie|Audio)\)",  # ()'s
+        r"\[(Official\s)?(Music\s|Lyric\s)?(Video|Movie|Audio)\]",  # []'s
+        r"\s\(.*Live( at| on| in)?.*\)",  # ()'s
+        r"\s\[.*Live( at| on| in)?.*\]",  # []'s
+        r"\s\((Original|Official)( Mix)?\)",  # ()'s
+        r"\s\[(Original|Official)( Mix)?\]",  # []'s
+        r"\s\(Remaster(ed)?\)",  # ()'s
+        r"\s\[Remaster(ed)?\]",  # []'s
+        r"\s\((Feat\.?|Featuring)\s.*\)",  # ()'s
+        r"\s\[(Feat\.?|Featuring)\s.*\]",  # []'s
+    ]
+
     @abstractproperty
-    def name(self):
+    def title(self):
         raise NotImplementedError
 
     @abstractproperty
@@ -78,8 +100,20 @@ class StreamingServiceTrack(metaclass=ABCMeta):
         raise NotImplementedError
 
     @property
+    def cleaned_title(self):
+        """Returns a title without expressions that impact our ability to match
+        to other services
+        """
+        cleaned_title = html.unescape(self.title)
+        # Remove terms that negatively impact search between services
+        for exp in self.TITLE_EXCLUDE_EXPRESSIONS:
+            cleaned_title = re.sub(exp, "", cleaned_title, flags=re.IGNORECASE)
+        return cleaned_title.strip()
+
+    @property
     def searchable_name(self):
-        return f"{self.name} - {self.artist}"
+        """Returns a name that can be used to search against other services"""
+        return f"{self.cleaned_title} - {self.artist}"
 
     @abstractmethod
     def share_link(self):

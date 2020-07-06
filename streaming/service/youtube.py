@@ -1,6 +1,4 @@
-import html
 import os
-import re
 from difflib import SequenceMatcher
 from enum import IntEnum
 
@@ -35,32 +33,23 @@ class YouTubeTrack(StreamingServiceTrack):
     # Symbols that may lie between an artist and track title
     SEARCHABLE_NAME_DIVIDERS = {"-", "|"}
 
-    # Regexp to exclude from searchable video names
-    SEARCHABLE_EXCLUDE_EXPRESSIONS = [
-        r"\s\(?(HD\s?)?((with |w\/ )?lyrics)?\)?$",  # ()'s
-        r"\s\[?(HD\s?)?((with |w\/ )?lyrics)?\]?$",  # []'s
-        r"\((Official\s)?(Music\s|Lyric\s)?(Video|Movie|Audio)\)",  # ()'s
-        r"\[(Official\s)?(Music\s|Lyric\s)?(Video|Movie|Audio)\]",  # []'s
-    ]
-
-    name = None
+    title = None
     artist = None
     id = None
 
-    def __init__(self, name, artist, id):
-        self.name = name
-        self.artist = artist
+    def __init__(self, title, artist, id):
+        self.title = title
+        self.artist = artist  # YouTube does not provide artist information
         self.id = id
 
     @property
     def searchable_name(self):
-        searchable_name = html.unescape(self.name)
-        # Remove terms that negatively impact our search on other platforms
-        for exp in self.SEARCHABLE_EXCLUDE_EXPRESSIONS:
-            searchable_name = re.sub(
-                exp, "", searchable_name, flags=re.IGNORECASE
-            )
-        return searchable_name.strip()
+        """Overrides StreamingServiceTrack.searchable_name()
+
+        Because YouTube does not provide artist information, we use just the
+        title for comparisons, which includes both title and artist names.
+        """
+        return self.cleaned_title
 
     def share_link(self):
         """WARNING: This is not going through an API and is subject to break"""
@@ -73,7 +62,6 @@ class YouTubeTrack(StreamingServiceTrack):
         the artist and track title. This method tries rearranging the video
         title to better check for a match with another track.
         """
-
         ratio = SequenceMatcher(
             None, self.searchable_name, other_track.searchable_name
         ).ratio()
@@ -86,7 +74,7 @@ class YouTubeTrack(StreamingServiceTrack):
             ]
             for idx in splits:
                 left = self.searchable_name[:idx].strip()
-                right = self.searchable_name[idx + 1 :].strip()
+                right = self.searchable_name[idx + 1 :].strip()  # noqa: E203
                 # use '-' as the new divider since its the most standard
                 swapped_name = f"{right} - {left}"
                 new_ratio = SequenceMatcher(
