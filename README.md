@@ -204,6 +204,18 @@ Use this and update `$TELEGRAM_API_GATEWAY_ROOT_{stage}` for {stage} in secrets/
 export TELEGRAM_API_GATEWAY_ROOT_DEV="https://u3ir5tjcsf.execute-api.us-east-1.amazonaws.com/dev/telegram"
 ```
 
+### Suggested deployment workflow
+
+1. Run all unit and integration tests
+1. Create PR for branch
+1. Deploy to dev
+1. Send and confirm link in `DEV` chat
+1. Push any additional changes/fixes to PR
+1. Merge PR
+1. Push to prod (to make it clear what code is running in prod)
+1. Send and confirm link in `PROD` chat
+1. Revert PR if issues in prod
+
 ## Adding a New Endpoint
 
 If you want to extend the functionality of the bot with your own requests/commands, you need to create a new endpoint.
