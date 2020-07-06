@@ -16,14 +16,6 @@ class YTMusicTrack(StreamingServiceTrack):
     into a different base class later.
     """
 
-    # Regexp to exclude from searchable video names
-    SEARCHABLE_EXCLUDE_EXPRESSIONS = [
-        r"\s\(?(HD\s?)?((with |w\/ )?lyrics)?\)?$",  # ()'s
-        r"\s\[?(HD\s?)?((with |w\/ )?lyrics)?\]?$",  # []'s
-        r"\((Official\s)?(Music\s|Lyric\s)?(Video|Movie|Audio)\)",  # ()'s
-        r"\[(Official\s)?(Music\s|Lyric\s)?(Video|Movie|Audio)\]",  # []'s
-    ]
-
     title = None
     artist = None
     id = None
@@ -32,18 +24,6 @@ class YTMusicTrack(StreamingServiceTrack):
         self.title = title
         self.artist = artist
         self.id = id
-
-    @property
-    def searchable_name(self):
-        """NOTE: This override may not be necessary, based on YTMusic's
-        titling. Worth testing and removing, if so."""
-        searchable_track_name = self.title
-        # Remove terms that negatively impact our search on other platforms
-        for exp in self.SEARCHABLE_EXCLUDE_EXPRESSIONS:
-            searchable_track_name = re.sub(
-                exp, "", searchable_track_name, flags=re.IGNORECASE
-            )
-        return f"{searchable_track_name.strip()} - {self.artist}"
 
     def share_link(self):
         """WARNING: This is not going through an API and is subject to break"""
