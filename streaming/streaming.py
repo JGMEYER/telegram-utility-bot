@@ -71,7 +71,7 @@ class StreamingServiceTrack(metaclass=ABCMeta):
         )
 
     # Expressions that impact our ability to effectively match between
-    # different services. These can be pretty aggressive.
+    # different services. These can be pretty aggressive. Order is important.
     TITLE_EXCLUDE_EXPRESSIONS = [
         r"\s\(?(HD )?((with |w\/ )?lyrics)?\)?$",  # ()'s
         r"\s\[?(HD )?((with |w\/ )?lyrics)?\]?$",  # []'s
@@ -83,9 +83,11 @@ class StreamingServiceTrack(metaclass=ABCMeta):
         r"\s\| Live( at| on| in)?.*$",
         r"\s\((Original|Official)( Mix)?\)",  # ()'s
         r"\s\[(Original|Official)( Mix)?\]",  # []'s
-        r"\s\(Remaster(ed)?\)",  # ()'s
-        r"\s\[Remaster(ed)?\]",  # []'s
-        r"\s\| Remaster(ed)?.*$",
+        r"\s\(.*Remaster(ed)?.*\)",  # ()'s
+        r"\s\[.*Remaster(ed)?.*\]",  # []'s
+        r"(\| |\- ).*Remaster(ed)?[^\||^\-]*",
+        r"\s( \| |- ).*Remaster(ed)?.*$",
+        r"Remaster(ed)?[\s]?",
         r"\s\((Ft\.?|Feat\.?|Featuring)\s.*\)",  # ()'s
         r"\s\[(Ft\.?|Feat\.?|Featuring)\s.*\]",  # []'s
         r"\s(Ft\.?|Feat\.?|Featuring)\s.*",
@@ -117,7 +119,7 @@ class StreamingServiceTrack(metaclass=ABCMeta):
     @property
     def searchable_name(self):
         """Returns a name that can be used to search against other services"""
-        return f"{self.cleaned_title} - {self.artist}"
+        return f"{self.cleaned_title} - {self.artist}".lower()
 
     @abstractmethod
     def share_link(self):

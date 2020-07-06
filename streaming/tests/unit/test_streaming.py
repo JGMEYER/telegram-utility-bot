@@ -183,21 +183,53 @@ class TestStreamingServiceTrack(TestCase):
         _assert_cleaned("Song [Original Mix]")
         _assert_cleaned("Song [Official Mix]")
 
-        # r"\s\(Remaster(ed)?\)"
+        # r"\s\(.*Remaster(ed)?.*\)"
 
         _assert_cleaned("Song (Remaster)")
+        _assert_cleaned("Song (2011 Remaster)")
         _assert_cleaned("Song (Remastered)")
+        _assert_cleaned("Song (Remastered 2011)")
 
-        # r"\s\[Remaster(ed)?\]"
+        # r"\s\[.*Remaster(ed)?.*\]"
 
         _assert_cleaned("Song [Remaster]")
+        _assert_cleaned("Song [2011 Remaster]")
         _assert_cleaned("Song [Remastered]")
+        _assert_cleaned("Song [Remastered 2011]")
 
-        # r"\s\| Remaster(ed)?.*$"
+        # r"(\| |\- ).*Remaster(ed)?[^\||^\-]*"
+
+        _assert_cleaned("Song - Remaster - Artist", "Song - Artist")
+        _assert_cleaned("Song - 2020 Remaster - Artist", "Song - Artist")
+        _assert_cleaned("Song - Remastered - Artist", "Song - Artist")
+        _assert_cleaned("Song - Remastered 2020 - Artist", "Song - Artist")
+        _assert_cleaned("Song | Remaster | Artist", "Song | Artist")
+        _assert_cleaned("Song | 2020 Remaster | Artist", "Song | Artist")
+        _assert_cleaned("Song | Remastered | Artist", "Song | Artist")
+        _assert_cleaned("Song | Remastered 2020 | Artist", "Song | Artist")
+
+        # r"\s(\| |- ).*Remaster(ed)?.*$"
 
         _assert_cleaned("Song | Remaster")
+        _assert_cleaned("Song | 2020 Remaster")
         _assert_cleaned("Song | Remastered")
-        _assert_cleaned("Song | Remastered | 2020")
+        _assert_cleaned("Song | Remastered 2020")
+        _assert_cleaned("Song - Remaster")
+        _assert_cleaned("Song - 2020 Remaster")
+        _assert_cleaned("Song - Remastered")
+        _assert_cleaned("Song - Remastered 2020")
+
+        # r"Remaster(ed)?[\s]?",
+
+        _assert_cleaned("Song Remaster")
+        _assert_cleaned("Song Remastered")
+
+        # very complicated casesto manage, we don't want to accidentally lose
+        # information from removing anything before or after "Remaster"
+        _assert_cleaned("Song Remaster 2020", "Song 2020")
+        _assert_cleaned("Song Remastered 2020", "Song 2020")
+        _assert_cleaned("Song 2020 Remaster", "Song 2020")
+        _assert_cleaned("Song 2020 Remastered", "Song 2020")
 
         # r"\s\((Ft\.?|Feat\.?|Featuring)\s.*\)"
 
