@@ -49,7 +49,7 @@ class YouTubeTrack(StreamingServiceTrack):
         Because YouTube does not provide artist information, we use just the
         title for comparisons, which includes both title and artist names.
         """
-        return self.cleaned_title
+        return self.cleaned_title.lower()
 
     def share_link(self):
         """WARNING: This is not going through an API and is subject to break"""
