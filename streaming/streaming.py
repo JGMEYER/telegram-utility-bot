@@ -66,18 +66,22 @@ class StreamingServiceTrack(metaclass=ABCMeta):
             f"({self.id})"
         )
 
+    # Expressions that impact our ability to effectively match between
+    # different services.
     TITLE_EXCLUDE_EXPRESSIONS = [
         r"\s\(?(HD\s?)?((with |w\/ )?lyrics)?\)?$",  # ()'s
         r"\s\[?(HD\s?)?((with |w\/ )?lyrics)?\]?$",  # []'s
         r"\((Official\s)?(Music\s|Lyric\s)?(Video|Movie|Audio)\)",  # ()'s
         r"\[(Official\s)?(Music\s|Lyric\s)?(Video|Movie|Audio)\]",  # []'s
-        r"\s\(.*Live(\sat|\son|\sin)?.*\)",  # ()'s
-        r"\s\[.*Live(\sat|\son|\sin)?.*\]",  # []'s
-        # TODO add matches for "(Original Mix)"
-        # TODO add matches for "(Official)"
+        r"\s\(.*Live( at| on| in)?.*\)",  # ()'s
+        r"\s\[.*Live( at| on| in)?.*\]",  # []'s
+        r"\s\((Original|Official)( Mix)?\)",  # ()'s
+        r"\s\[(Original|Official)( Mix)?\]",  # []'s
+        r"\s\(Remaster(ed)?\)",  # ()'s
+        r"\s\[Remaster(ed)?\]",  # []'s
+        r"\s\((Feat\.?|Featuring)\s.*\)",  # ()'s
+        r"\s\[(Feat\.?|Featuring)\s.*\]",  # []'s
     ]
-
-    # Expressions to exclude:
 
     @abstractproperty
     def title(self):
