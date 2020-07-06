@@ -50,12 +50,12 @@ def request_token():
 
 
 class SpotifyTrack(StreamingServiceTrack):
-    name = None
+    title = None
     artist = None
     id = None
 
-    def __init__(self, name, artist, trackId, url=None):
-        self.name = name
+    def __init__(self, title, artist, trackId, url=None):
+        self.title = title
         self.artist = artist
         self.id = trackId
         self.url = url

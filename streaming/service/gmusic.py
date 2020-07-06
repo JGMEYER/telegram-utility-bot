@@ -9,12 +9,12 @@ from streaming import StreamingService, StreamingServiceTrack
 class GMusicTrack(StreamingServiceTrack):
     """GMusic song track"""
 
-    name = None
+    title = None
     artist = None
     id = None
 
-    def __init__(self, name, artist, storeId):
-        self.name = name
+    def __init__(self, title, artist, storeId):
+        self.title = title
         self.artist = artist
         self.id = storeId
 

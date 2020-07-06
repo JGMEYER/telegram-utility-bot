@@ -1,3 +1,4 @@
+import html
 import re
 from abc import ABCMeta, abstractmethod, abstractproperty
 from difflib import SequenceMatcher
@@ -65,8 +66,21 @@ class StreamingServiceTrack(metaclass=ABCMeta):
             f"({self.id})"
         )
 
+    TITLE_EXCLUDE_EXPRESSIONS = [
+        r"\s\(?(HD\s?)?((with |w\/ )?lyrics)?\)?$",  # ()'s
+        r"\s\[?(HD\s?)?((with |w\/ )?lyrics)?\]?$",  # []'s
+        r"\((Official\s)?(Music\s|Lyric\s)?(Video|Movie|Audio)\)",  # ()'s
+        r"\[(Official\s)?(Music\s|Lyric\s)?(Video|Movie|Audio)\]",  # []'s
+        r"\s\(.*Live(\sat|\son|\sin)?.*\)",  # ()'s
+        r"\s\[.*Live(\sat|\son|\sin)?.*\]",  # []'s
+        # TODO add matches for "(Original Mix)"
+        # TODO add matches for "(Official)"
+    ]
+
+    # Expressions to exclude:
+
     @abstractproperty
-    def name(self):
+    def title(self):
         raise NotImplementedError
 
     @abstractproperty
@@ -77,9 +91,18 @@ class StreamingServiceTrack(metaclass=ABCMeta):
     def id(self):
         raise NotImplementedError
 
+    # TODO lazy load or make more efficient?
+    @property
+    def cleaned_title(self):
+        cleaned_title = html.unescape(self.title)
+        # Remove terms that negatively impact search between services
+        for exp in self.TITLE_EXCLUDE_EXPRESSIONS:
+            cleaned_title = re.sub(exp, "", cleaned_title, flags=re.IGNORECASE)
+        return cleaned_title.strip()
+
     @property
     def searchable_name(self):
-        return f"{self.name} - {self.artist}"
+        return f"{self.cleaned_title} - {self.artist}"
 
     @abstractmethod
     def share_link(self):

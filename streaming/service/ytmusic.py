@@ -24,12 +24,12 @@ class YTMusicTrack(StreamingServiceTrack):
         r"\[(Official\s)?(Music\s|Lyric\s)?(Video|Movie|Audio)\]",  # []'s
     ]
 
-    name = None
+    title = None
     artist = None
     id = None
 
-    def __init__(self, name, artist, id):
-        self.name = name
+    def __init__(self, title, artist, id):
+        self.title = title
         self.artist = artist
         self.id = id
 
@@ -37,7 +37,7 @@ class YTMusicTrack(StreamingServiceTrack):
     def searchable_name(self):
         """NOTE: This override may not be necessary, based on YTMusic's
         titling. Worth testing and removing, if so."""
-        searchable_track_name = self.name
+        searchable_track_name = self.title
         # Remove terms that negatively impact our search on other platforms
         for exp in self.SEARCHABLE_EXCLUDE_EXPRESSIONS:
             searchable_track_name = re.sub(
