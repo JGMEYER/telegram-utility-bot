@@ -1,6 +1,4 @@
-import html
 import os
-import re
 from difflib import SequenceMatcher
 from enum import IntEnum
 
@@ -76,7 +74,7 @@ class YouTubeTrack(StreamingServiceTrack):
             ]
             for idx in splits:
                 left = self.searchable_name[:idx].strip()
-                right = self.searchable_name[idx + 1 :].strip()
+                right = self.searchable_name[idx + 1 :].strip()  # noqa: E203
                 # use '-' as the new divider since its the most standard
                 swapped_name = f"{right} - {left}"
                 new_ratio = SequenceMatcher(
