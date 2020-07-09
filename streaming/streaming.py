@@ -75,8 +75,8 @@ class StreamingServiceTrack(metaclass=ABCMeta):
     TITLE_EXCLUDE_EXPRESSIONS = [
         r"\s\(?(HD )?((with |w\/ )?lyrics)?\)?$",  # ()'s
         r"\s\[?(HD )?((with |w\/ )?lyrics)?\]?$",  # []'s
-        r"\((Official )?(Music |Lyric )?(Video|Movie|Audio)\)",  # ()'s
-        r"\[(Official )?(Music |Lyric )?(Video|Movie|Audio)\]",  # []'s
+        r"\((Official |New )?(Unreleased )?(Music |Lyric )?(Video|Movie|Audio)\)",  # ()'s
+        r"\[(Official |New )?(Unreleased )?(Music |Lyric )?(Video|Movie|Audio)\]",  # []'s
         r"(\| |- )?(Official )?(Music |Lyric )?(Video|Movie|Audio)",
         r"\s\(.*Live( at| on| in)?.*\)",  # ()'s
         r"\s\[.*Live( at| on| in)?.*\]",  # []'s
