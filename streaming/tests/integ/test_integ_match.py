@@ -29,10 +29,12 @@ def test_get_similar_track_for_original_track():
             raise Exception("SVC not supported by test")
 
         track = track_type(title, artist, None)
-
         similar_tracks = match.get_similar_tracks_for_original_track(
             track_svc, track
         )
+
+        assert all(similar_tracks.values())
+        # We want this to fail when adding new svcs, for visibility
         assert len(similar_tracks.keys()) == 3
 
     # GMusic
@@ -43,7 +45,7 @@ def test_get_similar_track_for_original_track():
 
     # Spotify
 
-    _assert_matches_all_services(Spotify, "EASTGHOST", "Praey")
+    _assert_matches_all_services(Spotify, "Praey", "Eastghost")
 
     # YouTube
 
@@ -54,5 +56,5 @@ def test_get_similar_track_for_original_track():
     # YTMusic
 
     _assert_matches_all_services(
-        YTMusic, "Jelly Roll - Save Me (New Unreleased Video)", "Jelly Roll"
+        YTMusic, "Save Me (New Unreleased Video)", "Jelly Roll"
     )
