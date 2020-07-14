@@ -2,7 +2,6 @@ import pytest
 from unittest import TestCase
 
 from ....service.ytmusic import YTMusic
-from ....streaming import StreamingServiceActionNotSupportedError
 
 
 class TestIntegYTMusic(TestCase):
@@ -19,5 +18,5 @@ class TestIntegYTMusic(TestCase):
             # trackId may change, not worth testing this
             trackId = ytm.get_trackId_from_url(track.share_link())
 
-            with self.assertRaises(StreamingServiceActionNotSupportedError):
-                track = ytm.get_track_from_trackId(trackId)
+            track = ytm.get_track_from_trackId(trackId)
+            self.assertEqual(track.searchable_name, "g.o.a.t. - polyphia")

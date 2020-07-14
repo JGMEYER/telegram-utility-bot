@@ -91,7 +91,7 @@ def get_similar_tracks_from_urls(urls, include_original=False):
                 log.error("Getting track from track id", exc_info=True)
                 continue
 
-            similar_tracks_from_original = get_similar_tracks_for_original_track(
+            similar_tracks_from_original = get_similar_tracks_for_original_track(  # noqa: E501
                 svc, original_track
             )
             if include_original:
