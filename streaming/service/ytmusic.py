@@ -48,7 +48,7 @@ class YTMusicTrack(StreamingServiceTrack):
 
 class YTMusic(StreamingService):
     VALID_TRACK_URL_PATTERNS = [
-        r"https://music.youtube.com/watch\?v=(?P<trackId>\w+).*",
+        r"https://music.youtube.com/watch\?v=(?P<trackId>[a-zA-z0-9\-\_]+).*",
     ]
 
     def __init__(self):
