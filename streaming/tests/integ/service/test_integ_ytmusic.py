@@ -19,6 +19,4 @@ class TestIntegYTMusic(TestCase):
             trackId = ytm.get_trackId_from_url(track.share_link())
 
             track = ytm.get_track_from_trackId(trackId)
-            self.assertEqual(
-                track.searchable_name.lower(), "g.o.a.t. - polyphia"
-            )
+            self.assertEqual(track.searchable_name, "g.o.a.t. - polyphia")
