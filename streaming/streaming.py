@@ -66,7 +66,7 @@ class StreamingService(object, metaclass=ABCMeta):
 class StreamingServiceTrack(metaclass=ABCMeta):
     def __str__(self):
         return (
-            f"{self.__class__.__name__}: '{self.name}' - {self.artist} "
+            f"{self.__class__.__name__}: '{self.title}' - {self.artist} "
             f"({self.id})"
         )
 
@@ -92,6 +92,7 @@ class StreamingServiceTrack(metaclass=ABCMeta):
         r"\s\[(Ft\.?|Feat\.?|Featuring)\s.*\]",  # []'s
         r"\s(Ft\.?|Feat\.?|Featuring)\s.*",
     ]
+    ARTIST_EXCLUDE_EXPRESSIONS = [r"\s\-\sTopic$"]
 
     @abstractproperty
     def title(self):
@@ -117,9 +118,22 @@ class StreamingServiceTrack(metaclass=ABCMeta):
         return cleaned_title.strip()
 
     @property
+    def cleaned_artist(self):
+        """Returns an artist without expressions that impact our ability to match
+        to other services
+        """
+        cleaned_artist = self.artist
+        # Remove terms that negatively impact search between services
+        for exp in self.ARTIST_EXCLUDE_EXPRESSIONS:
+            cleaned_artist = re.sub(
+                exp, "", cleaned_artist, flags=re.IGNORECASE
+            )
+        return cleaned_artist.strip()
+
+    @property
     def searchable_name(self):
         """Returns a name that can be used to search against other services"""
-        return f"{self.cleaned_title} - {self.artist}".lower()
+        return f"{self.cleaned_title} - {self.cleaned_artist}".lower()
 
     @abstractmethod
     def share_link(self):
