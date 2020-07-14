@@ -36,8 +36,12 @@ class TelegramLogHandler(logging.StreamHandler):
         """Send message to Telegram"""
         try:
             msg = self.format(record)
+            html_msg = f"<code>{msg}</code>"
             telegram.send_message(
-                self.telegram_token, self.telegram_chat_id, msg
+                self.telegram_token,
+                self.telegram_chat_id,
+                html_msg,
+                parse_mode="html",
             )
         except (KeyboardInterrupt, SystemExit):
             raise
