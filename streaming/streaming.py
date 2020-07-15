@@ -88,9 +88,9 @@ class StreamingServiceTrack(metaclass=ABCMeta):
         r"(\| |\- ).*Remaster(ed)?[^\||^\-]*",
         r"\s( \| |- ).*Remaster(ed)?.*$",
         r"Remaster(ed)?[\s]?",
-        r"\s\((Ft\.?|Feat\.?|Featuring)\s.*\)",  # ()'s
-        r"\s\[(Ft\.?|Feat\.?|Featuring)\s.*\]",  # []'s
-        r"\s(Ft\.?|Feat\.?|Featuring)\s.*",
+        r"\s\((Ft\.?|Feat\.?|Featuring)\:?\s.*\)",  # ()'s
+        r"\s\[(Ft\.?|Feat\.?|Featuring)\:?\s.*\]",  # []'s
+        r"\s(Ft\.?|Feat\.?|Featuring)\:?\s.*",
     ]
     ARTIST_EXCLUDE_EXPRESSIONS = [r"\s\-\sTopic$"]
 

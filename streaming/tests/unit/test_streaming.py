@@ -303,26 +303,38 @@ class TestStreamingServiceTrack(TestCase):
         _assert_cleaned("Title 2020 Remaster", "Title 2020")
         _assert_cleaned("Title 2020 Remastered", "Title 2020")
 
-        # r"\s\((Ft\.?|Feat\.?|Featuring)\s.*\)"
+        # r"\s\((Ft\.?|Feat\.?|Featuring)\:?\s.*\)"
 
+        _assert_cleaned("Title [Ft Calvin & Hobbes]")
         _assert_cleaned("Title (Ft. Calvin & Hobbes)")
+        _assert_cleaned("Title (Ft: Calvin & Hobbes)")
         _assert_cleaned("Title (Feat Calvin & Hobbes)")
         _assert_cleaned("Title (Feat. Calvin & Hobbes)")
+        _assert_cleaned("Title (Feat: Calvin & Hobbes)")
         _assert_cleaned("Title (Featuring Calvin & Hobbes)")
+        _assert_cleaned("Title (Featuring: Calvin & Hobbes)")
 
-        # r"\s\[(Feat\.?|Featuring)\s.*\]"
+        # r"\s\[(Feat\.?|Featuring)\:?\s.*\]"
 
+        _assert_cleaned("Title [Ft Calvin & Hobbes]")
         _assert_cleaned("Title [Ft. Calvin & Hobbes]")
+        _assert_cleaned("Title [Ft: Calvin & Hobbes]")
         _assert_cleaned("Title [Feat Calvin & Hobbes]")
         _assert_cleaned("Title [Feat. Calvin & Hobbes]")
+        _assert_cleaned("Title [Feat: Calvin & Hobbes]")
         _assert_cleaned("Title [Featuring Calvin & Hobbes]")
+        _assert_cleaned("Title [Featuring: Calvin & Hobbes]")
 
-        # r"\s(Ft\.?|Feat\.?|Featuring)\s.*"
+        # r"\s(Ft\.?|Feat\.?|Featuring)\:?\s.*"
 
+        _assert_cleaned("Title Ft Calvin & Hobbes")
         _assert_cleaned("Title Ft. Calvin & Hobbes")
+        _assert_cleaned("Title Ft: Calvin & Hobbes")
         _assert_cleaned("Title Feat Calvin & Hobbes")
         _assert_cleaned("Title Feat. Calvin & Hobbes")
+        _assert_cleaned("Title Feat: Calvin & Hobbes")
         _assert_cleaned("Title Featuring Calvin & Hobbes")
+        _assert_cleaned("Title Featuring: Calvin & Hobbes")
 
         # r"\s\(New( Unreleased)? Video\)"
 
@@ -344,3 +356,21 @@ class TestStreamingServiceTrack(TestCase):
 
         # r"\s\-\sTopic$"
         _assert_cleaned("Artist - Topic")
+
+    def test_searchable_name(self):
+        """Test searchable names on real-world examples"""
+
+        mock_sst = MockStreamingServiceTrack(None, None, None)
+
+        def _assert_searchable(title, artist, expected):
+            mock_sst.artist = artist
+            mock_sst.title = title
+            self.assertEqual(mock_sst.searchable_name, expected)
+            mock_sst.artist = None
+            mock_sst.title = None
+
+        mock_sst = MockStreamingServiceTrack(
+            "Stars Have No Names (they just shine) (feat: Nick Arnold & Chrissy Dunn)",
+            "Bootsy Collins",
+            "stars have no names (they just shine) - bootsy collins",
+        )
