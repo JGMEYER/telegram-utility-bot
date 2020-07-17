@@ -34,28 +34,40 @@ class GMusic(StreamingService):
     def __init__(self):
         self._client = Mobileclient()
 
-    def __enter__(self):
+    def _create_or_fetch_oauth_cred_file(self):
+        # CircleCI / Docker
+        if os.getenv("GMUSIC_INTEG_OAUTH_CRED"):
+            tmp_path = os.path.join("/tmp", GMusic.CRED_FILE)
+            # Create a .cred file from env. gmusicapi needs to write to the
+            # .cred file to refresh its tokens.
+            with open(tmp_path) as f:
+                f.write(os.environ["GMUSIC_INTEG_OAUTH_CRED"])
+            return tmp_path
+
         # AWS / Docker
-        if (
+        elif (
             os.getenv("LAMBDA_TASK_ROOT")
             and os.environ["SERVERLESS_STAGE"] != "local"
         ):
             cred_path = os.path.join(
                 os.environ["LAMBDA_TASK_ROOT"], "secrets", GMusic.CRED_FILE
             )
-            # Only /tmp is writable on AWS lambda. gmusicapi needs to write to
-            # the cred file to refresh its tokens.
+            # Only /tmp is writable on AWS lambda. Copy the file to /tmp.
+            # gmusicapi needs to write to the .cred file to refresh its tokens.
             tmp_path = os.path.join("/tmp", GMusic.CRED_FILE)
             copyfile(cred_path, tmp_path)
-            self._client.oauth_login(
-                Mobileclient.FROM_MAC_ADDRESS, oauth_credentials=tmp_path
-            )
+            return tmp_path
+
         # Local
         else:
             cred_path = os.path.join(os.getcwd(), "secrets", GMusic.CRED_FILE)
-            self._client.oauth_login(
-                Mobileclient.FROM_MAC_ADDRESS, oauth_credentials=cred_path
-            )
+            return cred_path
+
+    def __enter__(self):
+        cred_path = self._create_or_fetch_oauth_cred_file()
+        self._client.oauth_login(
+            Mobileclient.FROM_MAC_ADDRESS, oauth_credentials=cred_path
+        )
         return self
 
     def __exit__(self, *args):
