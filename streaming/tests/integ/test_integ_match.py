@@ -45,7 +45,7 @@ def test_get_similar_track_for_original_track():
 
     # Spotify
 
-    _assert_matches_all_services(Spotify, "Praey", "Eastghost")
+    _assert_matches_all_services(Spotify, "Blood Bank", "Bon Iver")
 
     # YouTube
 
