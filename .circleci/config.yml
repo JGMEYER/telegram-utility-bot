@@ -12,7 +12,6 @@ jobs:
     executor: python/default
     steps:
       - checkout
-      - run: python -v
       - run: |
           sudo pip install pipenv
           source setup
