@@ -6,7 +6,7 @@ orbs:
 jobs:
   build-and-test:
     docker:
-      - image: circleci/python:3.6.0
+      - image: circleci/python:3.6
         environment:
           PIPENV_VENV_IN_PROJECT: true
     executor: python/default
