@@ -9,13 +9,11 @@ jobs:
     steps:
       - checkout
       - run: Setup env
-        command: |
-          sudo pip install pipenv
-          source setup
-      - run: Run unit tests
-        command: pipenv run pytest -m 'not integ' -rf
-      - run: Run integration tests
-        command: pipenv run pytest -m 'integ' -rf --log-level=WARNING
+          command: |
+            sudo pip install pipenv
+            source setup
+      - run: pipenv run pytest -m 'not integ' -rf
+      - run: pipenv run pytest -m 'integ' -rf --log-level=WARNING
 
 
 workflows:
