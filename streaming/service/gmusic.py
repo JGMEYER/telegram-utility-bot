@@ -46,7 +46,6 @@ class GMusic(StreamingService):
             # .cred file to refresh its tokens.
             with open(tmp_path, "a") as f:
                 f.write(os.environ["GMUSIC_INTEG_OAUTH_CRED"])
-            print(os.walk(secrets_dir).next())  # TODO rm
             return tmp_path
 
         # AWS / Docker
