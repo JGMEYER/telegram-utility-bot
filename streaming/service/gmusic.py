@@ -40,7 +40,7 @@ class GMusic(StreamingService):
             tmp_path = os.path.join("/tmp", GMusic.CRED_FILE)
             # Create a .cred file from env. gmusicapi needs to write to the
             # .cred file to refresh its tokens.
-            with open(tmp_path) as f:
+            with open(tmp_path, "a") as f:
                 f.write(os.environ["GMUSIC_INTEG_OAUTH_CRED"])
             return tmp_path
 
