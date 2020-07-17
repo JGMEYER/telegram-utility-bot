@@ -36,7 +36,10 @@ def request_token():
     client_credentials = f"{client_id}:{client_secret}"
     encoded_credentials = base64.b64encode(client_credentials.encode())
 
-    headers = {"Authorization": f"Basic {encoded_credentials.decode()}"}
+    headers = {
+        "Authorization": f"Basic {encoded_credentials.decode()}",
+        "Content-Type": "application/x-www-form-urlencoded",
+    }
     data = {"grant_type": "client_credentials"}
     try:
         response = requests.post(AUTHORIZE_URL, headers=headers, data=data)
