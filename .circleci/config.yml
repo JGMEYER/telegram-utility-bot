@@ -17,11 +17,12 @@ jobs:
           sudo pip install pipenv
           pipenv install
       - run: pipenv run pytest -m 'not integ' -rf
-      - run: pipenv run pytest -m 'integ' -rf --log-level=WARNING
+      # will require a way to store gmusic .cred file and integration context
+      # - run: pipenv run pytest -m 'integ' -rf --log-level=WARNING
 
 
 workflows:
   main:
     jobs:
       - build-and-test:
-          context: Integration
+          # context: Integration
