@@ -10,8 +10,6 @@ jobs:
     executor: python/default
     steps:
       - checkout
-      - restore_cache:  # ensure this step occurs *before* installing dependencies
-          key: deps9-{{ .Branch }}-{{ checksum "Pipfile.lock" }}
       - run: |
           sudo pip install pipenv
           pipenv install
