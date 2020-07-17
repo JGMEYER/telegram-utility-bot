@@ -52,6 +52,10 @@ def test_get_similar_track_for_original_track():
     _assert_matches_all_services(
         YouTube, "Bon Iver - PDLIF - Official Video", "Bon Iver"
     )
+    # Video actually separates title and artist
+    _assert_matches_all_services(
+        YouTube, "Patterns (Demo)", "Letters To The Editor - Topic"
+    )
 
     # YTMusic
 
