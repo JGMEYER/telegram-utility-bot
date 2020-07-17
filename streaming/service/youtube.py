@@ -39,17 +39,20 @@ class YouTubeTrack(StreamingServiceTrack):
 
     def __init__(self, title, artist, id):
         self.title = title
-        self.artist = artist  # YouTube does not provide artist information
+        self.artist = (
+            artist  # YouTube does not always provide artist information
+        )
         self.id = id
 
     @property
     def searchable_name(self):
-        """Overrides StreamingServiceTrack.searchable_name()
+        """Overrides StreamingServiceTrack.searchable_name()"""
 
-        Because YouTube does not provide artist information, we use just the
-        title for comparisons, which includes both title and artist names.
-        """
-        return self.cleaned_title.lower()
+        # If the artist is already in the video name, ignore
+        if self.cleaned_artist.lower() in self.cleaned_title.lower():
+            return self.cleaned_title.lower()
+
+        return f"{self.cleaned_title} - {self.cleaned_artist}".lower()
 
     def share_link(self):
         """WARNING: This is not going through an API and is subject to break"""
@@ -58,14 +61,13 @@ class YouTubeTrack(StreamingServiceTrack):
     def similarity_ratio(self, other_track):
         """Overrides StreamingServiceTrack.similarity_ratio()
 
-        YouTube titles don't adhere to any convention and may occasionally swap
-        the artist and track title. This method tries rearranging the video
-        title to better check for a match with another track.
+        YouTube titles don't adhere to any convention. Try a few approaches to
+        better check for a match with another track.
         """
-        ratio = SequenceMatcher(
-            None, self.searchable_name, other_track.searchable_name
-        ).ratio()
 
+        ratio = super().similarity_ratio(other_track)
+
+        # Rearrange video title in case track title and artist are swapped
         for div in self.SEARCHABLE_NAME_DIVIDERS:
             splits = [
                 idx
