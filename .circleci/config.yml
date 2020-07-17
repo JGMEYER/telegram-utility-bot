@@ -8,12 +8,18 @@ jobs:
     executor: python/default
     steps:
       - checkout
-      - python/load-cache
-      - python/install-deps
-      - python/save-cache
       - run:
-          command: ./manage.py test
-          name: Test
+        name: Setup env
+        command: |
+          sudo pip install pipenv
+          source setup
+      - run:
+        name: Run unit tests
+        command: pipenv run pytest -m 'not integ' -rf
+      - run:
+        name: Run integration tests
+        command: pipenv run pytest -m 'integ' -rf --log-level=WARNING
+
 
 workflows:
   main:
