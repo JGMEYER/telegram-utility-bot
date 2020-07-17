@@ -14,7 +14,7 @@ jobs:
           key: deps9-{{ .Branch }}-{{ checksum "Pipfile.lock" }}
       - run: |
           sudo pip install pipenv
-          source setup
+          pipenv install
       - run: pipenv run pytest -m 'not integ' -rf
       - run: pipenv run pytest -m 'integ' -rf --log-level=WARNING
       - store_test_results:
@@ -25,3 +25,4 @@ workflows:
   main:
     jobs:
       - build-and-test
+          context: integration
