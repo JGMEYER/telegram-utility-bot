@@ -37,7 +37,8 @@ class GMusic(StreamingService):
     def _create_or_fetch_oauth_cred_file(self):
         # CircleCI / Docker
         if os.getenv("GMUSIC_INTEG_OAUTH_CRED"):
-            tmp_path = os.path.join("secrets", GMusic.CRED_FILE)
+            os.mkdir("/secrets")
+            tmp_path = os.path.join("/secrets", GMusic.CRED_FILE)
             # Create a .cred file from env. gmusicapi needs to write to the
             # .cred file to refresh its tokens.
             with open(tmp_path, "a") as f:
