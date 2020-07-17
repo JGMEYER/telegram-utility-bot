@@ -39,12 +39,14 @@ class GMusic(StreamingService):
         if os.getenv("GMUSIC_INTEG_OAUTH_CRED"):
             cwd = os.getcwd()
             secrets_dir = os.path.join(cwd, "secrets")
-            os.mkdir(secrets_dir)
+            if not os.path.isdir(secrets_dir):
+                os.mkdir(secrets_dir)
             tmp_path = os.path.join(secrets_dir, GMusic.CRED_FILE)
             # Create a .cred file from env. gmusicapi needs to write to the
             # .cred file to refresh its tokens.
             with open(tmp_path, "a") as f:
                 f.write(os.environ["GMUSIC_INTEG_OAUTH_CRED"])
+            print(os.walk(secrets_dir).next())  # TODO rm
             return tmp_path
 
         # AWS / Docker
