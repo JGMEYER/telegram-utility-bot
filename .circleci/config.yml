@@ -18,8 +18,6 @@ jobs:
           pipenv install
       - run: pipenv run pytest -m 'not integ' -rf
       - run: pipenv run pytest -m 'integ' -rf --log-level=WARNING
-      - store_test_results:
-          path: test-results
 
 
 workflows:
