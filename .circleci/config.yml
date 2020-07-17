@@ -15,7 +15,7 @@ jobs:
       - run: |
           sudo pip install pipenv
           pipenv install
-      - run: pipenv run pytest -rf --log-level=WARNING
+      - run: pipenv run pytest -rf --log-level=WARNING streaming/tests/integ/service/test_integ_gmusic.py
 
 
 workflows:
