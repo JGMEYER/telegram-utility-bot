@@ -12,11 +12,14 @@ jobs:
     executor: python/default
     steps:
       - checkout
+      - run: python -v
       - run: |
           sudo pip install pipenv
           source setup
       - run: pipenv run pytest -m 'not integ' -rf
       - run: pipenv run pytest -m 'integ' -rf --log-level=WARNING
+      - store_test_results:
+          path: test-results
 
 
 workflows:
