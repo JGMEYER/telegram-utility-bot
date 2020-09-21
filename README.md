@@ -151,24 +151,6 @@ For other assistance, check out the [Telegram documentation](https://core.telegr
 1. Register application on Spotify's website.
 1. Set SPOTIFY_CLIENT_ID and SPOTIFY_CLIENT_SECRET in secrets/env.
 
-### Google Music setup
-
-1. Run `pipenv run python`.
-
-1. Enter the code below and follow the instructions. This will authorize Google Play Music Manager to manage your account.
-
-```python
-import os
-from gmusicapi import Mobileclient
-
-mm = Mobileclient()
-mm.perform_oauth(storage_filepath=os.path.join(os.getcwd(), 'secrets/gmusicapi.cred'), open_browser=True)
-```
-
-This file will be pushed as part of the zip archive to S3, which will allow AWS to interact with the api.
-
-For more information on the API, check out [the docs](https://unofficial-google-music-api.readthedocs.io).
-
 ## Deploy to AWS
 
 Dev:

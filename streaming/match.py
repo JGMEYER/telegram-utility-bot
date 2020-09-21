@@ -44,10 +44,10 @@ def get_mirror_links_message(urls):
             # Generates message like:
             #   """
             #   Song - Artist
-            #   GMusic | Spotify | YouTube
+            #   Spotify | YouTube | YTMusic
             #
             #   Song - Artist
-            #   GMusic | Spotify | YouTube
+            #   Spotify | YouTube | YTMusic
             #   """
             if msg:
                 msg += "\n\n"
