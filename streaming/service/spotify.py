@@ -103,6 +103,9 @@ class Spotify(StreamingService):
             return None
 
     def search_tracks(self, q, max_results=5):
+        # Spotify sometimes doesn't deal well with dividers
+        q = q.replace(" - ", " ")
+
         search_url = urljoin(BASE_API_URL, "search")
         headers = {
             "Authorization": str(self._token),

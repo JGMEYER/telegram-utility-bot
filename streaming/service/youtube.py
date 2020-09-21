@@ -44,19 +44,17 @@ class YouTubeTrack(StreamingServiceTrack):
         )
         self.id = id
 
-    @property
-    def searchable_name(self):
-        """Overrides StreamingServiceTrack.searchable_name()"""
-
-        # If the artist is already in the video name, ignore
-        if self.cleaned_artist.lower() in self.cleaned_title.lower():
-            return self.cleaned_title.lower()
-
-        return f"{self.cleaned_title} - {self.cleaned_artist}".lower()
-
     def share_link(self):
         """WARNING: This is not going through an API and is subject to break"""
         return f"https://www.youtube.com/watch?v={self.id}"
+
+    @property
+    def searchable_name(self):
+        """Returns a name that can be used to search against other services"""
+        if self.artist.endswith("- Topic"):
+            return f"{self.cleaned_title.lower()} - {self.artist[:-7].lower()}"
+        else:
+            return self.cleaned_title.lower()
 
     def similarity_ratio(self, other_track):
         """Overrides StreamingServiceTrack.similarity_ratio()
@@ -64,7 +62,6 @@ class YouTubeTrack(StreamingServiceTrack):
         YouTube titles don't adhere to any convention. Try a few approaches to
         better check for a match with another track.
         """
-
         ratio = super().similarity_ratio(other_track)
 
         # Rearrange video title in case track title and artist are swapped
@@ -83,6 +80,16 @@ class YouTubeTrack(StreamingServiceTrack):
                     None, swapped_name, other_track.searchable_name
                 ).ratio()
                 ratio = max(ratio, new_ratio)
+
+        # Check if artist may be hidden in channel name
+        if self.cleaned_artist.lower() not in self.searchable_name:
+            name_with_artist = (
+                f"{self.cleaned_title} - {self.cleaned_artist}".lower()
+            )
+            new_ratio = SequenceMatcher(
+                None, name_with_artist, other_track.searchable_name
+            ).ratio()
+            ratio = max(ratio, new_ratio)
 
         return ratio
 

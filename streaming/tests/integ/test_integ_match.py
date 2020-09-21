@@ -1,7 +1,6 @@
 import pytest
 
 from ... import match
-from ...service.gmusic import GMusic, GMusicTrack
 from ...service.spotify import Spotify, SpotifyTrack
 from ...service.youtube import YouTube, YouTubeTrack
 from ...service.ytmusic import YTMusic, YTMusicTrack
@@ -17,9 +16,7 @@ def test_get_similar_track_for_original_track():
 
     def _assert_matches_all_services(track_svc, title, artist):
         track_type = None
-        if track_svc == GMusic:
-            track_type = GMusicTrack
-        elif track_svc == Spotify:
+        if track_svc == Spotify:
             track_type = SpotifyTrack
         elif track_svc == YouTube:
             track_type = YouTubeTrack
@@ -33,15 +30,10 @@ def test_get_similar_track_for_original_track():
             track_svc, track
         )
 
+        print(similar_tracks.values())
         assert all(similar_tracks.values())
         # We want this to fail when adding new svcs, for visibility
-        assert len(similar_tracks.keys()) == 3
-
-    # GMusic
-
-    _assert_matches_all_services(
-        GMusic, "Here I Go Again (2011 Remaster)", "Whitesnake"
-    )
+        assert len(similar_tracks.keys()) == 2
 
     # Spotify
 
