@@ -5,9 +5,9 @@ from .streaming import (  # noqa: F401
     StreamingServiceTrack,
 )
 
+from .service.spotify import Spotify, SpotifyTrack  # noqa: F401
 from .service.youtube import YouTube, YouTubeTrack  # noqa: F401
 from .service.ytmusic import YTMusic, YTMusicTrack  # noqa: F401
-from .service.spotify import Spotify, SpotifyTrack  # noqa: F401
 
 SUPPORTED_STREAMING_SERVICES = StreamingService.__subclasses__()
 

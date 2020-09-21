@@ -4,24 +4,23 @@ url = "https://pypi.org/simple"
 verify_ssl = true
 
 [dev-packages]
-flake8 = "*"
 black = "==19.10b0"
+flake8 = "*"
 pytest = "*"
 
 [packages]
-requests = "*"
+black = "*"
 google-api-python-client = "*"
 google-auth = "*"
-google-auth-oauthlib = "*"
 google-auth-httplib2 = "*"
+google-auth-oauthlib = "*"
+pre-commit = "*"
+pytest-xdist = "*"
+requests = "*"
 rsa = "*"
 urllib3 = "*"
 wheel = "*"
-gmusicapi = "*"
-pre-commit = "*"
-black = "*"
 ytmusicapi = "*"
-pytest-xdist = "*"
 
 [requires]
 python_version = "3.6"
