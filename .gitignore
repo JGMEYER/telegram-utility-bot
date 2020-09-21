@@ -18,6 +18,9 @@ var/
 __pycache__
 .python-version
 
+# Coverage
+.coverage
+
 # Serverless directories
 .serverless
 
