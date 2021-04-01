@@ -7,6 +7,7 @@ verify_ssl = true
 black = "==19.10b0"
 flake8 = "*"
 pytest = "*"
+PyYAML = ">=5.4"
 
 [packages]
 black = "*"

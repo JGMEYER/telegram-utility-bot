@@ -4,6 +4,9 @@ import pytest
 from unittest import TestCase
 
 import handler
+from utils.env import getenv
+
+TELEGRAM_CHAT_ID = getenv("TELEGRAM_CHAT_ID")
 
 
 class TestIntegHandler(TestCase):
@@ -30,7 +33,7 @@ class TestIntegHandler(TestCase):
                         "date": 99999999999,
                         "chat": {
                             "last_name": "Test Lastname",
-                            "id": 1111111,
+                            "id": TELEGRAM_CHAT_ID,
                             "first_name": "Test",
                             "username": "Test",
                         },

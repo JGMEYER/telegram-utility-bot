@@ -81,12 +81,21 @@ def handle_webhook_update(event, context):
             "body": "Could not parse date from Telegram update",
         }
 
+    try:
+        msg_chat_id = event_body["message"]["chat"]["id"]
+    except KeyError:
+        log.error("Parsing chat id from Telegram update", exc_info=True)
+        return {
+            "statusCode": 400,
+            "body": "Could not parse chat id from Telegram update",
+        }
+
     # avoid spamming our APIs
     timeout = 30  # seconds
     age = datetime.datetime.now().timestamp() - msg_date
     log.info(f"Telegram update age: {age}s")
     if age > timeout:
-        log.info(f"Ignoring old Telegram update")
+        log.info("Ignoring old Telegram update")
         return {"statusCode": 200, "body": "ok"}
 
     try:
@@ -105,7 +114,7 @@ def handle_webhook_update(event, context):
         if text:
             response = telegram.send_message(
                 TELEGRAM_TOKEN,
-                TELEGRAM_CHAT_ID,
+                msg_chat_id,
                 response_text,
                 disable_link_previews=True,
             )
