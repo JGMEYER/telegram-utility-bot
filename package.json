@@ -1,6 +1,6 @@
 {
   "name": "telegram-utility-bot",
-  "version": "0.0.2",
+  "version": "0.1.0",
   "description": "A general-use telegram utility bot.",
   "main": "index.js",
   "dependencies": {
@@ -9,7 +9,7 @@
   },
   "devDependencies": {
     "serverless-domain-manager": "^3.3.1",
-    "serverless-offline": "^5.12.0"
+    "serverless-offline": "^8.2.0"
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
