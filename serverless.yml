@@ -7,6 +7,11 @@ provider:
   region: us-east-1
   environment: ${file(./env.yml):${opt:stage, self:provider.stage}}
 
+package:
+  exclude:
+    # Fix for packages being too large to unpack
+    - node_modules/**
+
 functions:
   post:
     handler: handler.handler
@@ -23,6 +28,52 @@ functions:
           path: webhookUpdate
           method: post
           cors: true
+
+resources:
+  Resources:
+    SecretRDSDBClusterTelegramBot:
+      Type: AWS::SecretsManager::Secret
+      Properties:
+        Description: Secret for RDS DB credentials
+        GenerateSecretString:
+          SecretStringTemplate: '{"username": "${file(./env.yml):${opt:stage, self:provider.stage}.DB_CLUSTER_MASTER_USERNAME}"}'
+          GenerateStringKey: password
+          PasswordLength: 30
+          ExcludeCharacters: "\"@/\\"
+    KMSKeyRDSDBClusterTelegramBot:
+      Type: AWS::KMS::Key
+      Properties:
+        Description: Symmetric key for RDS DB encryption
+        Enabled: true
+        EnableKeyRotation: true
+        KeyPolicy:
+          Id: key-my-telegram-bot-rdsdbcluster1
+          Statement:
+            - Sid: Enable IAM User Permissions
+              Effect: Allow
+              Principal:
+                AWS: !Sub arn:aws:iam::${AWS::AccountId}:root
+              Action: kms:*
+              Resource: '*'
+    RDSDBClusterTelegramBot:
+      Type: AWS::RDS::DBCluster
+      Properties:
+        BackupRetentionPeriod: 7
+        DatabaseName: telegram_bot
+        DBClusterIdentifier: my-telegram-bot-rdsdbcluster1
+        Engine: aurora-mysql
+        EngineMode: serverless
+        EngineVersion: 5.7.mysql_aurora.2.10.1
+        EnableHttpEndpoint: true
+        KmsKeyId: !GetAtt KMSKeyRDSDBClusterTelegramBot.Arn
+        MasterUsername: !Sub "{{resolve:secretsmanager:${SecretRDSDBClusterTelegramBot}::username}}"
+        MasterUserPassword: !Sub "{{resolve:secretsmanager:${SecretRDSDBClusterTelegramBot}::password}}"
+        ScalingConfiguration:
+          AutoPause: true
+          MaxCapacity: 2
+          MinCapacity: 2
+          SecondsUntilAutoPause: 300 # 5 min
+        StorageEncrypted: true
 
 plugins:
   - serverless-domain-manager
