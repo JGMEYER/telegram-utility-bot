@@ -3,7 +3,7 @@ import json
 import logging
 import os
 
-from streaming.match import get_mirror_links_message, urls_in_text
+import streaming.match as match
 from utils import telegram
 from utils.env import getenv
 from utils.log import setup_logger
@@ -107,21 +107,17 @@ def handle_webhook_update(event, context):
             "body": "Could not parse text from Telegram update",
         }
 
-    entities = event_body["message"].get("entities")
-    mentions = telegram.get_mentions_from_text(text, entities)
-    log.warning(mentions)
-    has_been_mentioned = (
-        "@BopizTestBot" in mentions
-    )  # TODO save bot name in env var
-    if has_been_mentioned:
+    # TODO cleanup logic
+    search_track = match.search_track_in_text(text)
+    if search_track:
         telegram.send_message(
-            TELEGRAM_TOKEN, msg_chat_id, "suh, dude!",
+            TELEGRAM_TOKEN, msg_chat_id, str(search_track),
         )
 
     # handle music mirror links
-    urls = urls_in_text(text)
+    urls = match.urls_in_text(text)
     if urls:
-        response_text = get_mirror_links_message(urls)
+        response_text = match.get_mirror_links_message(urls)
         if text:
             response = telegram.send_message(
                 TELEGRAM_TOKEN,

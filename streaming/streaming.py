@@ -65,6 +65,7 @@ class StreamingService(object, metaclass=ABCMeta):
 
 class StreamingServiceTrack(metaclass=ABCMeta):
     def __str__(self):
+        # TODO flip title and artist
         return (
             f"{self.__class__.__name__}: '{self.title}' - {self.artist} "
             f"({self.id})"

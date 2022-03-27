@@ -23,6 +23,34 @@ def urls_in_text(text):
     return urls
 
 
+class SearchTrack(StreamingServiceTrack):
+    title = None
+    artist = None
+    id = None
+
+    def __init__(self, title, artist):
+        self.title = title
+        self.artist = artist
+        self.id = None
+
+    def share_link(self):
+        raise NotImplementedError(
+            "A search track does not have an associated URL"
+        )
+
+
+def search_track_in_text(text):
+    # TODO grab bot name from env var
+    BOT_SEARCH_COMMAND = r"\@BopizTestBot\s(?P<artist>.*)\s\-\s(?P<title>.*)"
+    match = re.search(BOT_SEARCH_COMMAND, text)
+
+    if match is None:
+        return None
+
+    artist, title = match.group("artist"), match.group("title")
+    return SearchTrack(title, artist)
+
+
 def get_mirror_links_message(urls):
     """Generate message to display mirror link results"""
     similar_tracks = get_similar_tracks_from_urls(urls, include_original=True)
