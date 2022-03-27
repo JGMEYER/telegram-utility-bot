@@ -107,6 +107,17 @@ def handle_webhook_update(event, context):
             "body": "Could not parse text from Telegram update",
         }
 
+    entities = event_body["message"].get("entities")
+    mentions = telegram.get_mentions_from_text(text, entities)
+    log.warning(mentions)
+    has_been_mentioned = (
+        "@BopizTestBot" in mentions
+    )  # TODO save bot name in env var
+    if has_been_mentioned:
+        telegram.send_message(
+            TELEGRAM_TOKEN, msg_chat_id, "suh, dude!",
+        )
+
     # handle music mirror links
     urls = urls_in_text(text)
     if urls:
