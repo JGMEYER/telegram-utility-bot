@@ -110,9 +110,22 @@ def handle_webhook_update(event, context):
     # TODO cleanup logic
     search_track = match.search_track_in_text(text)
     if search_track:
-        telegram.send_message(
-            TELEGRAM_TOKEN, msg_chat_id, str(search_track),
+        similar_tracks = match.get_similar_tracks_for_original_track(
+            match.SearchTrack, search_track
         )
+
+        # TODO prolly wanna refactor - hack
+        response_text = match.get_search_result_message(
+            search_track.searchable_name, similar_tracks
+        )
+        response = telegram.send_message(
+            TELEGRAM_TOKEN,
+            msg_chat_id,
+            response_text,
+            disable_link_previews=True,
+        )
+        if response["statusCode"] != 200:
+            return response
 
     # handle music mirror links
     urls = match.urls_in_text(text)

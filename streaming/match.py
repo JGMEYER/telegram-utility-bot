@@ -28,7 +28,7 @@ class SearchTrack(StreamingServiceTrack):
     artist = None
     id = None
 
-    def __init__(self, title, artist):
+    def __init__(self, title, artist, *argv):
         self.title = title
         self.artist = artist
         self.id = None
@@ -49,6 +49,31 @@ def search_track_in_text(text):
 
     artist, title = match.group("artist"), match.group("title")
     return SearchTrack(title, artist)
+
+
+# TODO prolly wanna refactor - hack
+def get_search_result_message(searchable_name, similar_tracks):
+    log.info(f"similar_tracks: {similar_tracks}")
+
+    if not any(similar_tracks.values()):
+        msg = f"Sorry. No matches found for {searchable_name}"
+        return msg
+
+    # Generates message like:
+    #   """
+    #   Title - Artist
+    #   Spotify | YouTube | YTMusic
+    #   """
+    msg = ""
+    msg += f"{searchable_name}:\n"
+    msg += " | ".join(
+        [
+            f"[{svc_name}]({t.share_link()})" if t else f"{svc_name}"
+            for svc_name, t in sorted(similar_tracks.items())
+        ]
+    )
+
+    return msg
 
 
 def get_mirror_links_message(urls):
