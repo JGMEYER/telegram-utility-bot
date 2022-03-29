@@ -1,3 +1,6 @@
+# Install node packages
+npm ci
+
 # Install python packages
 pipenv clean
 pipenv install --dev
