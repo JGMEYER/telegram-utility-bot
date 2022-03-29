@@ -94,8 +94,11 @@ class YTMusic(StreamingService):
         tracks = []
         for search_result in self._ytmusic_client.search(q, filter="songs"):
             track = search_result
-            ytm_track = YTMusicTrack(
-                track["artists"][0]["name"], track["title"], track["videoId"]
-            )
+
+            # sometimes no artist set
+            artist = track["artists"][0]["name"] if track["artists"] else None
+
+            ytm_track = YTMusicTrack(artist, track["title"], track["videoId"])
             tracks.append(ytm_track)
+
         return tracks
