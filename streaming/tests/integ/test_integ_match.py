@@ -59,5 +59,5 @@ def test_get_similar_track_for_original_track():
     # Search
 
     _assert_matches_all_services(
-        None, "Save Me (New Unreleased Video)", "Jelly Roll"
+        None, "Jelly Roll - Save Me (New Unreleased Video)", None
     )

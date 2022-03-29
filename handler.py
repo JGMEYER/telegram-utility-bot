@@ -111,7 +111,7 @@ def handle_webhook_update(event, context):
     search_track = match.search_track_in_text(text)
     if search_track:
         similar_tracks = match.get_similar_tracks_for_original_track(
-            match.SearchTrack, search_track
+            None, search_track
         )
 
         # TODO prolly wanna refactor - hack
