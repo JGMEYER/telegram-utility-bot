@@ -336,14 +336,15 @@ class TestStreamingServiceTrack(TestCase):
         _assert_cleaned("Title Featuring Calvin & Hobbes")
         _assert_cleaned("Title Featuring: Calvin & Hobbes")
 
-        # r"\s\(New( Unreleased)? Video\)"
+        # r"\s\(Visuali[sz]er\)"
 
-        _assert_cleaned("Title (New Video)")
-        _assert_cleaned("Title (New Unreleased Video)")
+        _assert_cleaned("Title (Visualiser)")
+        _assert_cleaned("Title (Visualizer)")
 
-        # r"\s\(New( Unreleased)? Video\)"
-        _assert_cleaned("Title [New Video]")
-        _assert_cleaned("Title [New Unreleased Video]")
+        # r"\s\[Visuali[sz]er\]"
+
+        _assert_cleaned("Title [Visualiser]")
+        _assert_cleaned("Title [Visualizer]")
 
     def test_cleaned_artist(self):
         mock_sst = MockStreamingServiceTrack(None, None, None)

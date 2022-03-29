@@ -92,8 +92,8 @@ class StreamingServiceTrack(metaclass=ABCMeta):
         r"\s\((Ft\.?|Feat\.?|Featuring)\:?\s.*\)",  # ()'s
         r"\s\[(Ft\.?|Feat\.?|Featuring)\:?\s.*\]",  # []'s
         r"\s(Ft\.?|Feat\.?|Featuring)\:?\s.*",
-        # TODO match on "(from ...)"
-        # TODO match visualizer
+        r"\s\(Visuali[sz]er\)",  # ()'s
+        r"\s\[Visuali[sz]er\]",  # []'s
     ]
     ARTIST_EXCLUDE_EXPRESSIONS = [r"\s\-\sTopic$"]
 
