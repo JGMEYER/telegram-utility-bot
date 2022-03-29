@@ -32,13 +32,13 @@ class YTMusicTrack(StreamingServiceTrack):
     into a different base class later.
     """
 
-    title = None
     artist = None
+    title = None
     id = None
 
-    def __init__(self, title, artist, id):
-        self.title = title
+    def __init__(self, artist, title, id):
         self.artist = artist
+        self.title = title
         self.id = id
 
     def share_link(self):
@@ -82,8 +82,8 @@ class YTMusic(StreamingService):
             return None
         query_result = query_response["items"][0]
         track = YTMusicTrack(
-            query_result["snippet"]["title"],
             query_result["snippet"]["channelTitle"],  # best guess
+            query_result["snippet"]["title"],
             query_result["id"],
         )
         return track
@@ -94,8 +94,11 @@ class YTMusic(StreamingService):
         tracks = []
         for search_result in self._ytmusic_client.search(q, filter="songs"):
             track = search_result
-            ytm_track = YTMusicTrack(
-                track["title"], track["artists"][0]["name"], track["videoId"]
-            )
+
+            # sometimes no artist set
+            artist = track["artists"][0]["name"] if track["artists"] else None
+
+            ytm_track = YTMusicTrack(artist, track["title"], track["videoId"])
             tracks.append(ytm_track)
+
         return tracks

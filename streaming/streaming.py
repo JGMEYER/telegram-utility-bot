@@ -66,7 +66,7 @@ class StreamingService(object, metaclass=ABCMeta):
 class StreamingServiceTrack(metaclass=ABCMeta):
     def __str__(self):
         return (
-            f"{self.__class__.__name__}: '{self.title}' - {self.artist} "
+            f"{self.__class__.__name__}: {self.artist} - '{self.title}' "
             f"({self.id})"
         )
 
@@ -97,11 +97,11 @@ class StreamingServiceTrack(metaclass=ABCMeta):
     ARTIST_EXCLUDE_EXPRESSIONS = [r"\s\-\sTopic$"]
 
     @abstractproperty
-    def title(self):
+    def artist(self):
         raise NotImplementedError
 
     @abstractproperty
-    def artist(self):
+    def title(self):
         raise NotImplementedError
 
     @abstractproperty
@@ -135,7 +135,7 @@ class StreamingServiceTrack(metaclass=ABCMeta):
     @property
     def searchable_name(self):
         """Returns a name that can be used to search against other services"""
-        return f"{self.cleaned_title} - {self.cleaned_artist}".lower()
+        return f"{self.cleaned_artist} - {self.cleaned_title}".lower()
 
     @abstractmethod
     def share_link(self):

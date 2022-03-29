@@ -7,18 +7,18 @@ from ....service.youtube import YouTube, YouTubeTrack
 class TestIntegYouTube(TestCase):
     """Integration tests for YouTube"""
 
-    def _valid_searchable_names(self, artist, name):
+    def _valid_searchable_names(self, artist, title):
         for div in YouTubeTrack.SEARCHABLE_NAME_DIVIDERS:
             yield from [
-                f"{name} {div} {artist}".lower(),
-                f"{artist} {div} {name}".lower(),
+                f"{title} {div} {artist}".lower(),
+                f"{artist} {div} {title}".lower(),
             ]
 
     @pytest.mark.integ
     def test_youtube_track_fetch(self):
         """Test ability to fetch tracks"""
         with YouTube() as yt:
-            track = yt.search_one_track("G.O.A.T. Polyphia")
+            track = yt.search_one_track("Polyphia G.O.A.T.")
             self.assertIn(
                 track.searchable_name.lower(),
                 self._valid_searchable_names("Polyphia", "G.O.A.T."),

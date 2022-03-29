@@ -53,13 +53,13 @@ def request_token():
 
 
 class SpotifyTrack(StreamingServiceTrack):
-    title = None
     artist = None
+    title = None
     id = None
 
-    def __init__(self, title, artist, trackId, url=None):
-        self.title = title
+    def __init__(self, artist, title, trackId, url=None):
         self.artist = artist
+        self.title = title
         self.id = trackId
         self.url = url
 
@@ -97,7 +97,7 @@ class Spotify(StreamingService):
         content = json.loads(response.content)
         if content:
             return SpotifyTrack(
-                content["name"], content["artists"][0]["name"], trackId
+                content["artists"][0]["name"], content["name"], trackId
             )
         else:
             return None
@@ -126,8 +126,8 @@ class Spotify(StreamingService):
         tracks = []
         for search_result in search_results["tracks"]["items"]:
             track = SpotifyTrack(
-                search_result["name"],
                 search_result["artists"][0]["name"],  # best guess
+                search_result["name"],
                 search_result["id"],
                 search_result["external_urls"]["spotify"],
             )

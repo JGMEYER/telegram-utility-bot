@@ -14,7 +14,7 @@ def test_get_similar_track_for_original_track():
     Use examples from prior failed cases.
     """
 
-    def _assert_matches_all_services(track_svc, title, artist):
+    def _assert_matches_all_services(track_svc, artist, title):
         if track_svc == Spotify:
             track_type = SpotifyTrack
         elif track_svc == YouTube:
@@ -24,7 +24,7 @@ def test_get_similar_track_for_original_track():
         else:
             track_type = match.SearchTrack
 
-        track = track_type(title, artist, None)
+        track = track_type(artist, title, None)
         similar_tracks = match.get_similar_tracks_for_original_track(
             track_svc, track
         )
@@ -38,26 +38,26 @@ def test_get_similar_track_for_original_track():
 
     # Spotify
 
-    _assert_matches_all_services(Spotify, "Blood Bank", "Bon Iver")
+    _assert_matches_all_services(Spotify, "Bon Iver", "Blood Bank")
 
     # YouTube
 
     _assert_matches_all_services(
-        YouTube, "Bon Iver - PDLIF - Official Video", "Bon Iver"
+        YouTube, "Bon Iver", "Bon Iver - PDLIF - Official Video"
     )
     # Video actually separates title and artist
     _assert_matches_all_services(
-        YouTube, "Patterns (Demo)", "Letters To The Editor - Topic"
+        YouTube, "Letters To The Editor - Topic", "Patterns (Demo)"
     )
 
     # YTMusic
 
     _assert_matches_all_services(
-        YTMusic, "Save Me (New Unreleased Video)", "Jelly Roll"
+        YTMusic, "Jelly Roll", "Save Me (New Unreleased Video)"
     )
 
     # Search
 
     _assert_matches_all_services(
-        None, "Jelly Roll - Save Me (New Unreleased Video)", None
+        None, None, "Jelly Roll - Save Me (New Unreleased Video)"
     )

@@ -108,6 +108,7 @@ def handle_webhook_update(event, context):
             "body": "Could not parse text from Telegram update",
         }
 
+    # handle music search
     search_track = match.search_track_in_text(TELEGRAM_BOT_NAME, text)
     if search_track:
         similar_tracks = match.get_similar_tracks_for_original_track(
