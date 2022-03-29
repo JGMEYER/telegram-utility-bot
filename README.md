@@ -56,6 +56,8 @@ export TELEGRAM_CHAT_ID_DEV=
 export TELEGRAM_CHAT_ID_PROD=
 export TELEGRAM_TOKEN_DEV=
 export TELEGRAM_TOKEN_PROD=
+export TELEGRAM_BOT_NAME_DEV=
+export TELEGRAM_BOT_NAME_PROD=
 
 # logging (recommend same credentials as DEV chat if no other group setup)
 export TELEGRAM_LOG_CHAT_ID_DEV=

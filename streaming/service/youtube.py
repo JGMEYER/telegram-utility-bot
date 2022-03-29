@@ -40,7 +40,7 @@ class YouTubeTrack(StreamingServiceTrack):
     def __init__(self, title, artist, id):
         self.title = title
         self.artist = (
-            artist  # YouTube does not always provide artist information
+            artist or ""  # YouTube does not always provide artist information
         )
         self.id = id
 
@@ -51,10 +51,10 @@ class YouTubeTrack(StreamingServiceTrack):
     @property
     def searchable_name(self):
         """Returns a name that can be used to search against other services"""
-        if self.artist.endswith("- Topic"):
+        if self.artist and self.artist.endswith("- Topic"):
             return f"{self.cleaned_title.lower()} - {self.artist[:-7].lower()}"
-        else:
-            return self.cleaned_title.lower()
+
+        return self.cleaned_title.lower()
 
     def similarity_ratio(self, other_track):
         """Overrides StreamingServiceTrack.similarity_ratio()

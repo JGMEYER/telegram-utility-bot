@@ -14,6 +14,15 @@ def get_api_url(token):
     return f"https://api.telegram.org/bot{token}/"
 
 
+def get_mentions_from_text(text, entities):
+    mentions = []
+    for idx, e in enumerate(entities):
+        if e["type"] == "mention":
+            start, end = e["offset"], e["offset"] + e["length"]
+            mentions.append(text[start:end])
+    return mentions
+
+
 def send_message(
     token, chat_id, text, parse_mode="markdown", disable_link_previews=False
 ):

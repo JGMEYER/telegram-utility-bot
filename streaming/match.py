@@ -1,11 +1,13 @@
-import re
 import logging
+import random
+import re
 from typing import Dict
 
 from streaming import (
     SUPPORTED_STREAMING_SERVICES,
     StreamingServiceActionNotSupportedError,
     StreamingServiceTrack,
+    YouTubeTrack,
     get_streaming_service_for_url,
 )
 from utils.log import setup_logger
@@ -21,6 +23,68 @@ def urls_in_text(text):
     """Retrieves list of valid urls from text"""
     urls = [w for w in text.split() if re.match("http[s]?://.*", w)]
     return urls
+
+
+class SearchTrack(YouTubeTrack):
+    """
+    HACK: At time of writing, YouTubeTrack is the only type that can more intelligently parse out the artist
+    and track from a single title. We abuse that fact here to avoid rewriting logic.
+    """
+
+    def __init__(self, title, *argv):
+        super().__init__(title, None, None)
+
+    def share_link(self):
+        raise NotImplementedError(
+            "A search track does not have an associated URL"
+        )
+
+
+def search_track_in_text(telegram_bot_name, text):
+    # e.g. "@TelegramBot title - artist" (title and artist combined into title)
+    search_regex = fr"\@{telegram_bot_name}\s(?P<title>.*)"
+
+    match = re.search(search_regex, text)
+    if match is None:
+        return None
+
+    title = match.group("title")
+    return SearchTrack(title)
+
+
+SEARCH_NOT_FOUND_MESSAGES = [
+    "Me, an empath, sensing that that song doesn't exist.",
+    "Song not found. Did you try switching it to Wumbo?",
+    "That's not a real song, don't gaslight me.",
+    "Look, I tried my best okay? The song's not there.",
+    "There's approximately 97 million songs in the world. That was not one of them.",
+    "Ah sorry, seems that song is out of stock. Supply chain issues, y'know?",
+    "Sometimes I find the song you're looking for... this is not one of those times.",
+]
+
+
+def get_search_result_message(searchable_name, similar_tracks, search_author):
+    log.info(f"similar_tracks: {similar_tracks}")
+
+    if not any(similar_tracks.values()):
+        fail_msg = random.choice(SEARCH_NOT_FOUND_MESSAGES)
+        return f"@{search_author} {fail_msg}"
+
+    # Generates message like:
+    #   """
+    #   Title - Artist
+    #   Spotify | YouTube | YTMusic
+    #   """
+    msg = ""
+    msg += f"{searchable_name}:\n"
+    msg += " | ".join(
+        [
+            f"[{svc_name}]({t.share_link()})" if t else f"{svc_name}"
+            for svc_name, t in sorted(similar_tracks.items())
+        ]
+    )
+
+    return msg
 
 
 def get_mirror_links_message(urls):
