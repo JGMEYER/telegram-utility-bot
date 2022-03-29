@@ -40,9 +40,11 @@ class SearchTrack(YouTubeTrack):
         )
 
 
-def search_track_in_text(text):
-    # TODO grab bot name from env var
-    match = re.search(r"\@BopizTestBot\s(?P<title>.*)", text)
+def search_track_in_text(telegram_bot_name, text):
+    # e.g. "@TelegramBot title - artist" (title and artist combined into title)
+    search_regex = fr"\@{telegram_bot_name}\s(?P<title>.*)"
+
+    match = re.search(search_regex, text)
     if match is None:
         return None
 

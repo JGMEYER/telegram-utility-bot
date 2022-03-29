@@ -13,6 +13,7 @@ log = logging.getLogger(__name__)
 
 TELEGRAM_TOKEN = getenv("TELEGRAM_TOKEN")
 TELEGRAM_CHAT_ID = getenv("TELEGRAM_CHAT_ID")
+TELEGRAM_BOT_NAME = getenv("TELEGRAM_BOT_NAME")
 TELEGRAM_ALERT_GROUP = json.loads(os.environ["TELEGRAM_ALERT_GROUP"])
 
 
@@ -107,8 +108,7 @@ def handle_webhook_update(event, context):
             "body": "Could not parse text from Telegram update",
         }
 
-    # TODO cleanup logic
-    search_track = match.search_track_in_text(text)
+    search_track = match.search_track_in_text(TELEGRAM_BOT_NAME, text)
     if search_track:
         similar_tracks = match.get_similar_tracks_for_original_track(
             None, search_track
@@ -120,7 +120,6 @@ def handle_webhook_update(event, context):
         except KeyError:
             log.warning("Username not found in message", exc_info=True)
 
-        # TODO prolly wanna refactor
         response_text = match.get_search_result_message(
             search_track.searchable_name, similar_tracks, search_author
         )
