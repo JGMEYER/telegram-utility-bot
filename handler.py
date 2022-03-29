@@ -114,9 +114,15 @@ def handle_webhook_update(event, context):
             None, search_track
         )
 
-        # TODO prolly wanna refactor - hack
+        search_author = "<username not found>"
+        try:
+            search_author = event_body["message"]["from"]["username"]
+        except KeyError:
+            log.warning("Username not found in message", exc_info=True)
+
+        # TODO prolly wanna refactor
         response_text = match.get_search_result_message(
-            search_track.searchable_name, similar_tracks
+            search_track.searchable_name, similar_tracks, search_author
         )
         response = telegram.send_message(
             TELEGRAM_TOKEN,

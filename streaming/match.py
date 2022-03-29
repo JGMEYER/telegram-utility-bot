@@ -61,11 +61,12 @@ SEARCH_NOT_FOUND_MESSAGES = [
 ]
 
 
-def get_search_result_message(searchable_name, similar_tracks):
+def get_search_result_message(searchable_name, similar_tracks, search_author):
     log.info(f"similar_tracks: {similar_tracks}")
 
     if not any(similar_tracks.values()):
-        return random.choice(SEARCH_NOT_FOUND_MESSAGES)
+        fail_msg = random.choice(SEARCH_NOT_FOUND_MESSAGES)
+        return f"@{search_author} {fail_msg}"
 
     # Generates message like:
     #   """
