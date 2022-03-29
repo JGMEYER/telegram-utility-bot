@@ -31,8 +31,8 @@ class SearchTrack(YouTubeTrack):
     and track from a single title. We abuse that fact here to avoid rewriting logic.
     """
 
-    def __init__(self, title, *argv):
-        super().__init__(title, None, None)
+    def __init__(self, artist, title, *argv):
+        super().__init__(artist, title, None)
 
     def share_link(self):
         raise NotImplementedError(
@@ -49,7 +49,7 @@ def search_track_in_text(telegram_bot_name, text):
         return None
 
     title = match.group("title")
-    return SearchTrack(title)
+    return SearchTrack(None, title)
 
 
 SEARCH_NOT_FOUND_MESSAGES = [
