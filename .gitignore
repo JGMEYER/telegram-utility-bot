@@ -30,4 +30,3 @@ node_modules/
 # Project-specific
 vendored/
 secrets/
-package-lock.json

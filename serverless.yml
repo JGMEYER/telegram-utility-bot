@@ -8,9 +8,11 @@ provider:
   environment: ${file(./env.yml):${opt:stage, self:provider.stage}}
 
 package:
-  exclude:
-    # Fix for packages being too large to unpack
-    - node_modules/**
+  patterns:
+    - '!.idea/**'
+    - '!.vscode/**'
+    - '!node_modules/**' # Fix for packages being too large to unpack
+    - '!secrets/**'
 
 functions:
   post:
