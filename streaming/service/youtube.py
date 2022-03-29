@@ -33,15 +33,15 @@ class YouTubeTrack(StreamingServiceTrack):
     # Symbols that may lie between an artist and track title
     SEARCHABLE_NAME_DIVIDERS = {"-", "|", "»"}
 
-    title = None
     artist = None
+    title = None
     id = None
 
-    def __init__(self, title, artist, id):
-        self.title = title
+    def __init__(self, artist, title, id):
         self.artist = (
             artist or ""  # YouTube does not always provide artist information
         )
+        self.title = title
         self.id = id
 
     def share_link(self):
@@ -52,7 +52,7 @@ class YouTubeTrack(StreamingServiceTrack):
     def searchable_name(self):
         """Returns a name that can be used to search against other services"""
         if self.artist and self.artist.endswith("- Topic"):
-            return f"{self.cleaned_title.lower()} - {self.artist[:-7].lower()}"
+            return f"{self.artist[:-7].lower()} - {self.cleaned_title.lower()}"
 
         return self.cleaned_title.lower()
 
@@ -131,8 +131,8 @@ class YouTube(StreamingService):
             return None
         query_result = query_response["items"][0]
         track = YouTubeTrack(
-            query_result["snippet"]["title"],
             query_result["snippet"]["channelTitle"],  # best guess
+            query_result["snippet"]["title"],
             query_result["id"],
         )
         return track
@@ -153,8 +153,8 @@ class YouTube(StreamingService):
         for search_result in search_response.get("items", []):
             if search_result["id"]["kind"] == "youtube#video":
                 track = YouTubeTrack(
-                    search_result["snippet"]["title"],
                     search_result["snippet"]["channelTitle"],  # best guess
+                    search_result["snippet"]["title"],
                     search_result["id"]["videoId"],
                 )
                 tracks.append(track)
