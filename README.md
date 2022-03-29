@@ -113,8 +113,8 @@ Once you have the domain registered, update all `$BOT_DOMAIN_{stage}` in secrets
 
 1. `$ npm install` - install this serverless package and its dependencies
 1. `$ sls create_domain` - create a custom dev domain
-1. `$ sls create_domain --s prod` - create a custom prod domain
-1. Once the domains are reachable in your browser, deploy dev and prod with `$ sls deploy && sls deploy --s prod`
+1. `$ sls create_domain -s prod` - create a custom prod domain
+1. Once the domains are reachable in your browser, deploy dev and prod with `$ sls deploy && sls deploy -s prod`
 
 ### Telegram setup
 
@@ -166,7 +166,7 @@ Prod:
 
 ```bash
 . setup
-sls deploy --s prod
+sls deploy -s prod
 ```
 
 Serverless will package all files into .zip archive and uploads to AWS. It will then create an AWS API Gateway and return an API endpoint. You will receive something like this:
