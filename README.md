@@ -98,7 +98,7 @@ Follow the steps below to setup your environment. Check out each tool's correspo
 1. Install pipenv: `brew install pipenv`
 1. Install pre-commit hooks: `pipenv run pre-commit install`
 1. Setup serverless
-1. Setup the environment: `. setup`
+1. Setup the environment: `source setup`
 
 ### AWS Setup
 
@@ -158,17 +158,19 @@ For other assistance, check out the [Telegram documentation](https://core.telegr
 
 ## Deploy to AWS
 
+> WARNING: You *must* run setup before a deploy.
+
 Dev:
 
 ```bash
-. setup
+source setup
 sls deploy
 ```
 
 Prod:
 
 ```bash
-. setup
+source setup
 sls deploy -s prod
 ```
 
@@ -280,21 +282,21 @@ curl --header "Accept: application/json" --header "Content-Type: application/jso
 ### Unit tests
 
 ```bash
-. setup
+source setup
 pipenv run pytest -m 'not integ' -rf
 ```
 
 ### Integration tests
 
 ```bash
-. setup
+source setup
 pipenv run pytest -m 'integ' -rf --log-level=WARNING
 ```
 
 ### All unit/integration tests
 
 ```bash
-. setup
+source setup
 pipenv run pytest -rf
 ```
 

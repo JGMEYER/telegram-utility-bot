@@ -42,7 +42,7 @@ custom:
     host: localhost
     port: 3000
   pythonRequirements:
-    usePipenv: true
+    usePipenv: false
     dockerizePip: non-linux
   customDomain:
     domainName: ${file(./env.yml):${opt:stage, self:provider.stage}.BOT_DOMAIN}

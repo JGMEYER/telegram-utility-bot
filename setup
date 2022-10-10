@@ -4,6 +4,7 @@ npm ci
 # Install python packages
 pipenv clean
 pipenv install --dev
+pipenv requirements > requirements.txt
 
 # Configure env
 . secrets/env
