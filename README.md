@@ -1,7 +1,6 @@
 # Telegram-Utility-Bot
 
-> NOTE: This project was developed on MacOS for python 3.6.0. As such, the
-commands provided in this guide are intended for users on a MacOS installation.
+> NOTE: This project was developed on MacOS for python 3.6.0 and ported to 3.9.0. As such, the commands provided in this guide are intended for users on a MacOS installation.
 
 ## About
 
@@ -33,7 +32,11 @@ This project compiles its python dependencies on a Docker instance to ensure tha
 
 Pipenv, though not strictly required, is recommended for managing python versions. You will need to mess around with serverless.yml and your deployment process to build this project with serverless, otherwise.
 
-The README herein assumes you are running python from within the `pipenv shell`. _This will probably bite you at some point, so be sure to run commands from the pipenv shell unless already specified directly._ Make sure you have pipenv installed before modifying this project. For more information on pipenv, check out [the basics](https://docs.pipenv.org/en/latest/basics/).
+```bash
+brew install pipenv
+```
+
+The README herein assumes you are running python from within the `pipenv shell`. _This will probably bite you at some point, so be sure to run commands from the pipenv shell unless already specified directly._ Make sure you have pipenv installed before modifying this project. For more information on pipenv, check out [the basics](https://docs.pipenv.org/).
 
 ## Env Variables
 

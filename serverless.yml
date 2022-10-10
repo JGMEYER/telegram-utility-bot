@@ -2,7 +2,7 @@ service: my-telegram-bot
 
 provider:
   name: aws
-  runtime: python3.6
+  runtime: python3.9
   stage: dev
   region: us-east-1
   environment: ${file(./env.yml):${opt:stage, self:provider.stage}}
