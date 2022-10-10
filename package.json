@@ -4,7 +4,7 @@
   "description": "A general-use telegram utility bot.",
   "main": "index.js",
   "dependencies": {
-    "serverless": "^3.10.0",
+    "serverless": "^3.22.0",
     "serverless-python-requirements": "^5.0.0"
   },
   "devDependencies": {
