@@ -42,7 +42,7 @@ class SearchTrack(YouTubeTrack):
 
 def search_track_in_text(telegram_bot_name, text):
     # e.g. "@TelegramBot title - artist" (title and artist combined into title)
-    search_regex = fr"\@{telegram_bot_name}\s(?P<title>.*)"
+    search_regex = rf"\@{telegram_bot_name}\s(?P<title>.*)"
 
     match = re.search(search_regex, text)
     if match is None:
@@ -73,7 +73,7 @@ def get_search_result_message(searchable_name, similar_tracks, search_author):
     # Generates message like:
     #   """
     #   Title - Artist
-    #   Spotify | YouTube | YTMusic
+    #   AppleMusic | Spotify | YouTube | YTMusic
     #   """
     msg = ""
     msg += f"{searchable_name}:\n"
@@ -108,10 +108,10 @@ def get_mirror_links_message(urls):
             # Generates message like:
             #   """
             #   Song - Artist
-            #   Spotify | YouTube | YTMusic
+            #   AppleMusic | Spotify | YouTube | YTMusic
             #
             #   Song - Artist
-            #   Spotify | YouTube | YTMusic
+            #   AppleMusic | Spotify | YouTube | YTMusic
             #   """
             if msg:
                 msg += "\n\n"
@@ -155,8 +155,8 @@ def get_similar_tracks_from_urls(urls, include_original=False):
                 log.error("Getting track from track id", exc_info=True)
                 continue
 
-            similar_tracks_from_original = get_similar_tracks_for_original_track(  # noqa: E501
-                svc, original_track
+            similar_tracks_from_original = (
+                get_similar_tracks_for_original_track(svc, original_track)
             )
             if include_original:
                 similar_tracks_from_original[svc.__name__] = original_track

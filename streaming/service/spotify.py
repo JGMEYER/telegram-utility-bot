@@ -124,12 +124,12 @@ class Spotify(StreamingService):
         search_results = json.loads(search_response.content)
 
         tracks = []
-        for search_result in search_results["tracks"]["items"]:
+        for res in search_results["tracks"]["items"]:
             track = SpotifyTrack(
-                search_result["artists"][0]["name"],  # best guess
-                search_result["name"],
-                search_result["id"],
-                search_result["external_urls"]["spotify"],
+                res["artists"][0]["name"],  # best guess
+                res["name"],
+                res["id"],
+                res["external_urls"]["spotify"],
             )
             tracks.append(track)
         return tracks
