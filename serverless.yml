@@ -42,8 +42,11 @@ custom:
     host: localhost
     port: 3000
   pythonRequirements:
-    usePipenv: false
     dockerizePip: non-linux
+    dockerImage: public.ecr.aws/sam/build-python3.9:latest
+    usePoetry: true
+    requirePoetryLockFile: false
+    slim: true
   customDomain:
     domainName: ${file(./env.yml):${opt:stage, self:provider.stage}.BOT_DOMAIN}
     stage: ${opt:stage, self:provider.stage}

@@ -28,15 +28,11 @@ Docker.
 
 This project compiles its python dependencies on a Docker instance to ensure that all installed dependencies are compatible with amazonlinux. Make sure you have Docker installed and running when iterating on this project. See [Docker's website](https://www.docker.com/) for setup instructions.
 
-### Pipenv
+### Poetry
 
-Pipenv, though not strictly required, is recommended for managing python versions. You will need to mess around with serverless.yml and your deployment process to build this project with serverless, otherwise.
+Poetry, though not strictly required, is recommended for managing python versions. You will need to mess around with serverless.yml and your deployment process to build this project with serverless, otherwise.
 
-```bash
-brew install pipenv
-```
-
-The README herein assumes you are running python from within the `pipenv shell`. _This will probably bite you at some point, so be sure to run commands from the pipenv shell unless already specified directly._ Make sure you have pipenv installed before modifying this project. For more information on pipenv, check out [the basics](https://docs.pipenv.org/).
+The README herein assumes you are running python from within the `poetry shell`. _This will probably bite you at some point, so be sure to run commands from the poetry shell unless already specified directly._ Make sure you have poetry installed before modifying this project. For more information on install, check out the [poetry docs](https://python-poetry.org/docs/).
 
 ## Env Variables
 
@@ -62,7 +58,7 @@ export TELEGRAM_TOKEN_PROD=
 export TELEGRAM_BOT_NAME_DEV=
 export TELEGRAM_BOT_NAME_PROD=
 
-# logging (recommend same credentials as DEV chat if no other group setup)
+# logging (recommend same credentials as DEV chat if no other group set up)
 export TELEGRAM_LOG_CHAT_ID_DEV=
 export TELEGRAM_LOG_TOKEN=
 
@@ -95,8 +91,8 @@ Follow the steps below to setup your environment. Check out each tool's correspo
 1. Create a new path/file "./secrets/env"
 1. Setup your [AWS account](https://aws.amazon.com/)
 1. Install and run [Docker](https://www.docker.com/)
-1. Install pipenv: `brew install pipenv`
-1. Install pre-commit hooks: `pipenv run pre-commit install`
+1. Install poetry: `brew install poetry`
+1. Install pre-commit hooks: `poetry run pre-commit install`
 1. Setup serverless
 1. Setup the environment: `source setup`
 
@@ -270,7 +266,7 @@ npm install serverless-offline serverless@latest
 Run serverless:
 
 ```bash
-pipenv run sls offline
+poetry run sls offline
 ```
 
 Send requests in a new terminal tab like:
@@ -283,21 +279,21 @@ curl --header "Accept: application/json" --header "Content-Type: application/jso
 
 ```bash
 source setup
-pipenv run pytest -m 'not integ' -rf
+poetry run pytest -m 'not integ' -rf
 ```
 
 ### Integration tests
 
 ```bash
 source setup
-pipenv run pytest -m 'integ' -rf --log-level=WARNING
+poetry run pytest -m 'integ' -rf --log-level=WARNING
 ```
 
 ### All unit/integration tests
 
 ```bash
 source setup
-pipenv run pytest -rf
+poetry run pytest -rf
 ```
 
 ## Test Commands

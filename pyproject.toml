@@ -1,0 +1,32 @@
+[tool.poetry]
+name = "telegram-utility-bot"
+version = "0.1.0"
+description = ""
+authors = ["JGMEYER <meyer.justian@gmail.com>"]
+readme = "README.md"
+packages = [{include = "telegram_utility_bot"}]
+
+[tool.poetry.dependencies]
+python = "^3.9"
+google-api-python-client = "*"
+google-auth = "*"
+google-auth-httplib2 = "*"
+google-auth-oauthlib = "*"
+pre-commit = "*"
+pytest-xdist = "*"
+requests = "*"
+rsa = "*"
+urllib3 = "*"
+wheel = "*"
+ytmusicapi = "*"
+
+[tool.poetry.dev-dependencies]
+black = "==19.10b0"
+flake8 = "*"
+pre-commit = "*"
+pytest = "*"
+PyYAML = ">=5.4"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
