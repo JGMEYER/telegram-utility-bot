@@ -21,7 +21,7 @@ class StreamingService(object, metaclass=ABCMeta):
 
     @abstractmethod
     def __enter__(self):
-        """Use this to instantiate a client or handle other setup.sh"""
+        """Use this to instantiate a client or handle other setup"""
         pass
 
     @abstractmethod
