@@ -1,28 +1,23 @@
 version: 2.1
 
 orbs:
-  python: circleci/python@0.2.1
-
+  python: circleci/python@2.0.3
 jobs:
-  build-and-test:
+  build_and_test:
     docker:
-      - image: circleci/python:3.6
+      - image: circleci/python:3.9
     executor: python/default
     steps:
       - checkout
-      - restore_cache:  # ensure this step occurs *before* installing dependencies
-          key: deps9-{{ .Branch }}-{{ checksum "Pipfile.lock" }}
+      - python/install-packages:
+          pkg-manager: poetry
+          args: --no-root  # important for docker - install dependencies only, not this project
       - run: echo $TELEGRAM_ALERT_GROUP
-      - run: |
-          sudo pip install pipenv
-          pipenv install
-      - run: pipenv run pytest -m 'not integ' -rf
+      - run: poetry run pytest -m 'not integ' -rf
       # will require a way to store gmusic .cred file and integration context
-      # - run: pipenv run pytest -m 'integ' -rf --log-level=WARNING
-
-
+      # - run: poetry run pytest -m 'integ' -rf --log-level=WARNING
 workflows:
   main:
     jobs:
-      - build-and-test:
+      - build_and_test:
           context: Integration  # still required for unit tests

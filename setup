@@ -1,11 +1,28 @@
-# Install node packages
-npm ci
+#!/bin/bash
 
-# Install python packages
-pipenv clean
-pipenv install --dev
-pipenv requirements > requirements.txt
+echo -e "\033[1;32m===> Checking node version\033[0m"
+correct_node_version=$(node -v 2>&1 | grep 'v14.15.4')
+if [[ -z "$correct_node_version" ]]
+then
+    # Read more about this bug here: https://github.com/serverless/serverless/issues/8794
+    echo -e "\033[1;31mNode version must be v14.15.4 due to a zero-byte bug with serverless-python-requirements. Set with 'sudo n 14.15.4'.\033[0m"
+    exit 1
+else
+    echo 'done'
+fi
 
-# Configure env
+echo -e "\033[1;32m===> Setting env variables\033[0m"
 . secrets/env
-echo "Env variables set"
+echo 'done'
+
+echo -e "\033[1;32m===> Installing node packages\033[0m"
+npm ci
+echo 'done'
+
+echo -e "\033[1;32m===> Syncing Poetry packages\033[0m"
+poetry install --sync
+echo 'done'
+
+echo -e "\033[1;32m===> Initializing pre-commit hooks\033[0m"
+poetry run pre-commit install
+echo 'done'
