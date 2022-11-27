@@ -32,7 +32,6 @@ def test_get_similar_track_for_original_track():
             track_svc, track
         )
 
-        print(similar_tracks.values())
         assert all(similar_tracks.values())
         # We want this to fail when adding new svcs, for visibility
         assert len(similar_tracks.keys()) == (
@@ -45,7 +44,7 @@ def test_get_similar_track_for_original_track():
 
     # Spotify
 
-    _assert_matches_all_services(Spotify, "Bon Iver", "Blood Bank")
+    _assert_matches_all_services(Spotify, "Avenged Sevenfold", "Almost Easy")
 
     # YouTube
 
@@ -53,9 +52,7 @@ def test_get_similar_track_for_original_track():
         YouTube, "Bon Iver", "Bon Iver - PDLIF - Official Video"
     )
     # Video actually separates title and artist
-    _assert_matches_all_services(
-        YouTube, "Letters To The Editor - Topic", "Patterns (Demo)"
-    )
+    _assert_matches_all_services(YouTube, "Bon Iver - Topic", "PDLIF")
 
     # YTMusic
 

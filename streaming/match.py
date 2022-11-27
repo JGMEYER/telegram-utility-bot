@@ -155,6 +155,13 @@ def get_similar_tracks_from_urls(urls, include_original=False):
                 log.error("Getting track from track id", exc_info=True)
                 continue
 
+            if not original_track:
+                log.warning(
+                    "No track result for track id unable to fetch similar tracks",
+                    exc_info=True,
+                )
+                continue
+
             similar_tracks_from_original = (
                 get_similar_tracks_for_original_track(svc, original_track)
             )

@@ -53,6 +53,7 @@ def request_token():
 
 
 class SpotifyTrack(StreamingServiceTrack):
+    # Override abstract properties
     artist = None
     title = None
     id = None
@@ -90,9 +91,9 @@ class Spotify(StreamingService):
         try:
             response = requests.get(track_url, headers=headers)
             response.raise_for_status()
-        except Exception:
+        except Exception as e:
             log.error("Requesting Spotify track from id", exc_info=True)
-            return None
+            raise e
 
         content = json.loads(response.content)
         if content:

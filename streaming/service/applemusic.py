@@ -15,6 +15,7 @@ BASE_API_URL = "https://api.music.apple.com/v1/"
 
 
 class AppleMusicTrack(StreamingServiceTrack):
+    # Override abstract properties
     artist = None
     title = None
     id = None
@@ -26,13 +27,10 @@ class AppleMusicTrack(StreamingServiceTrack):
         self.url = url
 
     def share_link(self):
-        """WARNING: This is not going through an API and is subject to break"""
-        return (
-            self.url
-            if self.url
-            # TODO test this
-            else f"what to return? do I need all the album info?"
-        )
+        if not self.url:
+            # This should never be left unset outside a test case
+            raise AttributeError("self.url never defined")
+        return self.url
 
 
 class AppleMusic(StreamingService):
@@ -41,26 +39,47 @@ class AppleMusic(StreamingService):
     ]
 
     def __enter__(self):
+        self._token = getenv("APPLE_DEVELOPER_JWT")
         return self
 
     def __exit__(self, *args):
         pass
 
     def get_track_from_trackId(self, trackId):
-        pass
+        songs_url = urljoin(BASE_API_URL, f"catalog/{STOREFRONT}/songs")
+        headers = {"Authorization": f"Bearer {self._token}"}
+        params = {"ids": str(trackId)}
+        try:
+            songs_response = requests.get(
+                songs_url, headers=headers, params=params
+            )
+            songs_response.raise_for_status()
+        except Exception as e:
+            log.error("Requesting Apple Music track from id", exc_info=True)
+            raise e
+
+        songs_results = json.loads(songs_response.content)
+        if songs_results["data"]:
+            res = songs_results["data"][0]
+            return AppleMusicTrack(
+                res["attributes"]["artistName"],
+                res["attributes"]["name"],
+                res["attributes"]["playParams"]["id"],
+                res["attributes"]["url"],
+            )
+        else:
+            return None
 
     def search_tracks(self, q, max_results=5):
         # Apple Music requires '+' delimiter instead of spaces
         q = q.replace(" ", "+")
 
-        token = getenv("APPLE_DEVELOPER_JWT")
-
         search_url = urljoin(BASE_API_URL, f"catalog/{STOREFRONT}/search")
-        # TODO headers
-        headers = {"Authorization": f"Bearer {token}"}
+        headers = {"Authorization": f"Bearer {self._token}"}
         params = {
             "types": "songs",
             "with": "topResults",
+            "term": q,
         }
         try:
             search_response = requests.get(
@@ -73,12 +92,13 @@ class AppleMusic(StreamingService):
         search_results = json.loads(search_response.content)
 
         tracks = []
-        for res in search_results["results"]["songs"]["data"]:
-            track = AppleMusicTrack(
-                res["attributes"]["artistName"],
-                res["attributes"]["name"],
-                res["attributes"]["playParams"]["id"],
-                res["attributes"]["url"],
-            )
-            tracks.append(track)
+        if search_results["results"]:
+            for res in search_results["results"]["songs"]["data"]:
+                track = AppleMusicTrack(
+                    res["attributes"]["artistName"],
+                    res["attributes"]["name"],
+                    res["attributes"]["playParams"]["id"],
+                    res["attributes"]["url"],
+                )
+                tracks.append(track)
         return tracks
