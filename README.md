@@ -74,8 +74,8 @@ export TELEGRAM_API_GATEWAY_ROOT_PROD="https://$BOT_DOMAIN_PROD"
 # API SECRETS
 
 # Apple Music API
-export APPLE_DEVELOPER_JWT="<not set>"
 export APPLE_DEVELOPER_JWT_DEV="<not set>"
+export APPLE_DEVELOPER_JWT_PROD="<not set>"
 
 # Spotify API
 export SPOTIFY_CLIENT_ID="<not set>"
@@ -164,7 +164,7 @@ For other assistance, check out the [Telegram documentation](https://core.telegr
 1. Generate a JWT using the provided script
    * `$ poetry run ./scripts/gen_apple_jwt.py <key_id> <team_id> <path_to_authkey>`
    * _Optional_: You can verify your key details at [jwt.io](https://jwt.io).
-1. Set APPLE_DEVELOPER_JWT in secrets/env.
+1. Set APPLE_DEVELOPER_JWT_<STAGE> in secrets/env.
 
 > NOTE: For more information on JWTs or if you would like to generate one yourself, check out the Apple Developer [docs](https://developer.apple.com/documentation/applemusicapi/generating_developer_tokens).
 
