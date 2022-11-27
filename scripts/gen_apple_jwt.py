@@ -16,7 +16,7 @@ parser.add_argument(
 args = parser.parse_args()
 
 issued_timestamp = int(time.time())
-expiration_timestamp = issued_timestamp + 1800
+expiration_timestamp = issued_timestamp + 15777000  # 6 months
 
 payload = {
     "iss": args.team_id,
