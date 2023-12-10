@@ -58,7 +58,8 @@ class TestIntegHandler(TestCase):
             "https://open.spotify.com/track/1wnq9TwifJ9ipLUFsm8vKx?si=IUytRONLTYWxJz3g5L9y8g\n"  # noqa: E501
             "https://youtu.be/_kvZpVMY89c\n"
             "https://youtu.be/srre8i83vL8\n"  # non-music link
-            "https://music.youtube.com/watch?v=xsKQdGkrqkw&feature=share"
+            "https://music.youtube.com/watch?v=xsKQdGkrqkw&feature=share\n"
+            "https://music.apple.com/us/album/strobe-club-edit/355539180?i=355539198"
         )
         event = {
             "body": json.dumps(

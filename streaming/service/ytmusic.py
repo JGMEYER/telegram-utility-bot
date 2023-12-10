@@ -32,6 +32,7 @@ class YTMusicTrack(StreamingServiceTrack):
     into a different base class later.
     """
 
+    # Override abstract properties
     artist = None
     title = None
     id = None
@@ -75,7 +76,11 @@ class YTMusic(StreamingService):
         forwards. See: https://github.com/sigma67/ytmusicapi/issues/42"""
         query_response = (
             self._yt_client.videos()
-            .list(id=trackId, part="id,snippet", maxResults=1,)
+            .list(
+                id=trackId,
+                part="id,snippet",
+                maxResults=1,
+            )
             .execute()
         )
         if not query_response["items"]:

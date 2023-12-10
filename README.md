@@ -43,40 +43,46 @@ Example `secrets/env` template:
 
 ```bash
 # Credentials for serverless-admin account on AWS
-export AWS_ACCESS_KEY_ID=
-export AWS_SECRET_ACCESS_KEY=
+export AWS_ACCESS_KEY_ID="<not set>"
+export AWS_SECRET_ACCESS_KEY="<not set>"
 
 # Domains
-export BOT_DOMAIN_DEV=
-export BOT_DOMAIN_PROD=
+export BOT_DOMAIN_DEV="<not set>"
+export BOT_DOMAIN_PROD="<not set>"
 
 # Telegram API
-export TELEGRAM_CHAT_ID_DEV=
-export TELEGRAM_CHAT_ID_PROD=
-export TELEGRAM_TOKEN_DEV=
-export TELEGRAM_TOKEN_PROD=
-export TELEGRAM_BOT_NAME_DEV=
-export TELEGRAM_BOT_NAME_PROD=
+export TELEGRAM_CHAT_ID_DEV="<not set>"
+export TELEGRAM_CHAT_ID_PROD="<not set>"
+export TELEGRAM_TOKEN_DEV="<not set>"
+export TELEGRAM_TOKEN_PROD="<not set>"
+export TELEGRAM_BOT_NAME_DEV="<not set>"
+export TELEGRAM_BOT_NAME_PROD="<not set>"
 
 # logging (recommend same credentials as DEV chat if no other group set up)
-export TELEGRAM_LOG_CHAT_ID_DEV=
-export TELEGRAM_LOG_TOKEN=
+export TELEGRAM_LOG_CHAT_ID_DEV="<not set>"
+export TELEGRAM_LOG_TOKEN="<not set>"
 
 # specific to telegram functionality
 # format like JSON e.g. ='["user1", "user2", "user3"]'
-export TELEGRAM_ALERT_GROUP=
+export TELEGRAM_ALERT_GROUP='[]'
 
 # helpers for testing calls locally
 export TELEGRAM_API_GATEWAY_ROOT_LOCAL="localhost:3000"
 export TELEGRAM_API_GATEWAY_ROOT_DEV="https://$BOT_DOMAIN_DEV"
 export TELEGRAM_API_GATEWAY_ROOT_PROD="https://$BOT_DOMAIN_PROD"
 
+# API SECRETS
+
+# Apple Music API
+export APPLE_DEVELOPER_JWT_DEV="<not set>"
+export APPLE_DEVELOPER_JWT_PROD="<not set>"
+
 # Spotify API
-export SPOTIFY_CLIENT_ID=
-export SPOTIFY_CLIENT_SECRET=
+export SPOTIFY_CLIENT_ID="<not set>"
+export SPOTIFY_CLIENT_SECRET="<not set>"
 
 # Google Cloud APIs
-export YOUTUBE_API_KEY=
+export YOUTUBE_API_KEY="<not set>"
 ```
 
 `env.yml` and `serverless.yml` help serverless resolve which environment variables to use.
@@ -146,6 +152,21 @@ You should see something like:
 If you ever want to remove the webhook, e.g. to test getUpdates GET requests on dev, you can send a POST request to `deleteWebhook`. Just remember to reconfigure the webhook once you're done.
 
 For other assistance, check out the [Telegram documentation](https://core.telegram.org/bots/webhooks) for everything webhook.
+
+### Apple Music setup
+
+#### Generate a JWT Token
+1. Create an Apple Developer [Media ID](https://developer.apple.com/account/resources/identifiers/list).
+1. Create an Apple Developer [key](https://developer.apple.com/account/resources/authkeys/) with `MusicKit` capabilities. Assign it your `Media ID` from the previous step.
+1. Download your new key private key and save it into `secrets`. It should end with `.p8`.
+1. Additionally, keep your `Key ID` for later steps.
+1. Go to your Apple Developer [Accounts page](https://developer.apple.com/account/) and grab your `Team ID` for later steps.
+1. Generate a JWT using the provided script
+   * `$ poetry run ./scripts/gen_apple_jwt.py <key_id> <team_id> <path_to_authkey>`
+   * _Optional_: You can verify your key details at [jwt.io](https://jwt.io).
+1. Set APPLE_DEVELOPER_JWT_<STAGE> in secrets/env.
+
+> NOTE: For more information on JWTs or if you would like to generate one yourself, check out the Apple Developer [docs](https://developer.apple.com/documentation/applemusicapi/generating_developer_tokens).
 
 ### Spotify setup
 

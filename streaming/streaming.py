@@ -11,7 +11,8 @@ class StreamingServiceActionNotSupportedError(Exception):
 
 
 class StreamingService(object, metaclass=ABCMeta):
-    @abstractproperty
+    @property
+    @abstractmethod
     def VALID_TRACK_URL_PATTERNS(self):
         """List of string patterns of supported urls. Url must include matching
         group for trackId.
@@ -93,18 +94,23 @@ class StreamingServiceTrack(metaclass=ABCMeta):
         r"\s(Ft\.?|Feat\.?|Featuring)\:?\s.*",
         r"\s\(Visuali[sz]er\)",  # ()'s
         r"\s\[Visuali[sz]er\]",  # []'s
+        r"\s\(With.*\)",  # ()'s
+        r"\s\[With.*\]",  # []'s
     ]
     ARTIST_EXCLUDE_EXPRESSIONS = [r"\s\-\sTopic$"]
 
-    @abstractproperty
+    @property
+    @abstractmethod
     def artist(self):
         raise NotImplementedError
 
-    @abstractproperty
+    @property
+    @abstractmethod
     def title(self):
         raise NotImplementedError
 
-    @abstractproperty
+    @property
+    @abstractmethod
     def id(self):
         raise NotImplementedError
 

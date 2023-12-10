@@ -33,6 +33,7 @@ class YouTubeTrack(StreamingServiceTrack):
     # Symbols that may lie between an artist and track title
     SEARCHABLE_NAME_DIVIDERS = {"-", "|", "»"}
 
+    # Override abstract properties
     artist = None
     title = None
     id = None
@@ -51,8 +52,8 @@ class YouTubeTrack(StreamingServiceTrack):
     @property
     def searchable_name(self):
         """Returns a name that can be used to search against other services"""
-        if self.artist and self.artist.endswith("- Topic"):
-            return f"{self.artist[:-7].lower()} - {self.cleaned_title.lower()}"
+        if self.artist and self.artist.endswith(" - Topic"):
+            return f"{self.artist[:-8].lower()} - {self.cleaned_title.lower()}"
 
         return self.cleaned_title.lower()
 
@@ -124,7 +125,11 @@ class YouTube(StreamingService):
     def get_track_from_trackId(self, trackId):
         query_response = (
             self._client.videos()
-            .list(id=trackId, part="id,snippet", maxResults=1,)
+            .list(
+                id=trackId,
+                part="id,snippet",
+                maxResults=1,
+            )
             .execute()
         )
         if not query_response["items"]:

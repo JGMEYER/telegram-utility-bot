@@ -21,11 +21,13 @@ wheel = "*"
 ytmusicapi = "*"
 
 [tool.poetry.dev-dependencies]
-black = "==19.10b0"
+black = "==22.10.0"
 flake8 = "*"
 pre-commit = "*"
 pytest = "*"
 PyYAML = ">=5.4"
+pyjwt = "*"
+cryptography = "*"  # Required for ES256 algorithm for jwt
 
 [build-system]
 requires = ["poetry-core"]
