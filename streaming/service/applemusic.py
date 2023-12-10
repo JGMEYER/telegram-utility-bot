@@ -39,7 +39,7 @@ class AppleMusic(StreamingService):
     ]
 
     def __enter__(self):
-        self._token = getenv("APPLE_DEVELOPER_JWT")
+        self._token = getenv("APPLE_DEVELOPER_JWT").replace('"', "")
         return self
 
     def __exit__(self, *args):
@@ -71,15 +71,15 @@ class AppleMusic(StreamingService):
             return None
 
     def search_tracks(self, q, max_results=5):
-        # Apple Music requires '+' delimiter instead of spaces
-        q = q.replace(" ", "+")
-
         search_url = urljoin(BASE_API_URL, f"catalog/{STOREFRONT}/search")
-        headers = {"Authorization": f"Bearer {self._token}"}
+        headers = {
+            "Accept": "application/json",
+            "Authorization": f"Bearer {self._token}",
+        }
         params = {
             "types": "songs",
             "with": "topResults",
-            "term": q,
+            "term": q,  # requests lib should convert all spaces to "+"
         }
         try:
             search_response = requests.get(
