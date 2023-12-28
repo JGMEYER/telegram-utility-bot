@@ -108,36 +108,56 @@ def handle_webhook_update(event, context):
             "body": "Could not parse text from Telegram update",
         }
 
-    # handle music search
-    search_track = match.search_track_in_text(TELEGRAM_BOT_NAME, text)
-    if search_track:
-        similar_tracks = match.get_similar_tracks_for_original_track(
-            None, search_track
-        )
+    if f"@{TELEGRAM_BOT_NAME}" in text:
+        from openai.chatbot import ChatBot
 
-        search_author = "<username not found>"
+        text_author = "error"
         try:
-            search_author = event_body["message"]["from"]["username"]
+            text_author = event_body["message"]["from"]["username"]
         except KeyError:
             log.warning("Username not found in message", exc_info=True)
 
-        response_text = match.get_search_result_message(
-            search_track.searchable_name, similar_tracks, search_author
-        )
-        response = telegram.send_message(
-            TELEGRAM_TOKEN,
-            msg_chat_id,
-            response_text,
-            disable_link_previews=True,
-        )
-        if response["statusCode"] != 200:
-            return response
+        response_text = ChatBot().ask(text, text_author)
+        if response_text:
+            response = telegram.send_message(
+                TELEGRAM_TOKEN,
+                msg_chat_id,
+                response_text,
+                disable_link_previews=True,
+            )
+            if response["statusCode"] != 200:
+                return response
+
+    # # handle music search
+    # search_track = match.search_track_in_text(TELEGRAM_BOT_NAME, text)
+    # if search_track:
+    #     similar_tracks = match.get_similar_tracks_for_original_track(
+    #         None, search_track
+    #     )
+    #
+    #     search_author = "<username not found>"
+    #     try:
+    #         search_author = event_body["message"]["from"]["username"]
+    #     except KeyError:
+    #         log.warning("Username not found in message", exc_info=True)
+    #
+    #     response_text = match.get_search_result_message(
+    #         search_track.searchable_name, similar_tracks, search_author
+    #     )
+    #     response = telegram.send_message(
+    #         TELEGRAM_TOKEN,
+    #         msg_chat_id,
+    #         response_text,
+    #         disable_link_previews=True,
+    #     )
+    #     if response["statusCode"] != 200:
+    #         return response
 
     # handle music mirror links
     urls = match.urls_in_text(text)
     if urls:
         response_text = match.get_mirror_links_message(urls)
-        if text:
+        if response_text:
             response = telegram.send_message(
                 TELEGRAM_TOKEN,
                 msg_chat_id,

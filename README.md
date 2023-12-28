@@ -81,8 +81,12 @@ export APPLE_DEVELOPER_JWT_PROD="<not set>"
 export SPOTIFY_CLIENT_ID="<not set>"
 export SPOTIFY_CLIENT_SECRET="<not set>"
 
-# Google Cloud APIs
+# YouTube API
 export YOUTUBE_API_KEY="<not set>"
+
+# OpenAI API
+export OPENAI_API_KEY="<not set>"
+export OPENAI_ORGANIZATION_ID="<not set>"
 ```
 
 `env.yml` and `serverless.yml` help serverless resolve which environment variables to use.
